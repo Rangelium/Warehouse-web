@@ -1,0 +1,23 @@
+{
+	"name": "warehouse-server",
+	"version": "1.0.0",
+	"description": "Backend for Warehouse web app",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"keywords": [
+		"warehouse",
+		"server",
+		"backend",
+		"express"
+	],
+	"author": "Emin Azadov",
+	"license": "ISC",
+	"dependencies": {
+		"body-parser": "^1.19.0",
+		"cors": "^2.8.5",
+		"express": "^4.17.1",
+		"mssql": "^6.2.3"
+	}
+}
