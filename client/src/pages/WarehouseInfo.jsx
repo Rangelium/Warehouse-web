@@ -27,6 +27,7 @@ class WarehouseInfo extends Component {
 		drawer: true,
 		dataForTreeview: null,
 		selectedProduct: null,
+		selectedProductInfo: null,
 		selectedProductTableData: [],
 		loading: true,
 		loadingSingleProduct: false,
@@ -63,6 +64,7 @@ class WarehouseInfo extends Component {
 		this.setState({
 			selectedProduct: info.length ? info[0] : [selectedProduct.title],
 			selectedProductTableData: tableData.length ? tableData : [],
+			selectedProductInfo: selectedProduct,
 			loadingSingleProduct: false,
 		});
 	}
@@ -87,6 +89,7 @@ class WarehouseInfo extends Component {
 							})
 						}
 						product={this.state.selectedProduct}
+						productInfo={this.state.selectedProductInfo}
 						tableData={this.state.selectedProductTableData}
 						active={this.state.selectedProduct ? 1 : 0}
 					/>

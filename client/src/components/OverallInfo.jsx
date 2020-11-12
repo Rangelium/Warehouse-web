@@ -229,7 +229,7 @@ export default class OverallInfo extends Component {
 										Miqdar:
 										<span className="dataElVal">
 											{this.props.overallInfo.last_in_quantity
-												? this.props.overallInfo.last_in_quantity
+												? `${this.props.overallInfo.last_in_quantity} ${this.props.overallInfo.last_in_unit_title}`
 												: 0}
 										</span>
 									</p>
@@ -295,7 +295,7 @@ export default class OverallInfo extends Component {
 										Miqdar:
 										<span className="dataElVal">
 											{this.props.overallInfo.last_out_quantity
-												? this.props.overallInfo.last_out_quantity
+												? `${this.props.overallInfo.last_out_quantity} ${this.props.overallInfo.last_out_unit_title}`
 												: 0}
 										</span>
 									</p>

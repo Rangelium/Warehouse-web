@@ -98,12 +98,14 @@ const StyledAppbar = styled.nav`
 				}
 
 				.MuiList-root {
+					z-index: 1;
 					opacity: 1;
 					top: 100%;
 				}
 			}
 
 			.MuiList-root {
+				/* z-index: 1; */
 				transition: 0.3s;
 				opacity: 0;
 				position: absolute;
@@ -117,6 +119,10 @@ const StyledAppbar = styled.nav`
 				.link {
 					width: 100%;
 					text-align: center;
+
+					.MuiTypography-root {
+						white-space: nowrap;
+					}
 				}
 			}
 		}
