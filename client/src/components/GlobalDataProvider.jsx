@@ -32,12 +32,24 @@ export class GlobalDataProvider extends React.Component {
 		storageId: null,
 
 		success: this.showSuccess,
+		error: this.showError,
 		setStorage: (a) => this.setStorage(a),
 		alert: (data) => this.context.alert(data),
 	};
 
 	showSuccess(msg) {
 		toast.success(msg, {
+			position: "bottom-right",
+			autoClose: 2000,
+			hideProgressBar: false,
+			closeOnClick: true,
+			pauseOnHover: true,
+			draggable: true,
+			progress: undefined,
+		});
+	}
+	showError(msg) {
+		toast.error(msg, {
 			position: "bottom-right",
 			autoClose: 2000,
 			hideProgressBar: false,

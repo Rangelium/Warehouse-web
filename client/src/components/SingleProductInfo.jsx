@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import uuid from "react-uuid";
 import styled from "styled-components";
-import { GlobalDataContext } from "./GlobalDataProvider";
 import dayjs from "dayjs";
 
 // import OptionsMenu from "./OptionsMenu";
@@ -140,11 +139,10 @@ const StyledTable = styled(Table)`
 `;
 
 export default class SingleProductInfo extends Component {
-	static contextType = GlobalDataContext;
-	state = {
-		// anchorEl: null,
-		// newProdForm: false,
-	};
+	// state = {
+	// 	anchorEl: null,
+	// 	newProdForm: false,
+	// };
 
 	// * Create New Product form handlers
 	handleNewProdFormOpen() {
@@ -157,6 +155,34 @@ export default class SingleProductInfo extends Component {
 	render() {
 		if (!this.props.product) return <SingleProduct active={this.props.active ? 1 : 0} />;
 
+		if (!this.props.product.length <= 1)
+			return (
+				<SingleProduct active={this.props.active ? 1 : 0}>
+					<div className="row">
+						<ArrowBackIosOutlinedIcon onClick={() => this.props.goBack()} />
+						<h1 className="productName">{this.props.product[0]}</h1>
+					</div>
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+							flexDirection: "column",
+							height: "100%",
+							width: "100%",
+						}}
+					>
+						<h1 style={{ color: "#000", fontSize: "3rem", marginBottom: "15px" }}>
+							No information
+						</h1>
+						<p style={{ fontSize: "1.2rem" }}>
+							Looks like there is no information about this product yet
+						</p>
+					</div>
+				</SingleProduct>
+			);
+
+		const DefaultText = "NaN";
 		return (
 			<SingleProduct active={this.props.active ? 1 : 0}>
 				<div className="row">
@@ -175,35 +201,63 @@ export default class SingleProductInfo extends Component {
 				<div className="info-blocks">
 					<StyledPaper variant="outlined">
 						<p className="title">Məhsulun kodu</p>
-						<p>Not given</p>
+						<p>
+							{this.props.product.product_id
+								? this.props.product.product_id
+								: DefaultText}
+						</p>
 					</StyledPaper>
 					<StyledPaper variant="outlined">
 						<p className="title">Ümumi daxil olunan miqdar</p>
-						<p>{this.props.product.in_quantity}</p>
+						<p>
+							{this.props.product.in_quantity
+								? this.props.product.in_quantity
+								: DefaultText}
+						</p>
 					</StyledPaper>
 					<StyledPaper variant="outlined">
 						<p className="title">Ümumi satılan miqdar</p>
-						<p>{this.props.product.out_quantity}</p>
+						<p>
+							{this.props.product.out_quantity
+								? this.props.product.out_quantity
+								: DefaultText}
+						</p>
 					</StyledPaper>
 					<StyledPaper variant="outlined">
 						<p className="title">Yararlıq müddəti</p>
-						<p>{dayjs(this.props.product.exp_date).format("DD-MM-YYYY HH:mm")}</p>
+						<p>
+							{this.props.product.exp_date
+								? dayjs(this.props.product.exp_date).format("DD-MM-YYYY HH:mm")
+								: DefaultText}
+						</p>
 					</StyledPaper>
 					<StyledPaper variant="outlined">
 						<p className="title">Orta alış qiyməti</p>
-						<p>{`${this.props.product.avg_price} ${this.props.product.currency}`}</p>
+						<p>
+							{this.props.product.avg_price
+								? `${this.props.product.avg_price} ${this.props.product.currency}`
+								: DefaultText}
+						</p>
 					</StyledPaper>
 					<StyledPaper variant="outlined">
 						<p className="title">Orta salış qiyməti</p>
-						<p>{`${this.props.product.avg_out_price} ${this.props.product.currency}`}</p>
+						<p>
+							{this.props.product.avg_out_price
+								? `${this.props.product.avg_out_price} ${this.props.product.currency}`
+								: DefaultText}
+						</p>
 					</StyledPaper>
 					<StyledPaper variant="outlined">
 						<p className="title">Qalıq</p>
-						<p>{this.props.product.left}</p>
+						<p>{this.props.product.left ? this.props.product.left : DefaultText}</p>
 					</StyledPaper>
 					<StyledPaper variant="outlined">
 						<p className="title">Hüceyrə nömrəsi</p>
-						<p>{this.props.product.document_id}</p>
+						<p>
+							{this.props.product.document_id
+								? this.props.product.document_id
+								: DefaultText}
+						</p>
 					</StyledPaper>
 				</div>
 				<StyledTableContainer component={Paper}>

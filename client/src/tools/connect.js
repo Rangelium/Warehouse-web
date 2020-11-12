@@ -1,22 +1,33 @@
 import axios from "axios";
+
+const timeoutDelay = 3000;
 class API {
 	async executeProcedure(procedure, data) {
-		return new Promise((resolve, reject) => {
-			axios({
+		let obtainedRes = false;
+
+		while (!obtainedRes) {
+			let res = await axios({
 				method: "post",
 				url: "http://localhost:7000/api/dbconnect",
 				data: { procedure: procedure, data: data },
-				timeout: 2000,
-			})
-				.then((res) => {
-					if (res.data.error) reject(res.data.error);
-					resolve(res.data.result);
-				})
-				.catch((err) => {
-					console.log(err);
-					reject(err);
-				});
-		});
+				timeout: timeoutDelay,
+			}).catch((err) => {
+				console.log(err);
+				if (
+					err.message !== `timeout of ${timeoutDelay}ms exceeded` &&
+					err.message !== "Network Error"
+				) {
+					return Error(err.message);
+				}
+			});
+
+			if (res) {
+				if (res.data.error) {
+					return Error(res.data.error);
+				}
+				return res.data.result;
+			}
+		}
 	}
 }
 

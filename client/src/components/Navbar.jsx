@@ -144,13 +144,18 @@ export default class Navbar extends Component {
 	};
 
 	componentDidMount() {
-		api.executeProcedure("anbar.storage_select_all").then((data) => {
-			this.context.setStorage(data[0].id);
-			this.setState({
-				storageData: data,
-				loading: false,
+		api
+			.executeProcedure("anbar.storage_select_all")
+			.then((data) => {
+				this.context.setStorage(data[0].id);
+				this.setState({
+					storageData: data,
+					loading: false,
+				});
+			})
+			.catch((err) => {
+				console.log(err);
 			});
-		});
 	}
 
 	handleChange(event) {
