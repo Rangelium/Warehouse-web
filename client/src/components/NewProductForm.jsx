@@ -119,16 +119,15 @@ const StyledTextField = styled(TextField)`
 
 export default class NewProductForm extends Component {
 	state = {
-		newCategoryText: "",
-
 		prodNameVal: "",
 		prodBarcodeVal: "",
 		prodCatId: "Kreslolar/Stullar",
 		prodMinAmountVal: "",
 		prodOptAmountVal: "",
 		prodExpDateVal: "2020-10-08T20:30",
-
 		prodClusterTemplate: "",
+
+		_forUpdate: false,
 	};
 
 	handleChange(e) {
@@ -138,12 +137,51 @@ export default class NewProductForm extends Component {
 	}
 	handleSubmit(e) {
 		e.preventDefault();
+		if (this.state._forUpdate) {
+			this.props.onUpdateSubmit(this.state);
+		} else {
+			this.props.onCreateSubmit(this.state);
+		}
+
+		this.props.handleClose();
 	}
 
 	render() {
+		console.log("render");
+		if (this.props.isUpdate && !this.state._forUpdate) {
+			this.setState({
+				prodNameVal: this.props.updateData.title,
+				prodBarcodeVal: this.props.updateData.barcode,
+				prodCatId: "Kreslolar/Stullar",
+				prodMinAmountVal: this.props.updateData.min_quantity,
+				prodOptAmountVal: this.props.updateData.optimal_quantity,
+				prodExpDateVal: this.props.product.exp_date,
+				prodClusterTemplate: "",
+
+				_forUpdate: true,
+			});
+		}
+		if (!this.props.isUpdate && this.state._forUpdate) {
+			this.setState({
+				prodNameVal: "",
+				prodBarcodeVal: "",
+				prodCatId: "Kreslolar/Stullar",
+				prodMinAmountVal: "",
+				prodOptAmountVal: "",
+				prodExpDateVal: "2020-10-08T20:30",
+				prodClusterTemplate: "",
+
+				_forUpdate: false,
+			});
+		}
+
 		return (
-			<StyledDialog open={this.props.open} onClose={this.props.handleClose}>
-				<form onSubmit={this.handleSubmit} autoComplete="off">
+			<StyledDialog
+				style={{ zIndex: 21474836470 }}
+				open={this.props.open}
+				onClose={this.props.handleClose}
+			>
+				<form onSubmit={this.handleSubmit.bind(this)} autoComplete="off">
 					<DialogTitle>Yeni məhsul əlavə et</DialogTitle>
 					<DialogContent>
 						<ProdInfo>
