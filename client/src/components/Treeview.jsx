@@ -216,9 +216,6 @@ export default class Treeview extends Component {
 						>
 							Ağacı gizlət
 						</StyledButton>
-						{/* <StyledButton onClick={() => alert("SOON")} startIcon={<LastPageIcon />}>
-							Ağacı bağla
-						</StyledButton> */}
 					</div>
 				</StyledDrawer>
 				<SpecialButton

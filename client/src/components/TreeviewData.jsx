@@ -3,12 +3,10 @@ import styled from "styled-components";
 
 import { Typography } from "@material-ui/core";
 import { TreeView, TreeItem } from "@material-ui/lab";
-// import OptionsMenu from "../components/OptionsMenu";
 
 import ExpandMoreOutlinedIcon from "@material-ui/icons/ExpandMoreOutlined";
 import ChevronRightOutlinedIcon from "@material-ui/icons/ChevronRightOutlined";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-// import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 const StyledContainer = styled.div`
 	width: 100%;
@@ -98,7 +96,6 @@ const StyledLabel = styled.div`
 
 export default class TreeviewData extends Component {
 	state = {
-		// optionsAnchorEl: null,
 		selectedProduct: null,
 	};
 
@@ -118,32 +115,10 @@ export default class TreeviewData extends Component {
 							<Typography className="productLabel">
 								{nodes.title.length < 30 ? nodes.title : `${nodes.title.slice(0, 30)}...`}
 							</Typography>
-							{/* <Typography className="amount">{`/ 10`}</Typography>
-							<div className="optionsBtn">
-								<MoreHorizIcon
-									onClick={(e) =>
-										this.setState({
-											optionsAnchorEl: e.currentTarget,
-											selectedProduct: nodes,
-										})
-									}
-								/>
-							</div> */}
 						</StyledLabel>
 					) : (
 						<StyledLabel>
 							<Typography>{nodes.title}</Typography>
-							{/* <Typography className="amount">{`/ 100`}</Typography>
-							<div className="optionsBtn">
-								<MoreHorizIcon
-									onClick={(e) =>
-										this.setState({
-											optionsAnchorEl: e.currentTarget,
-											selectedProduct: nodes,
-										})
-									}
-								/>
-							</div> */}
 						</StyledLabel>
 					)
 				}
@@ -172,11 +147,6 @@ export default class TreeviewData extends Component {
 						{this.props.data.map((nodes) => this.renderTree(nodes))}
 					</TreeView>
 				) : null}
-				{/* <OptionsMenu
-					product={this.state.selectedProduct}
-					anchorEl={this.state.optionsAnchorEl}
-					handleClose={() => this.setState({ optionsAnchorEl: null })}
-				/> */}
 			</StyledContainer>
 		);
 	}
