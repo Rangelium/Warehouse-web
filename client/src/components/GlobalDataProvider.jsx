@@ -2,7 +2,7 @@ import React from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
-import AlertDialog from "./AlertDialog";
+import { AlertDialogContext } from "./AlertDialogContext";
 
 const StyledToastContainer = styled(ToastContainer).attrs({
 	className: "toast-container",
@@ -23,6 +23,7 @@ const StyledToastContainer = styled(ToastContainer).attrs({
 export const GlobalDataContext = React.createContext();
 
 export class GlobalDataProvider extends React.Component {
+	static contextType = AlertDialogContext;
 	state = {
 		userLoggedIn: true,
 		theme: {
@@ -31,15 +32,8 @@ export class GlobalDataProvider extends React.Component {
 		storageId: null,
 
 		success: this.showSuccess,
-		alert: (a, b) => this.showAlert(a, b),
 		setStorage: (a) => this.setStorage(a),
-
-		_dialogOpen: false,
-		_dialogRes: null,
-		_dialogData: {
-			title: "",
-			text: "",
-		},
+		alert: (data) => this.context.alert(data),
 	};
 
 	showSuccess(msg) {
@@ -53,25 +47,6 @@ export class GlobalDataProvider extends React.Component {
 			progress: undefined,
 		});
 	}
-	showAlert(title, text) {
-		this.setState({
-			_dialogOpen: true,
-			_dialogData: {
-				title,
-				text,
-			},
-		});
-
-		return new Promise((resolve) => {
-			let interval = setInterval(() => {
-				if (this.state._dialogRes !== null) {
-					clearInterval(interval);
-					resolve(this.state._dialogRes);
-					this.setState({ _dialogRes: null });
-				}
-			}, 60);
-		});
-	}
 
 	setStorage(id) {
 		this.setState({
@@ -81,27 +56,22 @@ export class GlobalDataProvider extends React.Component {
 
 	render() {
 		return (
-			<GlobalDataContext.Provider value={this.state}>
-				{this.props.children}
-				<StyledToastContainer
-					position="bottom-right"
-					autoClose={2000}
-					hideProgressBar={false}
-					newestOnTop
-					closeOnClick
-					rtl={false}
-					pauseOnFocusLoss
-					draggable
-					pauseOnHover
-				/>
-				<AlertDialog
-					handleClose={(res) => {
-						this.setState({ _dialogOpen: false, _dialogRes: res });
-					}}
-					data={this.state._dialogData}
-					open={this.state._dialogOpen}
-				/>
-			</GlobalDataContext.Provider>
+			<>
+				<GlobalDataContext.Provider value={this.state}>
+					{this.props.children}
+					<StyledToastContainer
+						position="bottom-right"
+						autoClose={2000}
+						hideProgressBar={false}
+						newestOnTop
+						closeOnClick
+						rtl={false}
+						pauseOnFocusLoss
+						draggable
+						pauseOnHover
+					/>
+				</GlobalDataContext.Provider>
+			</>
 		);
 	}
 }
