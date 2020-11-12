@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { Typography } from "@material-ui/core";
 import { TreeView, TreeItem } from "@material-ui/lab";
-import { ProductOptionsMenu } from "../components/OptionsMenu";
+import { ProductOptionsMenu, CategoryOptionsMenu } from "../components/OptionsMenu";
 
 import ExpandMoreOutlinedIcon from "@material-ui/icons/ExpandMoreOutlined";
 import ChevronRightOutlinedIcon from "@material-ui/icons/ChevronRightOutlined";
@@ -98,7 +98,8 @@ const StyledLabel = styled.div`
 
 export default class TreeviewData extends Component {
 	state = {
-		anchorEl: null,
+		prodAnchorEl: null,
+		catAnchorEl: null,
 		selectedProduct: null,
 	};
 
@@ -122,7 +123,10 @@ export default class TreeviewData extends Component {
 							<div className="optionsBtn">
 								<MoreHorizIcon
 									onClick={(e) =>
-										this.setState({ anchorEl: e.currentTarget, selectedProduct: nodes })
+										this.setState({
+											prodAnchorEl: e.currentTarget,
+											selectedProduct: nodes,
+										})
 									}
 								/>
 							</div>
@@ -131,6 +135,16 @@ export default class TreeviewData extends Component {
 						<StyledLabel>
 							<Typography>{nodes.title}</Typography>
 							{/* <Typography className="amount">{`/ 100`}</Typography> */}
+							<div className="optionsBtn">
+								<MoreHorizIcon
+									onClick={(e) =>
+										this.setState({
+											catAnchorEl: e.currentTarget,
+											selectedProduct: nodes,
+										})
+									}
+								/>
+							</div>
 						</StyledLabel>
 					)
 				}
@@ -161,8 +175,13 @@ export default class TreeviewData extends Component {
 				) : null}
 				<ProductOptionsMenu
 					product={this.state.selectedProduct}
-					anchorEl={this.state.anchorEl}
-					handleClose={() => this.setState({ anchorEl: null })}
+					anchorEl={this.state.prodAnchorEl}
+					handleClose={() => this.setState({ prodAnchorEl: null })}
+				/>
+				<CategoryOptionsMenu
+					product={this.state.selectedProduct}
+					anchorEl={this.state.catAnchorEl}
+					handleClose={() => this.setState({ catAnchorEl: null })}
 				/>
 			</StyledContainer>
 		);

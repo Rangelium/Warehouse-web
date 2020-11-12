@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import uuid from "react-uuid";
 import styled from "styled-components";
 import { GlobalDataContext } from "./GlobalDataProvider";
-import api from "../tools/connect";
 import dayjs from "dayjs";
 
 import { ProductOptionsMenu } from "./OptionsMenu";
@@ -158,7 +157,6 @@ export default class SingleProductInfo extends Component {
 	render() {
 		if (!this.props.product) return <SingleProduct active={this.props.active ? 1 : 0} />;
 
-		console.log(this.props.tableData);
 		return (
 			<SingleProduct active={this.props.active ? 1 : 0}>
 				<div className="row">

@@ -5,6 +5,7 @@ import * as serviceWorker from "./serviceWorker";
 
 import { StylesProvider } from "@material-ui/core";
 import { GlobalDataProvider } from "./components/GlobalDataProvider";
+import { AlertDialogProvider } from "./components/AlertDialogContext";
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
@@ -22,12 +23,14 @@ const GlobalStyles = createGlobalStyle`
 
 ReactDOM.render(
 	<React.StrictMode>
-		<GlobalDataProvider>
-			<StylesProvider injectFirst>
-				<GlobalStyles />
-				<App />
-			</StylesProvider>
-		</GlobalDataProvider>
+		<AlertDialogProvider>
+			<GlobalDataProvider>
+				<StylesProvider injectFirst>
+					<GlobalStyles />
+					<App />
+				</StylesProvider>
+			</GlobalDataProvider>
+		</AlertDialogProvider>
 	</React.StrictMode>,
 	document.getElementById("root")
 );
