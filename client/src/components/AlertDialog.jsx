@@ -45,7 +45,11 @@ const StyledButton = styled(Button)`
 export default class AlertDialog extends Component {
 	render() {
 		return (
-			<StyledDialog open={this.props.open} onClose={() => this.props.onClose()}>
+			<StyledDialog
+				style={{ zIndex: 21474836470 }}
+				open={this.props.open}
+				onClose={() => this.props.onClose()}
+			>
 				<DialogTitle>{this.props.title}</DialogTitle>
 				<DialogContent>
 					<DialogContentText>{this.props.description}</DialogContentText>

@@ -75,6 +75,25 @@ const StyledPaper = styled(Paper)`
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
+	overflow: auto;
+
+	&::-webkit-scrollbar {
+		width: 5px;
+		height: 5px;
+	}
+	/* Track */
+	&::-webkit-scrollbar-track {
+		box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+		border-radius: 10px;
+		border-radius: 10px;
+	}
+	/* Handle */
+	&::-webkit-scrollbar-thumb {
+		border-radius: 10px;
+		border-radius: 10px;
+		background: #d7d8d6;
+		box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+	}
 
 	@media (max-width: 1300px) {
 		margin-right: 0;
@@ -97,6 +116,7 @@ const StyledPaper = styled(Paper)`
 
 	.specialBlock {
 		width: 100%;
+		height: 250px;
 		display: flex;
 		flex-direction: column;
 
@@ -151,8 +171,8 @@ class WarehouseInfo extends Component {
 
 		overallInfo: {
 			quantity: "",
-			totalLeft: "",
-			totalCost: "",
+			remaining_products: "",
+			cost: "",
 			last_in_act_num: "",
 			last_in_currency: "",
 			last_in_date: "",
@@ -173,40 +193,23 @@ class WarehouseInfo extends Component {
 	};
 
 	async componentDidMount() {
-		const data = await api.executeProcedure("anbar.warehouse_tree_select", {
-			storage_id: this.context.storageId,
-		});
+		const data = await api.executeProcedure("anbar.warehouse_tree_select");
 
 		let overallData = await api.executeProcedure("anbar.dashboard", {
 			storage_id: this.context.storageId,
 		});
-		overallData = overallData[0];
 
 		try {
-			this.setState({
-				dataForTreeview: data,
-				overallInfo: {
-					quantity: overallData.quantity,
-					totalLeft: overallData.remaining_products,
-					totalCost: overallData.cost,
-					last_in_act_num: overallData.last_in_act_num,
-					last_in_currency: overallData.last_in_currency,
-					last_in_date: overallData.last_in_date,
-					last_in_id: overallData.last_in_id,
-					last_in_invoice_num: overallData.last_in_invoice_num,
-					last_in_name: overallData.last_in_name,
-					last_in_price: overallData.last_in_price,
-					last_in_price_total: overallData.last_in_price_total,
-					last_in_quantity: overallData.last_in_quantity,
-					last_out_currency: overallData.last_out_currency,
-					last_out_date: overallData.last_out_date,
-					last_out_id: overallData.last_out_id,
-					last_out_name: overallData.last_out_name,
-					last_out_price: overallData.last_out_price,
-					last_out_price_total: overallData.last_out_price_total,
-					last_out_quantity: overallData.last_out_quantity,
-				},
-			});
+			if (overallData.length) {
+				this.setState({
+					dataForTreeview: data,
+					overallInfo: overallData[0],
+				});
+			} else {
+				this.setState({
+					dataForTreeview: data,
+				});
+			}
 		} catch (error) {
 			console.log(error);
 		}
@@ -228,6 +231,10 @@ class WarehouseInfo extends Component {
 			product_id: selectedProduct.product_id,
 			storage_id: this.context.storageId,
 		});
+
+		console.log(selectedProduct.product_id);
+		console.log(info);
+		console.table(info);
 
 		const tableData = await api.executeProcedure("anbar.main_tree_click_table", {
 			product_id: selectedProduct.product_id,
@@ -271,11 +278,11 @@ class WarehouseInfo extends Component {
 								</StyledPaper>
 								<StyledPaper elevation={3}>
 									<p className="title">Məhsulların qalan hissəsi</p>
-									<p>{this.state.overallInfo.totalLeft}</p>
+									<p>{this.state.overallInfo.remaining_products}</p>
 								</StyledPaper>
 								<StyledPaper elevation={3}>
 									<p className="title">Anbarın ümumi dəyəri</p>
-									<p>{this.state.overallInfo.totalCost}</p>
+									<p>{this.state.overallInfo.cost}</p>
 								</StyledPaper>
 							</div>
 						</div>

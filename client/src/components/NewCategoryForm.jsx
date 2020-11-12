@@ -52,6 +52,8 @@ const StyledTextField = styled(TextField)`
 export default class NewCategoryForm extends Component {
 	state = {
 		newCategoryText: "",
+
+		_forUpdate: false,
 	};
 
 	handleChange(e) {
@@ -62,12 +64,30 @@ export default class NewCategoryForm extends Component {
 
 	handleSubmit(e) {
 		e.preventDefault();
+		if (this.state._forUpdate) {
+			this.props.onUpdateSubmit(this.state);
+		} else {
+			this.props.onCreateSubmit(this.state);
+		}
+
+		this.props.handleClose();
 	}
 
 	render() {
+		if (this.props.isUpdate && !this.state._forUpdate) {
+			this.setState({ newCategoryText: this.props.product.title, _forUpdate: true });
+		}
+		if (!this.props.isUpdate && this.state._forUpdate) {
+			this.setState({ newCategoryText: "", _forUpdate: false });
+		}
+
 		return (
-			<StyledDialog open={this.props.open} onClose={this.props.handleClose}>
-				<form onSubmit={this.handleSubmit} autoComplete="off">
+			<StyledDialog
+				style={{ zIndex: 21474836470 }}
+				open={this.props.open}
+				onClose={this.props.handleClose}
+			>
+				<form onSubmit={this.handleSubmit.bind(this)} autoComplete="off">
 					<DialogTitle>Yeni kateqoriya yarat</DialogTitle>
 					<DialogContent>
 						<StyledTextField

@@ -4,11 +4,11 @@ import styled from "styled-components";
 import { GlobalDataContext } from "./GlobalDataProvider";
 import dayjs from "dayjs";
 
-import { ProductOptionsMenu } from "./OptionsMenu";
-import NewProductForm from "./NewProductForm";
+// import OptionsMenu from "./OptionsMenu";
+// import NewProductForm from "./NewProductForm";
 
 import {
-	Button,
+	// Button,
 	Paper,
 	Table,
 	TableHead,
@@ -20,7 +20,7 @@ import {
 
 // Icons
 import ArrowBackIosOutlinedIcon from "@material-ui/icons/ArrowBackIosOutlined";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+// import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 const SingleProduct = styled.section`
 	position: absolute;
@@ -142,8 +142,8 @@ const StyledTable = styled(Table)`
 export default class SingleProductInfo extends Component {
 	static contextType = GlobalDataContext;
 	state = {
-		anchorEl: null,
-		newProdForm: false,
+		// anchorEl: null,
+		// newProdForm: false,
 	};
 
 	// * Create New Product form handlers
@@ -162,15 +162,15 @@ export default class SingleProductInfo extends Component {
 				<div className="row">
 					<ArrowBackIosOutlinedIcon onClick={() => this.props.goBack()} />
 					<h1 className="productName">{this.props.product.title}</h1>
-					<Button variant="outlined" onClick={() => this.handleNewProdFormOpen()}>
+					{/* <Button variant="outlined" onClick={() => this.handleNewProdFormOpen()}>
 						Yeni məhsul əlavə et
-					</Button>
-					<MoreHorizIcon onClick={(e) => this.setState({ anchorEl: e.currentTarget })} />
-					<ProductOptionsMenu
+					</Button> */}
+					{/* <MoreHorizIcon onClick={(e) => this.setState({ anchorEl: e.currentTarget })} />
+					<OptionsMenu
 						product={this.props.product}
 						anchorEl={this.state.anchorEl}
 						handleClose={() => this.setState({ anchorEl: null })}
-					/>
+					/> */}
 				</div>
 				<div className="info-blocks">
 					<StyledPaper variant="outlined">
@@ -259,11 +259,11 @@ export default class SingleProductInfo extends Component {
 						</TableBody>
 					</StyledTable>
 				</StyledTableContainer>
-				<NewProductForm
+				{/* <NewProductForm
 					product={this.props.product}
 					open={this.state.newProdForm}
 					handleClose={() => this.handleNewProdFormClose()}
-				/>
+				/> */}
 			</SingleProduct>
 		);
 	}
