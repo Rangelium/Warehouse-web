@@ -8,7 +8,7 @@ import { Drawer, Button, Input, InputAdornment, IconButton } from "@material-ui/
 // Icons
 import VisibilityOutlinedIcon from "@material-ui/icons/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@material-ui/icons/VisibilityOffOutlined";
-import LastPageIcon from "@material-ui/icons/LastPage";
+// import LastPageIcon from "@material-ui/icons/LastPage";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 
 const StyledDrawer = styled(Drawer)`
@@ -26,7 +26,7 @@ const StyledDrawer = styled(Drawer)`
 		align-items: center;
 
 		.btns {
-			padding: 15px 30px;
+			padding: 10px;
 			margin-top: auto;
 			width: 100%;
 			display: flex;
@@ -108,12 +108,33 @@ export default class Treeview extends Component {
 	};
 
 	async handleSearchChange(e) {
+		// let data = null;
+		// const val = e.target.value;
+		// if (val !== "") {
+		// 	data = await api.executeProcedure("anbar.warehouse_tree_search", {
+		// 		title: val,
+		// 	});
+		// }
+
+		// this.setState({
+		// 	searchInput: val,
+		// 	dataForTree: data,
+		// });
+
+		// ! Experimental
 		let data = null;
 		const val = e.target.value;
 		if (val !== "") {
-			data = await api.executeProcedure("anbar.warehouse_tree_search", {
-				title: val,
-			});
+			console.log("search " + val);
+			api
+				.executeProcedure("anbar.warehouse_tree_search", {
+					title: val,
+				})
+				.then((data) => {
+					this.setState({
+						dataForTree: data,
+					});
+				});
 		}
 
 		this.setState({
@@ -195,9 +216,9 @@ export default class Treeview extends Component {
 						>
 							Ağacı gizlət
 						</StyledButton>
-						<StyledButton onClick={() => alert("SOON")} startIcon={<LastPageIcon />}>
+						{/* <StyledButton onClick={() => alert("SOON")} startIcon={<LastPageIcon />}>
 							Ağacı bağla
-						</StyledButton>
+						</StyledButton> */}
 					</div>
 				</StyledDrawer>
 				<SpecialButton

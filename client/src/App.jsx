@@ -8,6 +8,7 @@ import { ThemeProvider } from "styled-components";
 
 // Components
 import Navbar from "./components/Navbar";
+import { CircularProgress } from "@material-ui/core";
 
 // Pages
 import WarehouseInfo from "./pages/WarehouseInfo";
@@ -63,6 +64,25 @@ class App extends React.Component {
 								{renderRoutes}
 								<Route path="*" component={NotFound} />
 							</Switch>
+						)}
+						{!this.context.storageId && (
+							<div
+								className="pageData"
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									flexDirection: "column",
+								}}
+							>
+								<h1 style={{ color: "#000", fontSize: "3rem", marginBottom: "15px" }}>
+									Loading...
+								</h1>
+								<p style={{ fontSize: "1.2rem" }}>
+									Check your internet connection or VPN setup
+								</p>
+								<CircularProgress style={{ color: "#000", marginTop: "15px" }} />
+							</div>
 						)}
 					</StyledMain>
 				</BrowserRouter>
