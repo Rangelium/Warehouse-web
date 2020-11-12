@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import api from "../tools/connect";
 
-import NewProductForm from "../components/NewProductForm";
 import WarehouseAddTable from "../components/WarehouseAddTable";
-import { Button, TextField, Tabs, Tab, Divider } from "@material-ui/core";
+import { TextField, Tabs, Tab, Divider } from "@material-ui/core";
 
 // Icons
 import RemoveIcon from "@material-ui/icons/Remove";
@@ -120,9 +118,7 @@ class WarehouseAdd extends Component {
 			<StyledSection className="pageData">
 				<Header>
 					<h1 className="title">Mədaxil</h1>
-					<Button variant="outlined" onClick={() => this.handleNewProdFormOpen()}>
-						Yeni məhsul əlavə et
-					</Button>
+
 					<div className="dateBlock">
 						<p>Tarix:</p>
 						<StyledTextField
@@ -157,11 +153,6 @@ class WarehouseAdd extends Component {
 					</TableTab>
 					<ArxivTab hidden={this.state._tabValue !== 1}>Item two</ArxivTab>
 				</MainData>
-				<NewProductForm
-					product={this.props.product}
-					open={this.state.newProdForm}
-					handleClose={() => this.handleNewProdFormClose()}
-				/>
 			</StyledSection>
 		);
 	}

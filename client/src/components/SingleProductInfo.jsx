@@ -3,11 +3,7 @@ import uuid from "react-uuid";
 import styled from "styled-components";
 import dayjs from "dayjs";
 
-// import OptionsMenu from "./OptionsMenu";
-// import NewProductForm from "./NewProductForm";
-
 import {
-	// Button,
 	Paper,
 	Table,
 	TableHead,
@@ -19,7 +15,6 @@ import {
 
 // Icons
 import ArrowBackIosOutlinedIcon from "@material-ui/icons/ArrowBackIosOutlined";
-// import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 const SingleProduct = styled.section`
 	position: absolute;
@@ -139,23 +134,10 @@ const StyledTable = styled(Table)`
 `;
 
 export default class SingleProductInfo extends Component {
-	// state = {
-	// 	anchorEl: null,
-	// 	newProdForm: false,
-	// };
-
-	// * Create New Product form handlers
-	handleNewProdFormOpen() {
-		this.setState({ newProdForm: true });
-	}
-	handleNewProdFormClose() {
-		this.setState({ newProdForm: false });
-	}
-
 	render() {
 		if (!this.props.product) return <SingleProduct active={this.props.active ? 1 : 0} />;
 
-		if (!this.props.product.length <= 1)
+		if (this.props.product.length <= 1)
 			return (
 				<SingleProduct active={this.props.active ? 1 : 0}>
 					<div className="row">
@@ -182,21 +164,12 @@ export default class SingleProductInfo extends Component {
 				</SingleProduct>
 			);
 
-		const DefaultText = "NaN";
+		const DefaultText = 0;
 		return (
 			<SingleProduct active={this.props.active ? 1 : 0}>
 				<div className="row">
 					<ArrowBackIosOutlinedIcon onClick={() => this.props.goBack()} />
 					<h1 className="productName">{this.props.product.title}</h1>
-					{/* <Button variant="outlined" onClick={() => this.handleNewProdFormOpen()}>
-						Yeni məhsul əlavə et
-					</Button> */}
-					{/* <MoreHorizIcon onClick={(e) => this.setState({ anchorEl: e.currentTarget })} />
-					<OptionsMenu
-						product={this.props.product}
-						anchorEl={this.state.anchorEl}
-						handleClose={() => this.setState({ anchorEl: null })}
-					/> */}
 				</div>
 				<div className="info-blocks">
 					<StyledPaper variant="outlined">
@@ -313,11 +286,6 @@ export default class SingleProductInfo extends Component {
 						</TableBody>
 					</StyledTable>
 				</StyledTableContainer>
-				{/* <NewProductForm
-					product={this.props.product}
-					open={this.state.newProdForm}
-					handleClose={() => this.handleNewProdFormClose()}
-				/> */}
 			</SingleProduct>
 		);
 	}
