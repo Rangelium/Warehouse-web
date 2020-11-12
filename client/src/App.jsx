@@ -13,11 +13,33 @@ import { CircularProgress } from "@material-ui/core";
 // Pages
 import WarehouseInfo from "./pages/WarehouseInfo";
 import WarehouseAdd from "./pages/WarehouseAdd";
+import WarehouseRemove from "./pages/WarehouseRemove";
+import Currency from "./pages/Currency";
+import ExpireDate from "./pages/ExpireDate";
+import Transfer from "./pages/Transfer";
+import Reports from "./pages/Reports";
+import Invetory from "./pages/Invetory";
 import NotFound from "./pages/NotFound";
 
 const routes = [
 	{ name: "Anbar haqqında", path: "/", Component: WarehouseInfo },
 	{ name: "Mədaxil", path: "/add", Component: WarehouseAdd },
+	{ name: "Məxaric", path: "/remove", Component: WarehouseRemove },
+	{
+		name: "Siyahı",
+		children: [
+			{ name: "Valyutalar", path: "/currency", Component: Currency },
+			{ name: "Yararlılıq keçmiş", path: "/expire", Component: ExpireDate },
+			{ name: "Transfer", path: "/transfer", Component: Transfer },
+		],
+	},
+	{
+		name: "Əlavə",
+		children: [
+			{ name: "Reportlar", path: "/reports", Component: Reports },
+			{ name: "İnventarizasiya", path: "/inventory", Component: Invetory },
+		],
+	},
 ];
 
 const StyledMain = styled.main`

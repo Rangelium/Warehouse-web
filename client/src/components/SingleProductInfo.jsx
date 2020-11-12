@@ -137,7 +137,7 @@ export default class SingleProductInfo extends Component {
 	render() {
 		if (!this.props.product) return <SingleProduct active={this.props.active ? 1 : 0} />;
 
-		if (this.props.product.length <= 1)
+		if (this.props.product.length <= 1 && !this.props.tableData.length)
 			return (
 				<SingleProduct active={this.props.active ? 1 : 0}>
 					<div className="row">
@@ -164,19 +164,20 @@ export default class SingleProductInfo extends Component {
 				</SingleProduct>
 			);
 
+		console.log(this.props.productInfo);
 		const DefaultText = 0;
 		return (
 			<SingleProduct active={this.props.active ? 1 : 0}>
 				<div className="row">
 					<ArrowBackIosOutlinedIcon onClick={() => this.props.goBack()} />
-					<h1 className="productName">{this.props.product.title}</h1>
+					<h1 className="productName">{this.props.productInfo.title}</h1>
 				</div>
 				<div className="info-blocks">
 					<StyledPaper variant="outlined">
 						<p className="title">Məhsulun kodu</p>
 						<p>
-							{this.props.product.product_id
-								? this.props.product.product_id
+							{this.props.productInfo.product_id
+								? this.props.productInfo.product_id
 								: DefaultText}
 						</p>
 					</StyledPaper>
