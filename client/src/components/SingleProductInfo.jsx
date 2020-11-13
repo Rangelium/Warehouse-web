@@ -164,7 +164,6 @@ export default class SingleProductInfo extends Component {
 				</SingleProduct>
 			);
 
-		console.log(this.props.productInfo);
 		const DefaultText = 0;
 		return (
 			<SingleProduct active={this.props.active ? 1 : 0}>

@@ -27,17 +27,12 @@ app.post("/api/dbconnect", (req, res) => {
 			}
 		}
 		request.execute(req.body.procedure, (err, result) => {
-			let response = {};
-			if (err != null) {
-				response["error"] = err;
-				response["result"] = null;
-			} else {
-				response["error"] = null;
-				response["result"] = result.recordset;
+			if (err !== null) {
+				return res
+					.status(400)
+					.json({ error: err, errText: err.originalError.info.message });
 			}
-
-			// console.log(response);
-			res.json(response);
+			return res.status(200).json(result.recordset);
 		});
 	});
 });

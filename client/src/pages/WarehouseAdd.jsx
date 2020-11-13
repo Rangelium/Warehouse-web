@@ -59,8 +59,8 @@ const MainData = styled.div`
 			padding: 0;
 		}
 
-		.PrivateTabIndicator-root-5 {
-			background-color: #bdbebb;
+		.MuiTabs-indicator {
+			background-color: #ffaa00;
 		}
 	}
 `;
@@ -68,7 +68,7 @@ const MainData = styled.div`
 // ? I don't know wtf is going on but this does'n work without height,
 // ? moreover height value can be anything lover than 500
 const TableTab = styled.div`
-	height: 10px;
+	height: 1px;
 	flex-grow: 1;
 	padding: 15px 0 10px 0;
 `;
