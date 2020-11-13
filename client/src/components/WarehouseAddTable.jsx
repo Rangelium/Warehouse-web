@@ -26,6 +26,7 @@ const StyledTableContainer = styled(TableContainer)`
 
 	&::-webkit-scrollbar {
 		width: 5px;
+		height: 5px;
 	}
 	/* Track */
 	&::-webkit-scrollbar-track {
@@ -57,8 +58,8 @@ class Row extends Component {
 						<IconButton
 							size="small"
 							onClick={() =>
-								this.setState((oldProps) => {
-									return { infoTable: !oldProps.infoTable };
+								this.setState((prevState) => {
+									return { infoTable: !prevState.infoTable };
 								})
 							}
 						>

@@ -98,14 +98,17 @@ const StyledAppbar = styled.nav`
 				}
 
 				.MuiList-root {
-					z-index: 1;
+					/* z-index: 100000000000000000; */
 					opacity: 1;
 					top: 100%;
+					pointer-events: all;
 				}
 			}
 
 			.MuiList-root {
 				/* z-index: 1; */
+				z-index: 100000000000000000;
+				pointer-events: none;
 				transition: 0.3s;
 				opacity: 0;
 				position: absolute;

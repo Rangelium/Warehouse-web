@@ -4,19 +4,27 @@ import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
 import { AlertDialogContext } from "./AlertDialogContext";
 
-const StyledToastContainer = styled(ToastContainer).attrs({
-	className: "toast-container",
-	toastClassName: "toast",
-	bodyClassName: "body",
-	progressClassName: "progress",
-})`
-	.toast {
-		background-color: #071107;
+const StyledToastContainer = styled(ToastContainer)`
+	width: fit-content;
+	min-width: 320px;
+	max-width: 400px;
+
+	.Toastify__toast--success {
+		background-color: #167a16;
 		color: #f3ffe9;
 		height: 30px;
+
+		.Toastify__progress-bar {
+			background-color: #a8aaa5;
+		}
 	}
-	.progress {
-		background-color: #f3ffe9;
+	.Toastify__toast--error {
+		background-color: #c41b1b;
+		color: #f3ffe9;
+		height: 30px;
+		.Toastify__progress-bar {
+			background-color: #a8aaa5;
+		}
 	}
 `;
 

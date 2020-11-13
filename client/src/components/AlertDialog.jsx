@@ -42,6 +42,11 @@ const StyledButton = styled(Button)`
 	}
 `;
 
+// ? @param Options object
+// ?	{
+// ? 		title: String , description: String
+// ?  }
+// ?
 export default class AlertDialog extends Component {
 	render() {
 		return (
