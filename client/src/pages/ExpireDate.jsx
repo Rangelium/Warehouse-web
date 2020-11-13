@@ -4,7 +4,7 @@ import { GlobalDataContext } from "../components/GlobalDataProvider";
 import api from "../tools/connect";
 
 import { ExpDateOverTable, ArchiveTable } from "../components/ExpDateTable";
-import { Tabs, Tab, Divider } from "@material-ui/core";
+import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
 
 const StyledSection = styled.section`
 	padding: 10px 15px 0 15px;
@@ -49,6 +49,7 @@ export default class ExpireDate extends Component {
 	state = {
 		expDateTableData: [],
 		archivTableData: [],
+		loading: true,
 
 		_tabValue: 0,
 	};
@@ -58,6 +59,11 @@ export default class ExpireDate extends Component {
 	}
 
 	async getData() {
+		if (!this.state.loading) {
+			this.setState({
+				loading: true,
+			});
+		}
 		const expDate = await api.executeProcedure("anbar.exp_date_over", {
 			storage_id: this.context.storageId,
 		});
@@ -69,6 +75,7 @@ export default class ExpireDate extends Component {
 		this.setState({
 			expDateTableData: expDate,
 			archivTableData: archiv,
+			loading: false,
 		});
 	}
 
@@ -100,6 +107,16 @@ export default class ExpireDate extends Component {
 						<ArchiveTable tableData={this.state.archivTableData} />
 					</TabItem>
 				</MainData>
+				<Backdrop
+					style={{
+						zIndex: 100000000,
+						position: "absolute",
+						backgroundColor: "rgba(0, 0, 0, 0.7)",
+					}}
+					open={this.state.loading}
+				>
+					<CircularProgress style={{ color: "#fff" }} />
+				</Backdrop>
 			</StyledSection>
 		);
 	}
