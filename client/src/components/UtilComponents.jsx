@@ -122,7 +122,8 @@ const StyledContainedButton = styled(Button)`
 	}
 
 	.MuiButton-label {
-		color: rgba(0, 0, 0, 0.87);
+		color: ${(props) =>
+			props.disabled ? " rgba(0, 0, 0, 0.26)" : "rgba(0, 0, 0, 0.87)"};
 		transition: 250ms;
 	}
 `;
@@ -130,7 +131,9 @@ const StyledContainedButton = styled(Button)`
 export class CustomButton extends Component {
 	render() {
 		return (
-			<StyledContainedButton {...this.props}>{this.props.children}</StyledContainedButton>
+			<StyledContainedButton variant="outlined" {...this.props}>
+				{this.props.children}
+			</StyledContainedButton>
 		);
 	}
 }
