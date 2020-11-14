@@ -60,9 +60,6 @@ export class ExpDateOverTable extends Component {
 					.catch((err) => {
 						this.context.error(err.errText);
 					});
-			})
-			.catch(() => {
-				console.log("kek");
 			});
 	}
 

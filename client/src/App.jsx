@@ -19,6 +19,7 @@ import ExpireDate from "./pages/ExpireDate";
 import Transfer from "./pages/Transfer";
 import Reports from "./pages/Reports";
 import Invetory from "./pages/Invetory";
+import InitialRemainders from "./pages/InitialRemainders";
 import NotFound from "./pages/NotFound";
 
 const routes = [
@@ -38,6 +39,11 @@ const routes = [
 		children: [
 			{ name: "Reportlar", path: "/reports", Component: Reports },
 			{ name: "İnventarizasiya", path: "/inventory", Component: Invetory },
+			{
+				name: "İlkin qalıqlar",
+				path: "/initialRemainders",
+				Component: InitialRemainders,
+			},
 		],
 	},
 ];
