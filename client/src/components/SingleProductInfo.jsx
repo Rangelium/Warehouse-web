@@ -165,6 +165,7 @@ export default class SingleProductInfo extends Component {
 			);
 
 		const DefaultText = 0;
+		console.log(this.props.product);
 		return (
 			<SingleProduct active={this.props.active ? 1 : 0}>
 				<div className="row">
@@ -173,7 +174,7 @@ export default class SingleProductInfo extends Component {
 				</div>
 				<div className="info-blocks">
 					<StyledPaper variant="outlined">
-						<p className="title">Məhsulun kodu</p>
+						<p className="title">Barkod</p>
 						<p>
 							{this.props.productInfo.product_id
 								? this.props.productInfo.product_id
@@ -197,10 +198,10 @@ export default class SingleProductInfo extends Component {
 						</p>
 					</StyledPaper>
 					<StyledPaper variant="outlined">
-						<p className="title">Yararlıq müddəti</p>
+						<p className="title">Transfer olunan miqdar</p>
 						<p>
-							{this.props.product.exp_date
-								? dayjs(this.props.product.exp_date).format("DD-MM-YYYY HH:mm")
+							{this.props.product.transfer_quantity
+								? this.props.product.transfer_quantity
 								: DefaultText}
 						</p>
 					</StyledPaper>
@@ -213,7 +214,7 @@ export default class SingleProductInfo extends Component {
 						</p>
 					</StyledPaper>
 					<StyledPaper variant="outlined">
-						<p className="title">Orta salış qiyməti</p>
+						<p className="title">Orta satış qiyməti</p>
 						<p>
 							{this.props.product.avg_out_price
 								? `${this.props.product.avg_out_price} ${this.props.product.currency}`
@@ -225,10 +226,10 @@ export default class SingleProductInfo extends Component {
 						<p>{this.props.product.left ? this.props.product.left : DefaultText}</p>
 					</StyledPaper>
 					<StyledPaper variant="outlined">
-						<p className="title">Hüceyrə nömrəsi</p>
+						<p className="title">Ölçü vahidi</p>
 						<p>
-							{this.props.product.document_id
-								? this.props.product.document_id
+							{this.props.product.unit_title
+								? this.props.product.unit_title
 								: DefaultText}
 						</p>
 					</StyledPaper>
@@ -278,7 +279,7 @@ export default class SingleProductInfo extends Component {
 										{product.is_out ? "+" : "-"}
 									</TableCell>
 									<TableCell align="center" className="dataEl">
-										{product.document_id}
+										{product.product_cell}
 									</TableCell>
 								</TableRow>
 							))}

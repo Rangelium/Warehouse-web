@@ -13,6 +13,7 @@ class API {
 					data: { procedure: procedure, data: data },
 					timeout: timeoutDelay,
 				}).catch((err) => {
+					console.log(err.response.data.errText);
 					if (
 						err.message !== `timeout of ${timeoutDelay}ms exceeded` &&
 						err.message !== "Network Error"

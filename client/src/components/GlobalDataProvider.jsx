@@ -80,6 +80,9 @@ export class GlobalDataProvider extends React.Component {
 				<GlobalDataContext.Provider value={this.state}>
 					{this.props.children}
 					<StyledToastContainer
+						style={{
+							zIndex: 100000000000000,
+						}}
 						position="bottom-right"
 						autoClose={2000}
 						hideProgressBar={false}

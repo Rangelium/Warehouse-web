@@ -107,21 +107,7 @@ export default class Treeview extends Component {
 		dataForTree: null,
 	};
 
-	async handleSearchChange(e) {
-		// let data = null;
-		// const val = e.target.value;
-		// if (val !== "") {
-		// 	data = await api.executeProcedure("anbar.warehouse_tree_search", {
-		// 		title: val,
-		// 	});
-		// }
-
-		// this.setState({
-		// 	searchInput: val,
-		// 	dataForTree: data,
-		// });
-
-		// ! Experimental
+	handleSearchChange(e) {
 		let data = null;
 		const val = e.target.value;
 		if (val !== "") {
@@ -209,7 +195,10 @@ export default class Treeview extends Component {
 								: []
 						}
 					/>
-					<div className="btns">
+					<div
+						className="btns"
+						style={{ display: this.props.alwaysActive ? "none" : "flex" }}
+					>
 						<StyledButton
 							onClick={() => this.props.close()}
 							startIcon={<VisibilityOffOutlinedIcon />}
