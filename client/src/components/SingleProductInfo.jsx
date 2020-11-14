@@ -165,7 +165,6 @@ export default class SingleProductInfo extends Component {
 			);
 
 		const DefaultText = 0;
-		console.log(this.props.product);
 		return (
 			<SingleProduct active={this.props.active ? 1 : 0}>
 				<div className="row">
@@ -176,8 +175,8 @@ export default class SingleProductInfo extends Component {
 					<StyledPaper variant="outlined">
 						<p className="title">Barkod</p>
 						<p>
-							{this.props.productInfo.product_id
-								? this.props.productInfo.product_id
+							{this.props.productInfo.barcode
+								? this.props.productInfo.barcode
 								: DefaultText}
 						</p>
 					</StyledPaper>

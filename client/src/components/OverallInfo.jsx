@@ -100,7 +100,7 @@ const StyledPaper = styled(Paper)`
 
 	.specialBlock {
 		width: 100%;
-		height: 250px;
+		height: 260px;
 		display: flex;
 		flex-direction: column;
 
@@ -200,7 +200,7 @@ export default class OverallInfo extends Component {
 								</h2>
 								<div className="data specialRow">
 									<p className="dataEl">
-										Id:
+										Barkod:
 										<span className="dataElVal">
 											{this.props.overallInfo.last_in_id
 												? this.props.overallInfo.last_in_id
@@ -243,10 +243,18 @@ export default class OverallInfo extends Component {
 									</p>
 
 									<p className="dataEl">
-										Invoice num:
+										Faktura nömrəsi:
 										<span className="dataElVal">
 											{this.props.overallInfo.last_in_invoice_num
 												? this.props.overallInfo.last_in_invoice_num
+												: 0}
+										</span>
+									</p>
+									<p className="dataEl">
+										Akt nömrəsi:
+										<span className="dataElVal">
+											{this.props.overallInfo.last_in_act_num
+												? this.props.overallInfo.last_in_act_num
 												: 0}
 										</span>
 									</p>
@@ -266,7 +274,7 @@ export default class OverallInfo extends Component {
 								</h2>
 								<div className="data specialRow">
 									<p className="dataEl">
-										Id:
+										Barkod:
 										<span className="dataElVal">
 											{this.props.overallInfo.last_out_id
 												? this.props.overallInfo.last_out_id
@@ -303,7 +311,7 @@ export default class OverallInfo extends Component {
 										Ümumi qiymət:
 										<span className="dataElVal">
 											{this.props.overallInfo.last_out_price
-												? `${this.props.overallInfo.last_out_price} ${this.props.overallInfo.last_out_currency}`
+												? `${this.props.overallInfo.last_out_price_total} ${this.props.overallInfo.last_out_currency}`
 												: 0}
 										</span>
 									</p>

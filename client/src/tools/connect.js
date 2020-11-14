@@ -13,11 +13,12 @@ class API {
 					data: { procedure: procedure, data: data },
 					timeout: timeoutDelay,
 				}).catch((err) => {
-					console.log(err.response.data.errText);
+					console.log(err);
 					if (
 						err.message !== `timeout of ${timeoutDelay}ms exceeded` &&
 						err.message !== "Network Error"
 					) {
+						console.log(err.response.data.errText);
 						return { error: err, errText: err.response.data.errText };
 					}
 					console.log("Trying to reconnect...");

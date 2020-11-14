@@ -27,12 +27,16 @@ app.post("/api/dbconnect", (req, res) => {
 			}
 		}
 		request.execute(req.body.procedure, (err, result) => {
-			if (err !== null) {
-				return res
-					.status(400)
-					.json({ error: err, errText: err.originalError.info.message });
+			try {
+				if (err !== null) {
+					return res
+						.status(400)
+						.json({ error: err, errText: err.originalError.info.message });
+				}
+				return res.status(200).json(result.recordset);
+			} catch (error) {
+				res.status(500).json({ error, errText: "Internal server error" });
 			}
-			return res.status(200).json(result.recordset);
 		});
 	});
 });

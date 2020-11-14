@@ -317,7 +317,7 @@ export default class InitialRemaindersForm extends Component {
 							}
 						}}
 					>
-						Yarat
+						Əlavə et
 					</CustomButton>
 				</StyledPaper>
 				<Backdrop
