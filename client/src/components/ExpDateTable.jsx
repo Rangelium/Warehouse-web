@@ -109,6 +109,7 @@ export class ExpDateOverTable extends Component {
 
 export class ArchiveTable extends Component {
 	render() {
+		console.log(this.props.tableData);
 		return (
 			<StyledTableContainer component={Paper}>
 				<Table stickyHeader>
@@ -122,6 +123,7 @@ export class ArchiveTable extends Component {
 							<TableCell align="center">İstehsalçı</TableCell>
 							<TableCell align="center">Hüceyrə nömrəsi</TableCell>
 							<TableCell align="center">Yararlıq müddəti</TableCell>
+							<TableCell align="center">Silinmə tarixi</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -136,6 +138,9 @@ export class ArchiveTable extends Component {
 								<TableCell align="center">{el.product_cell}</TableCell>
 								<TableCell align="center">
 									{dayjs(el.exp_date).format("MM.DD.YYYY")}
+								</TableCell>
+								<TableCell align="center">
+									{dayjs(el.decommission_date).format("MM.DD.YYYY")}
 								</TableCell>
 							</TableRow>
 						))}
