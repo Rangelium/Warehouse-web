@@ -22,6 +22,7 @@ const StyledToastContainer = styled(ToastContainer)`
 		background-color: #c41b1b;
 		color: #f3ffe9;
 		height: 30px;
+
 		.Toastify__progress-bar {
 			background-color: #a8aaa5;
 		}
@@ -38,6 +39,7 @@ export class GlobalDataProvider extends React.Component {
 			primary: "#000000",
 		},
 		storageId: null,
+		userId: 1,
 
 		success: this.showSuccess,
 		error: this.showError,
@@ -84,7 +86,7 @@ export class GlobalDataProvider extends React.Component {
 							zIndex: 100000000000000,
 						}}
 						position="bottom-right"
-						autoClose={2000}
+						autoClose={3000}
 						hideProgressBar={false}
 						newestOnTop
 						closeOnClick

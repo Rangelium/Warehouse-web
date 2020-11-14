@@ -85,7 +85,7 @@ export default class InitialRemainders extends Component {
 			dataForTreeview,
 			sessionId: unfinSession ? parseInt(unfinSession.sessionId) : null,
 			vendorId: unfinSession ? parseInt(unfinSession.vendorId) : "",
-			contractNum: unfinSession ? parseInt(unfinSession.contractNum) : "",
+			contractNum: unfinSession ? unfinSession.contractNum : "",
 		});
 	}
 	handleChange(e) {
@@ -125,7 +125,9 @@ export default class InitialRemainders extends Component {
 		e.preventDefault();
 
 		api
-			.executeProcedure("anbar.input_initial_remainders_accept", { user_id: 1 })
+			.executeProcedure("anbar.input_initial_remainders_accept", {
+				user_id: this.context.userId,
+			})
 			.then(() => {
 				this.context.success("Session ended");
 				this.setState({
