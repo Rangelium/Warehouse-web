@@ -1,5 +1,7 @@
 import axios from "axios";
 
+axios.defaults.baseURL = "http://localhost:7000/api";
+
 const timeoutDelay = 3000;
 class API {
 	async executeProcedure(procedure, data) {
@@ -9,7 +11,7 @@ class API {
 			while (!obtainedRes) {
 				let res = await axios({
 					method: "post",
-					url: "http://localhost:7000/api/dbconnect",
+					url: "/dbconnect",
 					data: { procedure: procedure, data: data },
 					timeout: timeoutDelay,
 				}).catch((err) => {
@@ -33,6 +35,27 @@ class API {
 					return;
 				}
 			}
+		});
+	}
+
+	uploadTransferFile(data) {
+		return new Promise((resolve, reject) => {
+			axios({
+				method: "post",
+				url: "/uploadTransferFile",
+				data,
+				timeout: timeoutDelay,
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			})
+				.then((res) => {
+					resolve(res);
+				})
+				.catch((err) => {
+					console.log(err.response);
+					reject(err);
+				});
 		});
 	}
 }

@@ -418,7 +418,6 @@ export default class Currency extends Component {
 
 						<CustomTextInput
 							required
-							type="number"
 							variant="outlined"
 							label="Tarix"
 							name="currencyDate"

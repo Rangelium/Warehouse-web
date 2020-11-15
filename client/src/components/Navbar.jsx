@@ -156,7 +156,7 @@ export default class Navbar extends Component {
 		api
 			.executeProcedure("anbar.storage_select_all")
 			.then((data) => {
-				this.context.setStorage(data[0].id);
+				this.context.setStorage(data[0].id, data[0].storage_name);
 				this.setState({
 					storageData: data,
 					loading: false,

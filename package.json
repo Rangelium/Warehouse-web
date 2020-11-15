@@ -1,0 +1,20 @@
+{
+	"name": "anbar-web-2",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start": "concurrently \"npm start --prefix ./client\" \"nodemon ./server\" ",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Rangelium/Anbar-website.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/Rangelium/Anbar-website/issues"
+	},
+	"homepage": "https://github.com/Rangelium/Anbar-website#readme"
+}

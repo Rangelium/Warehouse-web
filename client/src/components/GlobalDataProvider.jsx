@@ -39,11 +39,12 @@ export class GlobalDataProvider extends React.Component {
 			primary: "#000000",
 		},
 		storageId: null,
+		storageTitle: "",
 		userId: 1,
 
 		success: this.showSuccess,
 		error: this.showError,
-		setStorage: (a) => this.setStorage(a),
+		setStorage: (a, b) => this.setStorage(a, b),
 		alert: (data) => this.context.alert(data),
 	};
 
@@ -70,9 +71,10 @@ export class GlobalDataProvider extends React.Component {
 		});
 	}
 
-	setStorage(id) {
+	setStorage(id, title) {
 		this.setState({
 			storageId: id,
+			storageTitle: title,
 		});
 	}
 
