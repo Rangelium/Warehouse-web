@@ -3,7 +3,6 @@
 
 import React, { Component } from "react";
 import styled from "styled-components";
-import uuid from "react-uuid";
 
 import {
 	TextField,
@@ -99,7 +98,7 @@ const StyledTextField = styled(TextField)`
 
 export class CustomTextInput extends Component {
 	render() {
-		return <StyledTextField {...this.props} />;
+		return <StyledTextField variant="outlined" {...this.props} />;
 	}
 }
 

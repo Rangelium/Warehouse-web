@@ -11,13 +11,7 @@ import {
 	CustomTextInput,
 	CustomButton,
 } from "./UtilComponents";
-import {
-	Typography,
-	Divider,
-	Paper,
-	Backdrop,
-	CircularProgress,
-} from "@material-ui/core";
+import { Typography, Paper, Backdrop, CircularProgress } from "@material-ui/core";
 
 const StyledForm = styled.form`
 	width: 100%;
@@ -216,7 +210,6 @@ export default class InitialRemaindersForm extends Component {
 							disabled={this.state.productId ? false : true}
 							required
 							type="number"
-							variant="outlined"
 							label="Vahid qiyməti"
 							name="price"
 							value={this.state.price}
@@ -242,7 +235,6 @@ export default class InitialRemaindersForm extends Component {
 							disabled={this.state.productId ? false : true}
 							required
 							type="number"
-							variant="outlined"
 							label="Miqdar"
 							name="quantity"
 							value={this.state.quantity}
@@ -265,8 +257,6 @@ export default class InitialRemaindersForm extends Component {
 
 						<CustomTextInput
 							disabled={this.state.productId ? false : true}
-							type="number"
-							variant="outlined"
 							label="Yararlıq müddəti"
 							name="expDate"
 							type="date"
@@ -276,7 +266,6 @@ export default class InitialRemaindersForm extends Component {
 
 						<CustomTextInput
 							disabled={this.state.productId ? false : true}
-							variant="outlined"
 							label="Hüceyrə nömrəsi"
 							name="productCell"
 							value={this.state.productCell}

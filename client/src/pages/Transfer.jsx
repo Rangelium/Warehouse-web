@@ -89,9 +89,8 @@ class Transfer extends Component {
 		endDate: dayjs().add(1, "year").format("YYYY-MM-DD"),
 		transferTableData: [],
 		archiveTableData: [],
-		selectedSessionId: null,
+		selectedSessionId: null, // null
 
-		newTransferForm: false,
 		_tabValue: 0,
 		loading: true,
 	};
@@ -195,12 +194,12 @@ class Transfer extends Component {
 					</div>
 				</Header>
 
-				<Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
-					<Tab label="Təstiq gözləyənlər" />
-					<Tab label="Arxiv" />
-				</Tabs>
-
 				<MainData>
+					<Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
+						<Tab label="Təstiq gözləyənlər" />
+						<Tab label="Arxiv" />
+					</Tabs>
+
 					<Divider />
 
 					<TabItem hidden={this.state._tabValue !== 0}>

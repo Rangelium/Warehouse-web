@@ -9,7 +9,6 @@ import { CustomButton } from "./UtilComponents";
 import {
 	IconButton,
 	Paper,
-	Box,
 	Collapse,
 	TableContainer,
 	Table,
@@ -17,6 +16,8 @@ import {
 	TableBody,
 	TableRow,
 	TableCell,
+	Backdrop,
+	CircularProgress,
 } from "@material-ui/core";
 
 // Icons
@@ -53,6 +54,7 @@ class Row extends Component {
 	state = {
 		infoTable: false,
 		productsTableData: [],
+		loading: false,
 	};
 
 	finishSession() {
@@ -68,24 +70,34 @@ class Row extends Component {
 	}
 
 	handleExpandRowClick() {
-		if (!this.state.infoTable) {
-			api
-				.executeProcedure("[SalaryDB].anbar.[transfer_products_session_info_selection]", {
-					session_id: this.props.row.id,
-				})
-				.then((res) => {
-					this.setState({
-						productsTableData: res,
-						infoTable: true,
-					});
-				})
-				.catch((err) => console.error(err.errText));
-
-			return;
-		}
-		this.setState({
-			infoTable: false,
-		});
+		this.setState(
+			(prevState) => {
+				return {
+					infoTable: !prevState.infoTable,
+					loading: !prevState.infoTable,
+				};
+			},
+			() => {
+				if (this.state.infoTable) {
+					api
+						.executeProcedure(
+							"[SalaryDB].anbar.[transfer_products_session_info_selection]",
+							{
+								session_id: this.props.row.id,
+							}
+						)
+						.then((res) => {
+							console.log(res);
+							this.setState({
+								productsTableData: res,
+								infoTable: true,
+								loading: false,
+							});
+						})
+						.catch((err) => console.error(err.errText));
+				}
+			}
+		);
 	}
 
 	render() {
@@ -136,7 +148,7 @@ class Row extends Component {
 				<TableRow>
 					<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
 						<Collapse in={this.state.infoTable} timeout="auto" unmountOnExit>
-							<Paper style={{ padding: "10px 0" }} elevation={0}>
+							<Paper style={{ padding: "10px 0", position: "relative" }} elevation={0}>
 								<Table size="small">
 									<TableHead>
 										<TableRow>
@@ -163,6 +175,17 @@ class Row extends Component {
 										))}
 									</TableBody>
 								</Table>
+
+								<Backdrop
+									style={{
+										zIndex: 1000,
+										position: "absolute",
+										backgroundColor: "rgba(0, 0, 0, 0.7)",
+									}}
+									open={this.state.loading}
+								>
+									<CircularProgress style={{ color: "#fff" }} />
+								</Backdrop>
 							</Paper>
 						</Collapse>
 					</TableCell>
