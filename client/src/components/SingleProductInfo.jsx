@@ -124,6 +124,7 @@ const StyledTable = styled(Table)`
   .head {
     font-size: 0.9rem;
     font-weight: 400;
+    text-align: center;
     color: #54585f;
   }
 
@@ -250,7 +251,6 @@ export default class SingleProductInfo extends Component {
                 <TableCell className="head">Valyuta</TableCell>
                 <TableCell className="head">Yararlıq müddəti</TableCell>
                 <TableCell className="head">Fəaliyyət</TableCell>
-                <TableCell className="head">Təstiq edilib</TableCell>
                 <TableCell className="head">Hüceyrə nömrəsi</TableCell>
               </TableRow>
             </TableHead>
@@ -278,9 +278,6 @@ export default class SingleProductInfo extends Component {
                   </TableCell>
                   <TableCell align="center" className="dataEl">
                     {product.reason}
-                  </TableCell>
-                  <TableCell align="center" className="dataEl">
-                    {product.is_out ? "+" : "-"}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
                     {product.product_cell}
