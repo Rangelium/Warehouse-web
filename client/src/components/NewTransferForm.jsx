@@ -151,6 +151,7 @@ export default class NewTransferForm extends Component {
 			let res = await api.uploadTransferFile(formData).catch((err) => {
 				console.log(err);
 			});
+			fileName = `${fileName}.${this.state.file.name.split(".")[1]}`;
 			if (res === undefined) return;
 		}
 
@@ -163,7 +164,7 @@ export default class NewTransferForm extends Component {
 				storage_to: this.state.toWarehouseId,
 				transfer_session_id: this.props.sessionId,
 				document_num: this.state.transferInfoData.contractNum,
-				document_num_path: `${fileName}.${this.state.file.name.split(".")[1]}`,
+				document_num_path: fileName,
 				cluster_order_default: this.state.selectedProduct.cluster_default,
 				price: this.state.selectedProduct.unit_price,
 				exp_date: this.state.selectedProduct.exp_date,
