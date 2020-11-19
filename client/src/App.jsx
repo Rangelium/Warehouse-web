@@ -20,6 +20,7 @@ import Transfer from "./pages/Transfer";
 import Reports from "./pages/Reports";
 import Invetory from "./pages/Invetory";
 import InitialRemainders from "./pages/InitialRemainders";
+import ManageWarehouses from "./pages/ManageWarehouses";
 import NotFound from "./pages/NotFound";
 
 const routes = [
@@ -44,8 +45,14 @@ const routes = [
 				path: "/initialRemainders",
 				Component: InitialRemainders,
 			},
+			{
+				name: "Anbarın quraşdırılması",
+				path: "/manageWarehouses",
+				Component: ManageWarehouses,
+			},
 		],
 	},
+	{ name: "Info", path: "/info", Component: NotFound },
 ];
 
 const StyledMain = styled.main`
