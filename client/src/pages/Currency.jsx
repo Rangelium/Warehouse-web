@@ -183,18 +183,18 @@ class CreateClusterForm extends Component {
 	}
 
 	handleChange(e) {
-		if (e.target.name === "startDate" || e.target.name === "endDate") {
-			this.setState(
-				{
-					[e.target.name]: e.target.value,
-				},
-				() => {
-					this.getCurrencyData();
-				}
-			);
+		// if (e.target.name === "startDate" || e.target.name === "endDate") {
+		// 	this.setState(
+		// 		{
+		// 			[e.target.name]: e.target.value,
+		// 		},
+		// 		() => {
+		// 			this.getCurrencyData();
+		// 		}
+		// 	);
 
-			return;
-		}
+		// 	return;
+		// }
 		this.setState({
 			[e.target.name]: e.target.value,
 		});
