@@ -168,7 +168,11 @@ export default class Navbar extends Component {
 	}
 
 	handleChange(event) {
-		this.context.setStorage(event.target.value);
+		const selectedTitle = this.state.storageData.find(
+			(storage) => storage.id === event.target.value
+		).storage_name;
+
+		this.context.setStorage(event.target.value, selectedTitle);
 	}
 
 	render() {

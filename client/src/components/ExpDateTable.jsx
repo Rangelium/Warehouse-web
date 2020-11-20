@@ -41,6 +41,7 @@ const StyledTableContainer = styled(TableContainer)`
 
 export class ExpDateOverTable extends Component {
   static contextType = GlobalDataContext;
+
   handleClick(data) {
     this.context
       .alert({
@@ -74,6 +75,7 @@ export class ExpDateOverTable extends Component {
               <TableCell align="center">Miqdar</TableCell>
               <TableCell align="center">Qiymət</TableCell>
               <TableCell align="center">Ümumi qiymət</TableCell>
+              {/* <TableCell align="center">İstehsalçı</TableCell> */}
               <TableCell align="center">Hüceyrə nömrəsi</TableCell>
               <TableCell align="center">Yararlıq müddəti</TableCell>
               <TableCell align="center" />
@@ -87,6 +89,7 @@ export class ExpDateOverTable extends Component {
                 <TableCell align="center">{`${el.left} ${el.unit_title}`}</TableCell>
                 <TableCell align="center">{`${el.price} ${el.currency_title}`}</TableCell>
                 <TableCell align="center">{`${el.sum_price} ${el.currency_title}`}</TableCell>
+                {/* <TableCell align="center">{el.manufacturer_title}</TableCell> */}
                 <TableCell align="center">{el.product_cell}</TableCell>
                 <TableCell align="center">
                   {dayjs(el.exp_date).format("MM.DD.YYYY")}
@@ -110,7 +113,6 @@ export class ExpDateOverTable extends Component {
 
 export class ArchiveTable extends Component {
   render() {
-    console.log(this.props.tableData);
     return (
       <StyledTableContainer component={Paper}>
         <Table stickyHeader>
@@ -121,6 +123,7 @@ export class ArchiveTable extends Component {
               <TableCell align="center">Miqdar</TableCell>
               <TableCell align="center">Qiymət</TableCell>
               <TableCell align="center">Ümumi qiymət</TableCell>
+              {/* <TableCell align="center">İstehsalçı</TableCell> */}
               <TableCell align="center">Hüceyrə nömrəsi</TableCell>
               <TableCell align="center">Yararlıq müddəti</TableCell>
               <TableCell align="center">Silinmə tarixi</TableCell>
@@ -134,6 +137,7 @@ export class ArchiveTable extends Component {
                 <TableCell align="center">{`${el.quantity} ${el.unit_title}`}</TableCell>
                 <TableCell align="center">{`${el.price} ${el.currency_title}`}</TableCell>
                 <TableCell align="center">{`${el.sum_price} ${el.currency_title}`}</TableCell>
+                {/* <TableCell align="center">{el.title[2]}</TableCell> */}
                 <TableCell align="center">{el.product_cell}</TableCell>
                 <TableCell align="center">
                   {dayjs(el.exp_date).format("MM.DD.YYYY")}
