@@ -16,6 +16,7 @@ const StyledContainer = styled.div`
 
 	&::-webkit-scrollbar {
 		width: 5px;
+		height: 5px;
 	}
 	/* Track */
 	&::-webkit-scrollbar-track {
