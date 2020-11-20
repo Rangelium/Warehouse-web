@@ -92,13 +92,13 @@ export default class InitialRemaindersForm extends Component {
         cluster_id: this.state.clusterId ? this.state.clusterId : 1,
         session_id: this.props.sessionId ? this.props.sessionId : null,
         barcode: this.state.barcode ? this.state.barcode : null,
+        inventory_num: this.state.inventory_num
+          ? this.state.inventory_num
+          : null,
         exp_date: this.state.expDate
           ? dayjs(this.state.expDate).format("YYYY.MM.DD")
           : null,
         currency: this.state.currency ? this.state.currency : null,
-        product_manufacturer: this.state.manufactorer
-          ? this.state.manufactorer
-          : null,
         product_cell: this.state.productCell ? this.state.productCell : null,
         quantity: this.state.quantity ? this.state.quantity : null,
         price: this.state.price ? this.state.price : null,
@@ -108,7 +108,6 @@ export default class InitialRemaindersForm extends Component {
         this.context.success(`Added ${this.state.title}`);
         this.setState({
           loading: false,
-
           title: "",
           barcode: "",
           productId: "",
@@ -121,8 +120,6 @@ export default class InitialRemaindersForm extends Component {
           currencyData: [],
           expDate: dayjs().format("YYYY-MM-DD"),
           productCell: "",
-          manufactorer: "",
-          manufactorerData: [],
           reason: "",
         });
       })
@@ -145,26 +142,21 @@ export default class InitialRemaindersForm extends Component {
 
     const currencyData = await api.executeProcedure("anbar.currency_select");
 
-    const manufactorerData = await api.executeProcedure(
-      "anbar.product_manufacturer_select_all"
-    );
-
     this.setState({
       productId: product.product_id,
       title: product.title,
       barcode: product.barcode,
       clustersData,
       currencyData,
-      manufactorerData,
       loading: false,
 
       quantity: "",
       clusterId: "",
       price: "",
       currency: "",
+      inventory_num: "",
       expDate: dayjs().format("YYYY-MM-DD"),
       productCell: "",
-      manufactorer: "",
       reason: "",
     });
   }
@@ -279,21 +271,14 @@ export default class InitialRemaindersForm extends Component {
               value={this.state.productCell}
               onChange={this.handleChange.bind(this)}
             />
-
-            <CustomSelect
+            <CustomTextInput
               disabled={this.state.productId ? false : true}
-              label="İstehsalçı"
-              name="manufactorer"
-              value={this.state.manufactorer}
+              variant="outlined"
+              label="Inventar №"
+              name="inventoryNum"
+              value={this.state.inventory_num}
               onChange={this.handleChange.bind(this)}
-            >
-              {this.state.manufactorerData.map((manufactorer) => (
-                <CustomSelectItem key={uuid()} value={manufactorer.id}>
-                  {manufactorer.title}
-                </CustomSelectItem>
-              ))}
-            </CustomSelect>
-
+            />
             <CustomTextInput
               disabled={this.state.productId ? false : true}
               variant="outlined"
