@@ -92,6 +92,9 @@ export default class InitialRemaindersForm extends Component {
         cluster_id: this.state.clusterId ? this.state.clusterId : 1,
         session_id: this.props.sessionId ? this.props.sessionId : null,
         barcode: this.state.barcode ? this.state.barcode : null,
+        inventory_num: this.state.inventory_num
+          ? this.state.inventory_num
+          : null,
         exp_date: this.state.expDate
           ? dayjs(this.state.expDate).format("YYYY.MM.DD")
           : null,
@@ -151,6 +154,7 @@ export default class InitialRemaindersForm extends Component {
       clusterId: "",
       price: "",
       currency: "",
+      inventory_num: "",
       expDate: dayjs().format("YYYY-MM-DD"),
       productCell: "",
       reason: "",
@@ -267,7 +271,14 @@ export default class InitialRemaindersForm extends Component {
               value={this.state.productCell}
               onChange={this.handleChange.bind(this)}
             />
-
+            <CustomTextInput
+              disabled={this.state.productId ? false : true}
+              variant="outlined"
+              label="Inventar №"
+              name="inventoryNum"
+              value={this.state.inventory_num}
+              onChange={this.handleChange.bind(this)}
+            />
             <CustomTextInput
               disabled={this.state.productId ? false : true}
               variant="outlined"
