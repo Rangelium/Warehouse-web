@@ -17,7 +17,7 @@ const StyledSection = styled.section`
 	flex-direction: column;
 
 	.MuiTabs-root {
-		padding: 0 15px;
+		padding: 0 15px 0 0;
 
 		.MuiTab-root {
 			padding: 0;

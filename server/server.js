@@ -7,10 +7,29 @@ const { connConfig } = require("./serverTools/connectionConfig");
 const { sha256 } = require("./serverTools/sha256");
 
 const multer = require("multer");
-const upload = multer({
+const uploadTransfer = multer({
 	storage: multer.diskStorage({
 		destination(req, file, cb) {
 			cb(null, `${__dirname}/transferFiles`);
+		},
+		filename(req, file, cb) {
+			cb(null, `${req.body.title}${path.parse(file.originalname).ext}`);
+		},
+	}),
+	limits: {
+		fileSize: 10000000, // max file size 1MB = 1000000 bytes
+	},
+	fileFilter(req, file, cb) {
+		if (file.originalname.match(/\.(exe)$/)) {
+			return cb(new Error("exe files are not allowed"));
+		}
+		cb(undefined, true); // continue with upload
+	},
+});
+const uploadWarehouseRemove = multer({
+	storage: multer.diskStorage({
+		destination(req, file, cb) {
+			cb(null, `${__dirname}/warehouseRemoveFiles`);
 		},
 		filename(req, file, cb) {
 			cb(null, `${req.body.title}${path.parse(file.originalname).ext}`);
@@ -82,7 +101,21 @@ app.post("/api/login", (req, res) => {
 
 app.post(
 	"/api/uploadTransferFile",
-	upload.single("file"),
+	uploadTransfer.single("file"),
+	async (req, res) => {
+		res.status(200).send("File uploaded successfully");
+	},
+	(error, req, res, next) => {
+		if (error) {
+			console.log(error);
+			res.status(500).send(error.message);
+		}
+	}
+);
+
+app.post(
+	"/api/uploadWarehouseRemoveFile",
+	uploadWarehouseRemove.single("file"),
 	async (req, res) => {
 		res.status(200).send("File uploaded successfully");
 	},
