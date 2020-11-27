@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { GlobalDataContext } from "./GlobalDataProvider";
 import uuid from "react-uuid";
-import dayjs from "dayjs";
 import api from "../tools/connect";
+
+import WarehouseRemoveForm from "./WarehouseRemoveForm";
 
 import { CustomButton } from "./UtilComponents";
 import {
@@ -23,8 +24,6 @@ import {
 // Icons
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import RemoveIcon from "@material-ui/icons/Remove";
-import DoneIcon from "@material-ui/icons/Done";
 
 const StyledTableContainer = styled(TableContainer)`
 	overflow-y: auto;
@@ -55,19 +54,11 @@ class Row extends Component {
 		infoTable: false,
 		productsTableData: [],
 		loading: false,
-	};
 
-	finishSession() {
-		api
-			.executeProcedure("anbar.transfer_products_session_info_accept_insert", {
-				transfer_session_id: this.props.row.id,
-			})
-			.then(() => {
-				this.context.success("Sessiya təsdiq edildi");
-				this.props.refresh();
-			})
-			.catch((err) => this.context.error(err.errText));
-	}
+		showForm: false,
+		dataForForm: [],
+		retailSaleId: null,
+	};
 
 	handleExpandRowClick() {
 		this.setState(
@@ -80,14 +71,11 @@ class Row extends Component {
 			() => {
 				if (this.state.infoTable) {
 					api
-						.executeProcedure(
-							"[SalaryDB].anbar.[transfer_products_session_info_selection]",
-							{
-								session_id: this.props.row.id,
-							}
-						)
+						.executeProcedure("[SalaryDB].procurement.[get_order_req_data]", {
+							ord_numb: this.props.row.ord_numb,
+							emp_version: this.props.row.emp_id,
+						})
 						.then((res) => {
-							// console.log(res);
 							this.setState({
 								productsTableData: res,
 								infoTable: true,
@@ -100,6 +88,49 @@ class Row extends Component {
 		);
 	}
 
+	async showRemoveForm() {
+		const dataForForm = await api
+			.executeProcedure("[SalaryDB].procurement.[get_order_req_data]", {
+				ord_numb: this.props.row.ord_numb,
+				emp_version: this.props.row.emp_id,
+			})
+			.catch((err) => console.error(err.errText));
+
+		const retailSaleId = await api
+			.executeProcedure("[SalaryDB].anbar.[order_request_handle_session_create]")
+			.then((res) => res[0][""])
+			.catch((err) => console.error(err.errText));
+
+		this.setState(
+			{
+				showForm: true,
+				dataForForm,
+				retailSaleId,
+			},
+			() => {
+				const data = localStorage.getItem("WarehouseRemoveUnfinishedRetailSessions");
+				if (data) {
+					const arr = JSON.parse(data);
+					arr.push(this.state.retailSaleId);
+					localStorage.setItem(
+						"WarehouseRemoveUnfinishedRetailSessions",
+						JSON.stringify(arr)
+					);
+				} else {
+					localStorage.setItem(
+						"WarehouseRemoveUnfinishedRetailSessions",
+						JSON.stringify([this.state.retailSaleId])
+					);
+				}
+			}
+		);
+	}
+	closeRemoveForm() {
+		this.setState({
+			showForm: false,
+		});
+	}
+
 	render() {
 		const data = this.props.row;
 
@@ -107,44 +138,22 @@ class Row extends Component {
 			<>
 				<TableRow>
 					<TableCell style={{ borderBottom: "unset" }}>
-						<IconButton
-							disabled={!Boolean(data.number_of_products)}
-							size="small"
-							onClick={this.handleExpandRowClick.bind(this)}
-						>
+						<IconButton size="small" onClick={this.handleExpandRowClick.bind(this)}>
 							{this.state.infoTable ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 						</IconButton>
 					</TableCell>
+
 					<TableCell style={{ borderBottom: "unset" }} align="center">
-						{dayjs(data.begin_date).subtract(4, "hour").format("DD MMMM YYYY, HH:mm:ss")}
+						{"PLACEHOLDER"}
 					</TableCell>
 					<TableCell style={{ borderBottom: "unset" }} align="center">
-						{data.number_of_products}
-					</TableCell>
-					<TableCell
-						style={{ borderBottom: "unset" }}
-						align="center"
-					>{`${data.total_sum} ${data.default_currency}`}</TableCell>
-					<TableCell style={{ borderBottom: "unset" }} align="center">
-						{data.done === "+" ? <DoneIcon /> : <RemoveIcon />}
+						{data.products_quantity}
 					</TableCell>
 					<TableCell style={{ borderBottom: "unset" }} align="center">
-						<CustomButton
-							disabled={data.done === "+" ? true : false}
-							style={{ marginRight: "5px" }}
-							onClick={() => this.props.showNewTransferForm(data.id)}
-						>
-							Əlavə et
-						</CustomButton>
-						<CustomButton
-							disabled={data.done === "+" ? true : false}
-							onClick={() => {
-								this.context
-									.alert({ title: "Finish session", description: "Are you sure?" })
-									.then(() => this.finishSession())
-									.catch(() => {});
-							}}
-						>
+						{data.create_date_time}
+					</TableCell>
+					<TableCell style={{ borderBottom: "unset" }} align="center">
+						<CustomButton onClick={this.showRemoveForm.bind(this)}>
 							Təstiq et
 						</CustomButton>
 					</TableCell>
@@ -157,24 +166,16 @@ class Row extends Component {
 									<TableHead>
 										<TableRow>
 											<TableCell align="center">Məhsul</TableCell>
-											<TableCell align="center">Barkod</TableCell>
 											<TableCell align="center">Kəmiyyət</TableCell>
-											<TableCell align="center">Qiymət</TableCell>
-											<TableCell align="center">Ümumi Qiymət</TableCell>
-											<TableCell align="center">Hüceyrə nömrəsi</TableCell>
-											<TableCell align="center">Transfer olunan anbarın adı</TableCell>
+											<TableCell align="center">Kurasiya</TableCell>
 										</TableRow>
 									</TableHead>
 									<TableBody>
 										{this.state.productsTableData.map((product) => (
 											<TableRow key={uuid()}>
-												<TableCell align="center">{product.title[0]}</TableCell>
-												<TableCell align="center">{product.barcode}</TableCell>
-												<TableCell align="center">{`${product.quantity} ${product.unit_title}`}</TableCell>
-												<TableCell align="center">{`${product["price for 1"]} ${product.title[1]}`}</TableCell>
-												<TableCell align="center">{`${product.sum_price} ${product.title[1]}`}</TableCell>
-												<TableCell align="center">{product.product_cell}</TableCell>
-												<TableCell align="center">{product.storage_name}</TableCell>
+												<TableCell align="center">{product.title}</TableCell>
+												<TableCell align="center">{product.amount}</TableCell>
+												<TableCell align="center">{product.department_name}</TableCell>
 											</TableRow>
 										))}
 									</TableBody>
@@ -194,12 +195,23 @@ class Row extends Component {
 						</Collapse>
 					</TableCell>
 				</TableRow>
+
+				{this.state.showForm && Boolean(this.state.retailSaleId) && (
+					<WarehouseRemoveForm
+						open={true}
+						data={this.state.dataForForm}
+						retailSaleId={this.state.retailSaleId}
+						close={this.closeRemoveForm.bind(this)}
+						refresh={this.props.refresh}
+						order_id={data.id}
+					/>
+				)}
 			</>
 		);
 	}
 }
 
-export default class TransferTable extends Component {
+export default class WarehouseRemoveTable extends Component {
 	render() {
 		return (
 			<StyledTableContainer component={Paper}>
@@ -207,21 +219,15 @@ export default class TransferTable extends Component {
 					<TableHead>
 						<TableRow>
 							<TableCell />
-							<TableCell align="center">Yaradılış tarixi</TableCell>
+							<TableCell align="center">Kontraqent</TableCell>
 							<TableCell align="center">Kəmiyyət</TableCell>
-							<TableCell align="center">Ümumi qiymət</TableCell>
-							<TableCell align="center">Təsdiq edilib</TableCell>
-							<TableCell align="center">Actions</TableCell>
+							<TableCell align="center">Tarix</TableCell>
+							<TableCell align="center">Tesdiq</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
 						{this.props.tableData.map((el) => (
-							<Row
-								refresh={this.props.refresh}
-								showNewTransferForm={(id) => this.props.showNewTransferForm(id)}
-								key={uuid()}
-								row={el}
-							/>
+							<Row refresh={this.props.refresh} key={uuid()} row={el} />
 						))}
 					</TableBody>
 				</Table>

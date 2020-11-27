@@ -58,6 +58,27 @@ class API {
 				});
 		});
 	}
+
+	uploadWarehouseRemoveFile(data) {
+		return new Promise((resolve, reject) => {
+			axios({
+				method: "post",
+				url: "/uploadWarehouseRemoveFile",
+				data,
+				timeout: timeoutDelay,
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			})
+				.then((res) => {
+					resolve(res);
+				})
+				.catch((err) => {
+					console.log(err.response);
+					reject(err);
+				});
+		});
+	}
 }
 
 export default new API();
