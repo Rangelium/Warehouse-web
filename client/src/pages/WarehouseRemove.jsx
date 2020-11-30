@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import api from "../tools/connect";
+import { GlobalDataContext } from "../components/GlobalDataProvider";
 
+import WarehouseRemoveArchive from "../components/WarehouseRemoveArchive";
 import WarehouseRemoveTable from "../components/WarehouseRemoveTable";
 import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
 
@@ -50,6 +52,7 @@ const TabItem = styled.div`
 `;
 
 class WarehouseRemove extends Component {
+	static contextType = GlobalDataContext;
 	state = {
 		procurementTableData: [],
 		archiveTableData: [],
@@ -100,9 +103,18 @@ class WarehouseRemove extends Component {
 				return [];
 			});
 
+		const archiveTableData = await api
+			.executeProcedure("[SalaryDB].anbar.[order_request_archive]", {
+				storage_id: this.context.storageId,
+			})
+			.catch(() => {
+				return [];
+			});
+
 		this.setState({
 			loading: false,
 			procurementTableData,
+			archiveTableData,
 		});
 	}
 
@@ -129,7 +141,9 @@ class WarehouseRemove extends Component {
 						/>
 					</TabItem>
 
-					<TabItem hidden={this.state._tabValue !== 1}>Item two</TabItem>
+					<TabItem hidden={this.state._tabValue !== 1}>
+						<WarehouseRemoveArchive tableData={this.state.archiveTableData} />
+					</TabItem>
 
 					<Backdrop
 						style={{

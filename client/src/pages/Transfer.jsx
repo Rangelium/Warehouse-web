@@ -4,6 +4,7 @@ import { GlobalDataContext } from "../components/GlobalDataProvider";
 import api from "../tools/connect";
 import dayjs from "dayjs";
 
+import TransferArchive from "../components/TransferArchive";
 import TransferTable from "../components/TransferTable";
 import NewTransferForm from "../components/NewTransferForm";
 import { CustomTextInput, CustomButton } from "../components/UtilComponents";
@@ -136,9 +137,18 @@ class Transfer extends Component {
 				return [];
 			});
 
+		const archiveTableData = await api
+			.executeProcedure("[SalaryDB].anbar.[transfer_products_archive]", {
+				storage_id: this.context.storageId,
+			})
+			.catch(() => {
+				return [];
+			});
+
 		this.setState({
 			loading: false,
 			transferTableData,
+			archiveTableData,
 		});
 	}
 
@@ -210,7 +220,9 @@ class Transfer extends Component {
 						/>
 					</TabItem>
 
-					<TabItem hidden={this.state._tabValue !== 1}>Item two</TabItem>
+					<TabItem hidden={this.state._tabValue !== 1}>
+						<TransferArchive tableData={this.state.archiveTableData} />
+					</TabItem>
 
 					<Backdrop
 						style={{
