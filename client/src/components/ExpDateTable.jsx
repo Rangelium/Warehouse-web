@@ -45,8 +45,8 @@ export class ExpDateOverTable extends Component {
   handleClick(data) {
     this.context
       .alert({
-        title: "Remove product",
-        description: `Are you sure you want to remove ${data.product_title}`,
+        title: "Təstiq",
+        description: `Silmək istədiyinizə əminsiniz? ${data.product_title}`,
       })
       .then(() => {
         api
@@ -99,7 +99,7 @@ export class ExpDateOverTable extends Component {
                     variant="outlined"
                     onClick={() => this.handleClick(el)}
                   >
-                    Remove
+                    silin
                   </Button>
                 </TableCell>
               </TableRow>
