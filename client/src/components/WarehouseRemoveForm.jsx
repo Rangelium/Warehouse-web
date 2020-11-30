@@ -164,13 +164,12 @@ export default class WarehouseRemoveForm extends Component {
 
 		selectedAmounts: Array(this.props.data.length).fill(0),
 		selectedProduct: null,
-		allComplete: false,
+		allComplete: true,
 	};
 
 	componentDidMount() {
 		this.getProductData(this.props.data[0].title);
 	}
-	// ! Сказать рустаму чтобы он добавил параметр уникальный для каждого выбранного товара(номер последовательности из степпера)
 	async getProductData(productTitle) {
 		const existingProducts = await api
 			.executeProcedure("[SalaryDB].anbar.[order_request_product_search]", {
@@ -182,6 +181,7 @@ export default class WarehouseRemoveForm extends Component {
 		const forOrderProducts = await api
 			.executeProcedure("[SalaryDB].anbar.[order_request_handle_session_info]", {
 				retail_sale_session_id: this.props.retailSaleId,
+				product_num: this.state.activeStep,
 			})
 			.catch((err) => console.error(err.errText));
 
@@ -456,6 +456,7 @@ export default class WarehouseRemoveForm extends Component {
 							parseInt(this.props.data[this.state.activeStep].amount) -
 							this.state.selectedAmounts[this.state.activeStep]
 						}
+						activeStep={this.state.activeStep}
 						refresh={() =>
 							this.getProductData(this.props.data[this.state.activeStep].title)
 						}

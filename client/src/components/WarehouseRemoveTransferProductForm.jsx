@@ -101,10 +101,11 @@ export default class WarehouseRemoveTransferProductForm extends Component {
 
 	async handleSubmit(e) {
 		e.preventDefault();
-		if (this.state.quantity === "0") {
+		if (this.state.quantity + "" === "0") {
 			this.context.error("Quantity value must be greater than 0");
 			return;
 		}
+		console.log(this.state.quantity);
 
 		let fileName = null;
 		if (this.state.file) {
@@ -125,6 +126,7 @@ export default class WarehouseRemoveTransferProductForm extends Component {
 			}
 		}
 
+		this.props.close();
 		api
 			.executeProcedure("[SalaryDB].anbar.[order_request_handle]", {
 				storage_id: this.context.storageId,
@@ -142,11 +144,11 @@ export default class WarehouseRemoveTransferProductForm extends Component {
 				product_id: this.props.product.product_id,
 				document_id_as_parent: this.props.product.document_id,
 				left: this.props.product.left,
+				product_num: this.props.activeStep,
 			})
 			.then(() => {
 				this.props.refresh();
 				this.context.success(`Added`);
-				this.props.close();
 			})
 			.catch((err) => this.context.error(err.errText));
 	}
