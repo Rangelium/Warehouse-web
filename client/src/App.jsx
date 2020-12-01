@@ -28,14 +28,6 @@ const routes = [
 	{ name: "Mədaxil", path: "/add", Component: WarehouseAdd },
 	{ name: "Məxaric", path: "/remove", Component: WarehouseRemove },
 	{
-		name: "Siyahı",
-		children: [
-			{ name: "Valyutalar", path: "/currency", Component: Currency },
-			{ name: "Yararlılıq keçmiş", path: "/expire", Component: ExpireDate },
-			{ name: "Transfer", path: "/transfer", Component: Transfer },
-		],
-	},
-	{
 		name: "Əlavə",
 		children: [
 			{ name: "Reportlar", path: "/reports", Component: Reports },
@@ -52,7 +44,14 @@ const routes = [
 			},
 		],
 	},
-	{ name: "Info", path: "/info", Component: NotFound },
+	{
+		name: "Siyahı",
+		children: [
+			{ name: "Valyutalar", path: "/currency", Component: Currency },
+			{ name: "Yararlılıq keçmiş", path: "/expire", Component: ExpireDate },
+			{ name: "Transfer", path: "/transfer", Component: Transfer },
+		],
+	},
 ];
 
 const StyledMain = styled.main`
