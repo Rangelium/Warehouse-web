@@ -19,7 +19,6 @@ import {
 	TableBody,
 	TableRow,
 	TableCell,
-	Dialog,
 } from "@material-ui/core";
 
 // Icons
@@ -91,39 +90,6 @@ const StyledTableContainer = styled(TableContainer)`
 		border-radius: 10px;
 		background: #d7d8d6;
 		box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
-	}
-`;
-const StyledDialog = styled(Dialog)`
-	.MuiPaper-root {
-		width: 500px;
-	}
-
-	.MuiDialogTitle-root {
-		background-color: #f5f5f5;
-
-		.MuiTypography-root {
-			font-size: 1.6rem;
-		}
-	}
-
-	.MuiDialogContent-root {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 15px;
-
-		.MuiFormControl-root {
-			width: 100%;
-		}
-
-		.MuiTextField-root {
-			width: 100%;
-		}
-	}
-
-	.MuiDialogActions-root {
-		padding: 8px 24px;
-		justify-content: flex-start;
 	}
 `;
 

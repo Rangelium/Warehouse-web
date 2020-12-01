@@ -4,7 +4,7 @@ import { GlobalDataContext } from "../components/GlobalDataProvider";
 import uuid from "react-uuid";
 import api from "../tools/connect";
 
-import { CustomTextInput, CustomButton } from "../components/UtilComponents";
+import { CustomButton } from "../components/UtilComponents";
 import {
 	Paper,
 	TableContainer,
@@ -18,9 +18,6 @@ import {
 	DialogContent,
 	DialogActions,
 } from "@material-ui/core";
-
-// Icons
-import RemoveIcon from "@material-ui/icons/Remove";
 
 const StyledDialog = styled(Dialog)`
 	.MuiPaper-root {
