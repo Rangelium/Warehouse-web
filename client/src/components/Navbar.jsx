@@ -187,6 +187,7 @@ export default class Navbar extends Component {
 						onChange={(e) => this.handleChange(e)}
 						IconComponent={ExpandMoreIcon}
 						MenuProps={{
+							style: { zIndex: 10000000 },
 							anchorOrigin: {
 								vertical: "bottom",
 								horizontal: "center",
