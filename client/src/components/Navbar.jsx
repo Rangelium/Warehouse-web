@@ -37,6 +37,7 @@ const StyledAppbar = styled.nav`
 	}
 
 	.links {
+		/* margin-right: 40px; */
 		margin-left: auto;
 		flex-grow: 0.6;
 		height: 100%;
