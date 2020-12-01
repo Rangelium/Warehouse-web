@@ -156,13 +156,6 @@ class WarehouseRemove extends Component {
 						<CircularProgress style={{ color: "#fff" }} />
 					</Backdrop>
 				</MainData>
-
-				{/* <NewTransferForm
-					sessionId={this.state.selectedSessionId}
-					refresh={this.getTransferData.bind(this)}
-					open={Boolean(this.state.selectedSessionId)}
-					close={() => this.setState({ selectedSessionId: null })}
-				/> */}
 			</StyledSection>
 		);
 	}
