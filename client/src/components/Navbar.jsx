@@ -251,8 +251,13 @@ export default class Navbar extends Component {
 				<CustomButton
 					style={{ marginRight: 15 }}
 					onClick={() => {
-						this.context.setToken(null);
-						localStorage.removeItem("warehouseAccessToken");
+						this.context
+							.alert({ title: "Logout", description: "Are you sure you want to logout?" })
+							.then(() => {
+								this.context.setToken(null);
+								localStorage.removeItem("warehouseAccessToken");
+							})
+							.catch(() => {});
 					}}
 				>
 					Logout

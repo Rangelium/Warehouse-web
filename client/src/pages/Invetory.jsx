@@ -7,6 +7,7 @@ import uuid from "react-uuid";
 
 import InventoryNewSessionForm from "../components/InventoryNewSessionForm";
 import InventoryProcessingForm from "../components/InventoryProcessingForm";
+import InventoryWriteOffForm from "../components/InventoryWriteOffForm";
 import { CustomButton } from "../components/UtilComponents";
 import {
 	Divider,
@@ -100,6 +101,9 @@ export default class Inventory extends Component {
 		loading: true,
 		newSessionForm: false,
 		selectedSessionId: null,
+
+		processingForm: false,
+		writeOffForm: false,
 	};
 
 	componentDidMount() {
@@ -176,12 +180,24 @@ export default class Inventory extends Component {
 														disabled={!Boolean(numberOf_products)}
 														style={{ marginRight: 5 }}
 														onClick={() => {
-															this.setState({ selectedSessionId: id });
+															this.setState({
+																selectedSessionId: id,
+																processingForm: true,
+															});
 														}}
 													>
-														Oprixodovaniye
+														Processing
 													</CustomButton>
-													<CustomButton onClick={() => {}}>Ətraflı</CustomButton>
+													<CustomButton
+														onClick={() => {
+															this.setState({
+																selectedSessionId: id,
+																writeOffForm: true,
+															});
+														}}
+													>
+														Write-off
+													</CustomButton>
 												</TableCell>
 											</TableRow>
 										)
@@ -199,10 +215,18 @@ export default class Inventory extends Component {
 						/>
 					)}
 
-					{Boolean(this.state.selectedSessionId) && (
+					{this.state.processingForm && (
 						<InventoryProcessingForm
 							open={true}
-							close={() => this.setState({ selectedSessionId: null })}
+							close={() => this.setState({ processingForm: false })}
+							refresh={this.getTableData.bind(this)}
+							sessionId={this.state.selectedSessionId}
+						/>
+					)}
+					{this.state.writeOffForm && (
+						<InventoryWriteOffForm
+							open={true}
+							close={() => this.setState({ writeOffForm: false })}
 							refresh={this.getTableData.bind(this)}
 							sessionId={this.state.selectedSessionId}
 						/>

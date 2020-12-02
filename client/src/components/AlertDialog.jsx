@@ -48,6 +48,18 @@ const StyledButton = styled(Button)`
 // ?  }
 // ?
 export default class AlertDialog extends Component {
+	state = {
+		title: "",
+		description: "",
+	};
+
+	fillData() {
+		this.setState({
+			title: this.props.title,
+			description: this.props.description,
+		});
+	}
+
 	render() {
 		return (
 			<StyledDialog
@@ -55,9 +67,9 @@ export default class AlertDialog extends Component {
 				open={this.props.open}
 				onClose={() => this.props.onClose()}
 			>
-				<DialogTitle>{this.props.title}</DialogTitle>
+				<DialogTitle>{this.state.title}</DialogTitle>
 				<DialogContent>
-					<DialogContentText>{this.props.description}</DialogContentText>
+					<DialogContentText>{this.state.description}</DialogContentText>
 				</DialogContent>
 				<DialogActions>
 					<StyledButton
@@ -65,7 +77,7 @@ export default class AlertDialog extends Component {
 						submit={1}
 						onClick={() => this.props.onSubmit()}
 					>
-						{this.props.title}
+						{this.state.title}
 					</StyledButton>
 					<StyledButton variant="contained" onClick={() => this.props.onClose()}>
 						İmtina

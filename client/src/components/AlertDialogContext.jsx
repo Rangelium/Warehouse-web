@@ -12,12 +12,18 @@ export class AlertDialogProvider extends Component {
 		};
 
 		this.awaitingPromiseRef = React.createRef();
+		this.alertDialogRef = React.createRef();
 	}
 
 	openConfirmation = (options) => {
-		this.setState({
-			confirmationState: options,
-		});
+		this.setState(
+			{
+				confirmationState: options,
+			},
+			() => {
+				this.alertDialogRef.current.fillData();
+			}
+		);
 		return new Promise((resolve, reject) => {
 			this.awaitingPromiseRef.current = { resolve, reject };
 		});
@@ -52,6 +58,7 @@ export class AlertDialogProvider extends Component {
 					{this.props.children}
 				</AlertDialogContext.Provider>
 				<AlertDialog
+					ref={this.alertDialogRef}
 					open={Boolean(this.state.confirmationState)}
 					onSubmit={() => this.handleSubmit()}
 					onClose={() => this.handleClose()}

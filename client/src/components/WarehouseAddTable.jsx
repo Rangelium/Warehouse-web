@@ -100,9 +100,6 @@ class Row extends Component {
 					</TableCell>
 
 					<TableCell style={{ borderBottom: "unset" }} align="center">
-						{"PLACEHOLDER"}
-					</TableCell>
-					<TableCell style={{ borderBottom: "unset" }} align="center">
 						{data.products_quantity}
 					</TableCell>
 					<TableCell style={{ borderBottom: "unset" }} align="center">
@@ -193,7 +190,6 @@ export default class WarehouseAddTable extends Component {
 					<TableHead>
 						<TableRow>
 							<TableCell />
-							<TableCell align="center">Kontraqent</TableCell>
 							<TableCell align="center">Məhsulların Kəmiyyəti</TableCell>
 							<TableCell align="center">Tarix</TableCell>
 							<TableCell align="center">Tesdiq</TableCell>
