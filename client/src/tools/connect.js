@@ -79,6 +79,23 @@ class API {
 				});
 		});
 	}
+
+	login(username, password) {
+		return new Promise((resolve, reject) => {
+			axios({
+				method: "post",
+				baseURL: "http://172.16.3.101:54321/api/login",
+				data: { username, password },
+				timeout: timeoutDelay,
+			})
+				.then((res) => {
+					resolve(res);
+				})
+				.catch((err) => {
+					reject(err);
+				});
+		});
+	}
 }
 
 export default new API();

@@ -215,7 +215,7 @@ export default class Navbar extends Component {
 									<Typography className="group">{name}</Typography>
 									<ExpandMoreIcon className="groupIcon" />
 									<List>
-										{children.map(({ name, path }) => (
+										{children.map(({ name, path, hidden }) => (
 											<ListItem button key={uuid()}>
 												<NavLink
 													className="link"

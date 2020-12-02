@@ -11,6 +11,7 @@
 		"@testing-library/user-event": "^7.2.1",
 		"axios": "^0.20.0",
 		"dayjs": "^1.9.6",
+		"jwt-decode": "^3.1.2",
 		"react": "^16.14.0",
 		"react-dom": "^16.14.0",
 		"react-dropzone": "^11.2.4",

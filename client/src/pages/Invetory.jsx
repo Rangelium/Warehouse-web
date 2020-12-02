@@ -118,7 +118,7 @@ export default class Inventory extends Component {
 		return (
 			<StyledSection className="pageData">
 				<Header>
-					<h1 className="title">Anbarın quraşdırılması</h1>
+					<h1 className="title">Inventorizasiya</h1>
 
 					<CustomButton onClick={() => this.setState({ newSessionForm: true })}>
 						Yeni sessiya yarat

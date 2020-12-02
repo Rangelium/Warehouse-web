@@ -176,14 +176,20 @@ export default class WarehouseRemoveForm extends Component {
 				storage_id: this.context.storageId,
 				title: productTitle,
 			})
-			.catch((err) => console.error(err.errText));
+			.catch((err) => {
+				console.error(err.errText);
+				return [];
+			});
 
 		const forOrderProducts = await api
 			.executeProcedure("[SalaryDB].anbar.[order_request_handle_session_info]", {
 				retail_sale_session_id: this.props.retailSaleId,
 				product_num: this.state.activeStep,
 			})
-			.catch((err) => console.error(err.errText));
+			.catch((err) => {
+				console.error(err.errText);
+				return [];
+			});
 
 		let selectedAmount = 0;
 		forOrderProducts.forEach((product) => {
@@ -236,6 +242,18 @@ export default class WarehouseRemoveForm extends Component {
 				this.context.success("Order complete");
 				this.props.refresh();
 				this.props.close();
+
+				const data = localStorage.getItem("WarehouseRemoveUnfinishedRetailSessions");
+				let arr = JSON.parse(data);
+				arr = arr.filter((el) => el !== this.props.retailSaleId);
+				if (arr.length) {
+					localStorage.setItem(
+						"WarehouseRemoveUnfinishedRetailSessions",
+						JSON.stringify(arr)
+					);
+				} else {
+					localStorage.removeItem("WarehouseRemoveUnfinishedRetailSessions");
+				}
 			})
 			.catch((err) => this.context.error(err.errText));
 	}
