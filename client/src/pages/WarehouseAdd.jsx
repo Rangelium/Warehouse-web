@@ -76,7 +76,7 @@ class WarehouseAdd extends Component {
 		});
 
 		const procurementTableData = await api
-			.executeProcedure("[SalaryDB].procurement.[orders_for_warehouse]", { result: 0 })
+			.executeProcedure("[SalaryDB].procurement.[orders_for_warehouse]", { result: 11 })
 			.catch(() => {
 				return [];
 			});

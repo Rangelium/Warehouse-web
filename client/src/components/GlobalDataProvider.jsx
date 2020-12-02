@@ -83,6 +83,14 @@ export class GlobalDataProvider extends React.Component {
 		});
 	}
 	setToken(token) {
+		if (token === null) {
+			this.setState({
+				userId: null,
+				userData: null,
+				token: null,
+			});
+			return;
+		}
 		const userData = jwtDecode(token);
 
 		this.setState({

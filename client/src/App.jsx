@@ -32,6 +32,14 @@ const routes = [
 	{ name: "Məxaric", path: "/remove", Component: WarehouseRemove },
 	{ name: "Malların sifarişi", path: "/productAuth", Component: ProductAuth },
 	{
+		name: "Siyahı",
+		children: [
+			{ name: "Valyutalar", path: "/currency", Component: Currency },
+			{ name: "Yararlılıq keçmiş", path: "/expire", Component: ExpireDate },
+			{ name: "Transfer", path: "/transfer", Component: Transfer },
+		],
+	},
+	{
 		name: "Əlavə",
 		children: [
 			{ name: "Reportlar", path: "/reports", Component: Reports },
@@ -46,14 +54,6 @@ const routes = [
 				path: "/manageWarehouses",
 				Component: ManageWarehouses,
 			},
-		],
-	},
-	{
-		name: "Siyahı",
-		children: [
-			{ name: "Valyutalar", path: "/currency", Component: Currency },
-			{ name: "Yararlılıq keçmiş", path: "/expire", Component: ExpireDate },
-			{ name: "Transfer", path: "/transfer", Component: Transfer },
 		],
 	},
 ];
