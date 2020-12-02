@@ -82,7 +82,7 @@ class WarehouseAdd extends Component {
 			});
 
 		const archiveTableData = await api
-			.executeProcedure("[SalaryDB].anbar.[order_request_archive]", {
+			.executeProcedure("[SalaryDB].anbar.[order_acception_archive]", {
 				storage_id: this.context.storageId,
 			})
 			.catch(() => {
