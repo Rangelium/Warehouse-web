@@ -5,6 +5,7 @@ import styled from "styled-components";
 import api from "../tools/connect";
 import { GlobalDataContext } from "./GlobalDataProvider";
 
+import { CustomButton } from "./UtilComponents";
 import {
 	Divider,
 	Typography,
@@ -246,6 +247,16 @@ export default class Navbar extends Component {
 						);
 					})}
 				</div>
+
+				<CustomButton
+					style={{ marginRight: 15 }}
+					onClick={() => {
+						this.context.setToken(null);
+						localStorage.removeItem("warehouseAccessToken");
+					}}
+				>
+					Logout
+				</CustomButton>
 			</StyledAppbar>
 		);
 	}

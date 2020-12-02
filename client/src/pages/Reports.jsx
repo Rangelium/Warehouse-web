@@ -35,6 +35,7 @@ const REPORTS_TYPES = [
 	{ name: "Mədaxil Report", value: "reportBuy" },
 	{ name: "Məxaric Report", value: "reportSale" },
 	{ name: "Silinmələr Report", value: "Decomission" },
+	{ name: "Malların dövriyəsi", value: "CommodityCirculationOfAllProducts" },
 	// { name: "Bütün malların dövriyyəsi", value: "CommodityCirculationOfAllProducts" },
 ];
 const REPORTS_FORMATS = [
@@ -57,10 +58,14 @@ const giveReportURL = ({ reportType, reportFormat, startDate, endDate, storageId
 	if (reportType === "reportBuy") {
 		return `http://172.16.3.42:88/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
 	}
+	if (reportType === "reportSale") {
+		return `http://172.16.3.42:88/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
+	}
 	if (reportType === "Decomission") {
 		return `http://172.16.3.42:88/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
 	}
-	return `http://172.16.3.42:88/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
+	if (reportType === "CommodityCirculationOfAllProducts")
+		return `http://172.16.3.42:88/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[storageid]=${storageId}`;
 };
 const giveInvetoryURL = ({ reportType, reportFormat, tableName }) =>
 	`http://172.16.3.42:88/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[table_name]=${tableName}`;
@@ -180,6 +185,7 @@ export default class Reports extends Component {
 		this.setState({
 			[e.target.name]: e.target.value,
 			pdfUrl: null,
+			loading: false,
 		});
 	}
 
@@ -292,25 +298,27 @@ export default class Reports extends Component {
 					</CustomSelect>
 
 					{this.state.reportType !== "Inventory" ? (
-						<div className="dateBlock">
-							<CustomTextInput
-								required
-								type="date"
-								label="Başlama tarixi"
-								name="startDate"
-								value={this.state.startDate}
-								onChange={this.handleChange.bind(this)}
-							/>
-							<RemoveIcon />
-							<CustomTextInput
-								required
-								type="date"
-								label="Bitmə tarixi"
-								name="endDate"
-								value={this.state.endDate}
-								onChange={this.handleChange.bind(this)}
-							/>
-						</div>
+						this.state.reportType !== "CommodityCirculationOfAllProducts" && (
+							<div className="dateBlock">
+								<CustomTextInput
+									required
+									type="date"
+									label="Başlama tarixi"
+									name="startDate"
+									value={this.state.startDate}
+									onChange={this.handleChange.bind(this)}
+								/>
+								<RemoveIcon />
+								<CustomTextInput
+									required
+									type="date"
+									label="Bitmə tarixi"
+									name="endDate"
+									value={this.state.endDate}
+									onChange={this.handleChange.bind(this)}
+								/>
+							</div>
+						)
 					) : (
 						<div className="tableNameBlock">
 							<CustomSelect
@@ -363,7 +371,10 @@ export default class Reports extends Component {
 							onLoadSuccess={({ numPages }) =>
 								this.setState({ loading: false, numOfPages: numPages })
 							}
-							onLoadError={(err) => this.context.error(err.message)}
+							onLoadError={(err) => {
+								this.context.error(err.message);
+								this.setState({ pdfUrl: null, loading: false });
+							}}
 						>
 							{[...Array(this.state.numOfPages)].map((n, i) => (
 								<Page pageNumber={i + 1} key={uuid()} />
