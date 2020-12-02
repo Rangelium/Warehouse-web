@@ -3,6 +3,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
 import { AlertDialogContext } from "./AlertDialogContext";
+import jwtDecode from "jwt-decode";
+import dayjs from "dayjs";
 
 const StyledToastContainer = styled(ToastContainer)`
 	width: fit-content;
@@ -34,17 +36,20 @@ export const GlobalDataContext = React.createContext();
 export class GlobalDataProvider extends React.Component {
 	static contextType = AlertDialogContext;
 	state = {
-		userLoggedIn: true,
 		theme: {
 			primary: "#000000",
 		},
 		storageId: null,
 		storageTitle: "",
-		userId: 1,
+
+		userId: null,
+		userData: null,
+		token: null,
 
 		success: this.showSuccess,
 		error: this.showError,
 		setStorage: (a, b) => this.setStorage(a, b),
+		setToken: (a) => this.setToken(a),
 		alert: (data) => this.context.alert(data),
 	};
 
@@ -76,6 +81,25 @@ export class GlobalDataProvider extends React.Component {
 			storageId: id,
 			storageTitle: title,
 		});
+	}
+	setToken(token) {
+		const userData = jwtDecode(token);
+
+		this.setState({
+			userId: userData.data.id,
+			userData: userData.data,
+			token,
+		});
+
+		if (!localStorage.getItem("warehouseAccessToken")) {
+			localStorage.setItem(
+				"warehouseAccessToken",
+				JSON.stringify({
+					token,
+					timestamp: dayjs().unix(),
+				})
+			);
+		}
 	}
 
 	render() {

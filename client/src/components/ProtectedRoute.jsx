@@ -12,9 +12,10 @@ export default class ProtectedRoute extends React.Component {
 			<Route
 				{...rest}
 				render={(props) => {
-					if (this.context.userLoggedIn) {
+					if (Boolean(this.context.userId)) {
 						return <Component {...props} />;
 					} else {
+						console.log("kek");
 						return (
 							<Redirect
 								to={{
