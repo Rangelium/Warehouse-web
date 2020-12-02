@@ -74,7 +74,7 @@ const StyledTableContainer = styled(TableContainer)`
 	}
 `;
 
-export default class InventoryProcessingForm extends Component {
+export default class InventoryWriteOffForm extends Component {
 	static contextType = GlobalDataContext;
 	state = {
 		givenTableData: [],
@@ -82,7 +82,7 @@ export default class InventoryProcessingForm extends Component {
 
 	async componentDidMount() {
 		const givenTableData = await api
-			.executeProcedure("[SalaryDB].anbar.[inventory_session_info_selection_fix_in]", {
+			.executeProcedure("[SalaryDB].anbar.[inventory_session_info_selection_fix_out]", {
 				inventory_session_id: this.props.sessionId,
 			})
 			.catch((err) => {
@@ -104,17 +104,9 @@ export default class InventoryProcessingForm extends Component {
 			if (!isSuccess) break;
 
 			isSuccess = await api
-				.executeProcedure("[SalaryDB].anbar.[inventory_fix_in]", {
-					cluster_id: 1,
-					product_cell: "",
-					currency_id: data[i].currency_id,
+				.executeProcedure("[SalaryDB].anbar.[inventory_fix_out]", {
 					row_id: data[i].id,
-					barcode: data[i].barcode,
 					storage_id: this.context.storageId,
-					product_id: data[i].product_id,
-					quantity: data[i].quantity_difference,
-					unit_price: data[i].unit_price,
-					price_difference: data[i].price_difference,
 				})
 				.then(() => true)
 				.catch((err) => {
@@ -125,7 +117,7 @@ export default class InventoryProcessingForm extends Component {
 
 		if (!isSuccess) return;
 		this.props.refresh();
-		this.context.success(`Processing complete`);
+		this.context.success(`Write-off complete`);
 		this.props.close();
 	}
 
