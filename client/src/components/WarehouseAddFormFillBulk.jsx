@@ -69,15 +69,19 @@ export default class WarehouseAddFormFillBulk extends Component {
 	state = {
 		tableInputs: this.createTableInputs(),
 		currencyData: [],
+		clustersData: [],
 	};
 
-	componentDidMount() {
-		api
+	async componentDidMount() {
+		const currencyData = await api
 			.executeProcedure("anbar.currency_select")
-			.then((currencyData) => {
-				this.setState({ currencyData });
-			})
 			.catch((err) => console.log(err.errText));
+
+		const clustersData = await api.executeProcedure(
+			"[SalaryDB].anbar.[cluster_names_select_all]"
+		);
+
+		this.setState({ currencyData, clustersData });
 	}
 	handleChange(e) {
 		this.setState({
@@ -94,6 +98,7 @@ export default class WarehouseAddFormFillBulk extends Component {
 			obj = {
 				[`price${i}`]: this.props.tableData[i].approx_price,
 				[`currency${i}`]: "",
+				[`clusterId${i}`]: "",
 				[`productCell${i}`]: "",
 				[`expDate${i}`]: dayjs().add("3", "month").format("YYYY-MM-DD"),
 				[`inventoryNum${i}`]: "",
@@ -113,6 +118,7 @@ export default class WarehouseAddFormFillBulk extends Component {
 							<TableRow>
 								<TableCell align="center">Məhsull</TableCell>
 								<TableCell align="center">Barkod</TableCell>
+								<TableCell align="center">Ölçü vahidi</TableCell>
 								<TableCell align="center">Kəmiyyət</TableCell>
 								<TableCell align="center">Qiymət</TableCell>
 								<TableCell align="center">Valyuta</TableCell>
@@ -126,6 +132,22 @@ export default class WarehouseAddFormFillBulk extends Component {
 								<TableRow key={`${el.title}${i}`}>
 									<TableCell align="center">{el.title}</TableCell>
 									<TableCell align="center">{el.barcode}</TableCell>
+									<TableCell align="center">
+										<CustomSelect
+											label=""
+											className="cstmInput"
+											style={{ width: 80 }}
+											name={`clusterId${i}`}
+											value={this.state.tableInputs[`clusterId${i}`]}
+											onChange={this.handleChange.bind(this)}
+										>
+											{this.state.clustersData.map((cluster) => (
+												<CustomSelectItem key={uuid()} value={cluster.id}>
+													{cluster.title}
+												</CustomSelectItem>
+											))}
+										</CustomSelect>
+									</TableCell>
 									<TableCell align="center">{el.amount}</TableCell>
 									<TableCell align="center">
 										<CustomTextInput

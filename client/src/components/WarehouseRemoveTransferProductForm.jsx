@@ -88,9 +88,13 @@ const StyledContent = styled(DialogContent)`
 export default class WarehouseRemoveTransferProductForm extends Component {
 	static contextType = GlobalDataContext;
 	state = {
-		quantity: this.props.neededAmount,
+		quantity:
+			parseInt(this.props.product.left) > this.props.neededAmount
+				? this.props.neededAmount
+				: parseInt(this.props.product.left),
 		reason: "",
 		documentNum: "",
+		loading: false,
 	};
 
 	handleInputsChange(e) {
@@ -105,31 +109,26 @@ export default class WarehouseRemoveTransferProductForm extends Component {
 			this.context.error("Quantity value must be greater than 0");
 			return;
 		}
-		console.log(this.state.quantity);
+
+		this.setState({
+			loading: true,
+		});
 
 		let fileName = null;
 		if (this.state.file) {
 			// Generate random name for file
-			fileName = uuid();
-			const formData = new FormData();
-
-			formData.append("title", fileName);
-			formData.append("file", this.state.file);
-
-			let res = await api.uploadWarehouseRemoveFile(formData).catch((err) => {
-				console.log(err);
+			fileName = "remove_" + uuid();
+			this.props.addFile({
+				file: this.state.file,
+				fileName,
 			});
+
 			fileName = `${fileName}.${this.state.file.name.split(".")[1]}`;
-			if (res === undefined) {
-				this.context.error("Smth went wrong...");
-				return;
-			}
 		}
 
-		this.props.close();
 		api
 			.executeProcedure("[SalaryDB].anbar.[order_request_handle]", {
-				storage_id: this.context.storageId,
+				storage_id: this.props.product.storage_id,
 				quantity: parseInt(this.state.quantity),
 				reason: this.state.reason,
 				document_num: this.state.documentNum,
@@ -145,12 +144,19 @@ export default class WarehouseRemoveTransferProductForm extends Component {
 				document_id_as_parent: this.props.product.document_id,
 				left: this.props.product.left,
 				product_num: this.props.activeStep,
+				is_out: 1,
 			})
 			.then(() => {
+				this.props.close();
 				this.props.refresh();
 				this.context.success(`Added`);
 			})
-			.catch((err) => this.context.error(err.errText));
+			.catch((err) => {
+				this.context.error(err.errText);
+				this.setState({
+					loading: false,
+				});
+			});
 	}
 
 	render() {
@@ -215,7 +221,9 @@ export default class WarehouseRemoveTransferProductForm extends Component {
 						<Divider />
 						<div className="gap" style={{ flexGrow: 1 }}></div>
 						<CustomButton onClick={this.props.close}>Imtina</CustomButton>
-						<CustomButton type="submit">Əlavə et</CustomButton>
+						<CustomButton disabled={this.state.loading} type="submit">
+							Əlavə et
+						</CustomButton>
 					</DialogActions>
 				</form>
 			</StyledDialog>

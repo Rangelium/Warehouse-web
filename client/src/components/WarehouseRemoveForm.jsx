@@ -5,13 +5,13 @@ import api from "../tools/connect";
 import uuid from "react-uuid";
 
 import TransferProductForm from "./WarehouseRemoveTransferProductForm";
-import { CustomButton } from "./UtilComponents";
+import ProductAuthForm from "./ProductAuthForm";
+import { CustomButton, CustomSelect, CustomSelectItem } from "./UtilComponents";
 import {
 	IconButton,
 	Dialog,
 	DialogActions,
 	DialogContent,
-	DialogTitle,
 	Stepper,
 	Step,
 	StepLabel,
@@ -32,26 +32,41 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 const StyledDialog = styled(Dialog)`
 	.MuiDialog-container > .MuiPaper-root {
 		min-width: 800px;
-		height: 600px;
+		max-width: unset;
+		height: 100%;
 
 		form {
 			width: 100%;
 			height: 100%;
-			display: flex;
-			flex-direction: column;
+
+			display: grid;
+			grid-template-columns: 100%;
+			grid-template-rows: 70px 1fr auto;
 		}
 	}
 
-	.MuiDialogTitle-root {
+	.head {
 		background-color: #f5f5f5;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 
-		.MuiTypography-root {
-			font-size: 1.6rem;
+		.MuiStepper-root {
+			background-color: transparent;
+			width: 90%;
+			padding-top: 0;
+			padding-bottom: 0;
+			/* padding: 0 0 10px 0; */
 		}
-	}
-
-	.MuiDialogContent-root {
-		flex-grow: 1;
+		.MuiStepIcon-root.MuiStepIcon-active {
+			color: #ffaa00;
+		}
+		.MuiStepIcon-root.MuiStepIcon-completed {
+			color: #ffaa00;
+		}
+		.MuiStepLabel-label.MuiStepLabel-alternativeLabel {
+			margin-top: 10px;
+		}
 	}
 
 	.MuiDialogActions-root {
@@ -68,32 +83,18 @@ const StyledDialog = styled(Dialog)`
 	}
 `;
 const StyledContent = styled(DialogContent)`
-	padding: 15px 0 0 0;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-
-	.MuiStepper-root {
-		width: 90%;
-		padding-top: 0;
-		padding-bottom: 10px;
-		/* padding: 0 0 10px 0; */
-	}
-	.MuiStepIcon-root.MuiStepIcon-active {
-		color: #ffaa00;
-	}
-	.MuiStepIcon-root.MuiStepIcon-completed {
-		color: #ffaa00;
-	}
-	.MuiStepLabel-label.MuiStepLabel-alternativeLabel {
-		margin-top: 10px;
-	}
+	padding: 0;
+	display: grid;
+	grid-template-columns: 100%;
+	grid-template-rows: auto 1fr;
+	grid-template-areas: "header" "tables";
 
 	.header {
-		padding: 10px;
-		width: 80%;
+		grid-area: header;
+		padding: 7px 0 0 0;
+		width: 100%;
 		display: flex;
-		justify-content: space-between;
+		justify-content: space-around;
 		align-items: center;
 
 		h1 {
@@ -108,21 +109,28 @@ const StyledContent = styled(DialogContent)`
 	}
 
 	.tablesContainer {
-		width: 100%;
+		overflow-y: hidden;
+		grid-area: tables;
 		padding: 10px;
-		flex-grow: 1;
 		display: grid;
 		grid-template-columns: 1fr auto 1fr;
-		grid-template-rows: 350px;
 		justify-items: center;
 		align-items: center;
 		gap: 5px;
 
+		.table.withDropdown {
+			display: grid;
+			grid-template-rows: auto 1fr;
+
+			> .MuiFormControl-root {
+				width: 100%;
+				margin-top: 6px;
+			}
+		}
 		.table {
-			overflow-y: auto;
-			border: 1px solid rgba(224, 224, 224, 1);
-			width: 100%;
+			overflow-y: hidden;
 			height: 100%;
+			width: 100%;
 		}
 
 		.MuiSvgIcon-root {
@@ -132,6 +140,7 @@ const StyledContent = styled(DialogContent)`
 	}
 `;
 const StyledTableContainer = styled(TableContainer)`
+	border: 1px solid rgba(224, 224, 224, 1);
 	overflow-y: auto;
 	height: 100%;
 
@@ -158,22 +167,39 @@ export default class WarehouseRemoveForm extends Component {
 	static contextType = GlobalDataContext;
 	state = {
 		activeStep: 0,
+		loading: true,
 
+		selectedWarehouse: this.context.storageId,
+		warehouseData: [],
 		existingProducts: [],
 		forOrderProducts: [],
+		createdFiles: [],
 
 		selectedAmounts: Array(this.props.data.length).fill(0),
 		selectedProduct: null,
-		allComplete: true,
+
+		showProductAuthForm: false,
 	};
 
-	componentDidMount() {
-		this.getProductData(this.props.data[0].title);
+	async componentDidMount() {
+		await this.getProductData(this.props.data[0].title);
+
+		api
+			.executeProcedure("anbar.storage_select_all")
+			.then((data) => {
+				this.setState({
+					warehouseData: data,
+					loading: false,
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}
 	async getProductData(productTitle) {
 		const existingProducts = await api
 			.executeProcedure("[SalaryDB].anbar.[order_request_product_search]", {
-				storage_id: this.context.storageId,
+				storage_id: this.state.selectedWarehouse,
 				title: productTitle,
 			})
 			.catch((err) => {
@@ -198,15 +224,20 @@ export default class WarehouseRemoveForm extends Component {
 			}
 		});
 
-		this.setState((prevState) => {
-			return {
-				existingProducts,
-				forOrderProducts,
-				selectedAmounts: prevState.selectedAmounts.map((el, i) =>
-					i === prevState.activeStep ? selectedAmount : el
-				),
-			};
-		});
+		this.setState(
+			(prevState) => {
+				return {
+					existingProducts,
+					forOrderProducts,
+					selectedAmounts: prevState.selectedAmounts.map((el, i) =>
+						i === prevState.activeStep ? selectedAmount : el
+					),
+				};
+			},
+			() => {
+				return;
+			}
+		);
 	}
 
 	handleChange(e) {
@@ -214,35 +245,48 @@ export default class WarehouseRemoveForm extends Component {
 			[e.target.name]: e.target.value,
 		});
 	}
-	// * We can check only last product because we have validation on each next button click
-	async handleSubmit(e) {
+	handleWarehouseChange(e) {
+		this.setState(
+			{
+				selectedWarehouse: e.target.value,
+			},
+			() => {
+				this.getProductData(this.props.data[this.state.activeStep].title);
+			}
+		);
+	}
+	async handleSubmit(e, authComplete) {
 		e.preventDefault();
 
-		if (
-			this.state.selectedAmounts[this.state.activeStep] !==
-			parseInt(this.props.data[this.state.activeStep].amount)
-		) {
-			this.context.error(
-				`You need to select ${
-					parseInt(this.props.data[this.state.activeStep].amount) -
-					this.state.selectedAmounts[this.state.activeStep]
-				} products`
-			);
-			return;
+		if (!authComplete) {
+			for (let i = 0; i < this.state.selectedAmounts.length; i++) {
+				if (this.state.selectedAmounts[i] !== parseInt(this.props.data[i].amount)) {
+					this.setState({
+						showProductAuthForm: true,
+					});
+
+					this.context.error("Not enough products selected");
+					return;
+				}
+			}
 		}
 
+		// Finish remove action
 		api
 			.executeProcedure("[SalaryDB].anbar.[order_request_complete]", {
 				user_id: this.context.userId,
 				retail_sale_session_id: this.props.retailSaleId,
 				order_id: this.props.order_id,
-				status: this.state.allComplete ? 20 : 21,
+				status: !authComplete ? 20 : 21, // if selectedAmount === required will be 20, after productAuth will be 21
 			})
 			.then(() => {
 				this.context.success("Order complete");
 				this.props.refresh();
 				this.props.close();
 
+				this.uploadFiles();
+
+				// Remove session from localstorage
 				const data = localStorage.getItem("WarehouseRemoveUnfinishedRetailSessions");
 				let arr = JSON.parse(data);
 				arr = arr.filter((el) => el !== this.props.retailSaleId);
@@ -259,18 +303,10 @@ export default class WarehouseRemoveForm extends Component {
 	}
 
 	handleNextStep() {
-		if (
-			this.state.selectedAmounts[this.state.activeStep] !==
-			parseInt(this.props.data[this.state.activeStep].amount)
-		) {
-			this.context.error(
-				`You need to select ${
-					parseInt(this.props.data[this.state.activeStep].amount) -
-					this.state.selectedAmounts[this.state.activeStep]
-				} products`
-			);
-			return;
-		}
+		// if (this.state.selectedAmounts[this.state.activeStep] !== 0) {
+		// 	this.context.error(`You need to select at least 1 product`);
+		// 	return;
+		// }
 		this.getProductData(this.props.data[this.state.activeStep + 1].title);
 		this.setState((prevState) => {
 			return { activeStep: prevState.activeStep + 1 };
@@ -314,7 +350,29 @@ export default class WarehouseRemoveForm extends Component {
 			.catch((err) => console.log(err.errText));
 	}
 
+	addFile(file) {
+		let newArr = [...this.state.createdFiles];
+		newArr.push({ ...file });
+		this.setState({
+			createdFiles: newArr,
+		});
+	}
+	uploadFiles() {
+		this.state.createdFiles.forEach(({ fileName, file }) => {
+			const formData = new FormData();
+			formData.append("title", fileName);
+			formData.append("file", file);
+
+			api.uploadFile(formData).catch((err) => {
+				console.log(err);
+				this.context.error("Smth went wrong while adding files...");
+			});
+		});
+	}
+
 	render() {
+		if (this.state.loading) return null;
+
 		return (
 			<StyledDialog
 				style={{ zIndex: 21 }}
@@ -322,9 +380,7 @@ export default class WarehouseRemoveForm extends Component {
 				onClose={this.handleFormClose.bind(this)}
 			>
 				<form autoComplete="off" onSubmit={this.handleSubmit.bind(this)}>
-					<DialogTitle>Məxaric</DialogTitle>
-
-					<StyledContent>
+					<div className="head">
 						<Stepper activeStep={this.state.activeStep}>
 							{this.props.data.map((step) => (
 								<Step key={uuid()}>
@@ -332,6 +388,9 @@ export default class WarehouseRemoveForm extends Component {
 								</Step>
 							))}
 						</Stepper>
+					</div>
+
+					<StyledContent>
 						<Divider />
 
 						<div className="header">
@@ -353,13 +412,39 @@ export default class WarehouseRemoveForm extends Component {
 						</div>
 
 						<div className="tablesContainer">
-							<div className="table">
+							<div className="table withDropdown">
+								<CustomSelect
+									MenuProps={{
+										anchorOrigin: {
+											vertical: "bottom",
+											horizontal: "left",
+										},
+										transformOrigin: {
+											vertical: "top",
+											horizontal: "left",
+										},
+										getContentAnchorEl: null,
+									}}
+									style={{ width: "100%" }}
+									label="Anbar"
+									name="selectedWarehouse"
+									value={this.state.selectedWarehouse}
+									onChange={this.handleWarehouseChange.bind(this)}
+								>
+									{this.state.warehouseData.map(({ id, storage_name }) => (
+										<CustomSelectItem key={uuid()} value={id}>
+											{storage_name}
+										</CustomSelectItem>
+									))}
+								</CustomSelect>
+
 								<StyledTableContainer>
 									<Table stickyHeader>
 										<TableHead>
 											<TableRow>
 												<TableCell align="center">Məhsul</TableCell>
 												<TableCell align="center">K-yət</TableCell>
+												<TableCell align="center">Qiymət</TableCell>
 												<TableCell align="center">Hüceyrə nömrəsi</TableCell>
 											</TableRow>
 										</TableHead>
@@ -375,6 +460,15 @@ export default class WarehouseRemoveForm extends Component {
 													<TableCell align="center">
 														{row.left !== null ? (
 															`${row.left} ${row.unit_title}`
+														) : (
+															<RemoveIcon />
+														)}
+													</TableCell>
+													<TableCell align="center">
+														{row.unit_price !== null ? (
+															`${parseFloat(row.unit_price).toFixed(2)} ${
+																row.currency_title
+															}`
 														) : (
 															<RemoveIcon />
 														)}
@@ -455,14 +549,14 @@ export default class WarehouseRemoveForm extends Component {
 
 						<div className="gap" style={{ flexGrow: 1 }}></div>
 						{Boolean(this.state.activeStep === this.props.data.length - 1) && (
-							<CustomButton type="submit">Əlavə et</CustomButton>
+							<CustomButton type="submit">Bitir</CustomButton>
 						)}
 					</DialogActions>
 				</form>
 
 				{Boolean(this.state.selectedProduct) && (
 					<TransferProductForm
-						open={Boolean(this.state.selectedProduct)}
+						open={true}
 						close={() => {
 							this.setState({
 								selectedProduct: null,
@@ -475,9 +569,19 @@ export default class WarehouseRemoveForm extends Component {
 							this.state.selectedAmounts[this.state.activeStep]
 						}
 						activeStep={this.state.activeStep}
+						addFile={this.addFile.bind(this)}
 						refresh={() =>
 							this.getProductData(this.props.data[this.state.activeStep].title)
 						}
+					/>
+				)}
+				{this.state.showProductAuthForm && (
+					<ProductAuthForm
+						open={true}
+						close={() => this.setState({ showProductAuthForm: false })}
+						handleSubmit={this.handleSubmit.bind(this)}
+						selectedAmounts={this.state.selectedAmounts}
+						neededData={this.props.data}
 					/>
 				)}
 			</StyledDialog>

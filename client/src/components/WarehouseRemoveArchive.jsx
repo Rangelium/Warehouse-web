@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { GlobalDataContext } from "./GlobalDataProvider";
 import uuid from "react-uuid";
+import api from "../tools/connect";
 import dayjs from "dayjs";
 
 import {
@@ -11,7 +13,12 @@ import {
 	TableBody,
 	TableRow,
 	TableCell,
+	IconButton,
 } from "@material-ui/core";
+
+// Icons
+import DescriptionIcon from "@material-ui/icons/Description";
+import NoSimIcon from "@material-ui/icons/NoSim";
 
 const StyledTableContainer = styled(TableContainer)`
 	overflow-y: auto;
@@ -37,6 +44,8 @@ const StyledTableContainer = styled(TableContainer)`
 `;
 
 export default class WarehouseRemoveArchive extends Component {
+	static contextType = GlobalDataContext;
+
 	render() {
 		return (
 			<StyledTableContainer component={Paper}>
@@ -51,6 +60,7 @@ export default class WarehouseRemoveArchive extends Component {
 							<TableCell align="center">Hüceyrə nömrəsi</TableCell>
 							<TableCell align="center">Yararlıq müddəti</TableCell>
 							<TableCell align="center">Creation müddəti</TableCell>
+							<TableCell align="center">File</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -67,6 +77,33 @@ export default class WarehouseRemoveArchive extends Component {
 								</TableCell>
 								<TableCell align="center">
 									{dayjs(el.inserted_date).format("MM.DD.YYYY")}
+								</TableCell>
+								<TableCell align="center">
+									{Boolean(el.document_num_path) ? (
+										<IconButton
+											title="Download file"
+											onClick={() =>
+												api
+													.downloadFile(el.document_num_path)
+													.then((res) => {
+														const url = window.URL.createObjectURL(new Blob([res.data]));
+														const link = document.createElement("a");
+														link.href = url;
+														link.setAttribute(
+															"download",
+															`AttachedFile.${res.data.type.split("/")[1]}`
+														);
+														document.body.appendChild(link);
+														link.click();
+													})
+													.catch((err) => this.context.error(err.error))
+											}
+										>
+											<DescriptionIcon style={{ color: "#ffaa00" }} />
+										</IconButton>
+									) : (
+										<NoSimIcon title="No file attached" style={{ color: "#ffaa00" }} />
+									)}
 								</TableCell>
 							</TableRow>
 						))}

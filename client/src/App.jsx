@@ -15,7 +15,6 @@ import { CircularProgress } from "@material-ui/core";
 import WarehouseInfo from "./pages/WarehouseInfo";
 import WarehouseAdd from "./pages/WarehouseAdd";
 import WarehouseRemove from "./pages/WarehouseRemove";
-import ProductAuth from "./pages/ProductAuth";
 import Currency from "./pages/Currency";
 import ExpireDate from "./pages/ExpireDate";
 import Transfer from "./pages/Transfer";
@@ -30,7 +29,6 @@ const routes = [
 	{ name: "Anbar haqqında", path: "/", Component: WarehouseInfo },
 	{ name: "Mədaxil", path: "/add", Component: WarehouseAdd },
 	{ name: "Məxaric", path: "/remove", Component: WarehouseRemove },
-	{ name: "Malların sifarişi", path: "/productAuth", Component: ProductAuth },
 	{
 		name: "Siyahı",
 		children: [
