@@ -4,32 +4,13 @@ const path = require("path");
 const bodyParser = require("body-parser");
 
 const { connConfig } = require("./serverTools/connectionConfig");
-const { sha256 } = require("./serverTools/sha256");
+const FBAuth = require("./serverTools/fbAuth");
 
 const multer = require("multer");
-const uploadTransfer = multer({
+const uploadFile = multer({
 	storage: multer.diskStorage({
 		destination(req, file, cb) {
-			cb(null, `${__dirname}/transferFiles`);
-		},
-		filename(req, file, cb) {
-			cb(null, `${req.body.title}${path.parse(file.originalname).ext}`);
-		},
-	}),
-	limits: {
-		fileSize: 10000000, // max file size 1MB = 1000000 bytes
-	},
-	fileFilter(req, file, cb) {
-		if (file.originalname.match(/\.(exe)$/)) {
-			return cb(new Error("exe files are not allowed"));
-		}
-		cb(undefined, true); // continue with upload
-	},
-});
-const uploadWarehouseRemove = multer({
-	storage: multer.diskStorage({
-		destination(req, file, cb) {
-			cb(null, `${__dirname}/warehouseRemoveFiles`);
+			cb(null, `${__dirname}/uploadedFiles`);
 		},
 		filename(req, file, cb) {
 			cb(null, `${req.body.title}${path.parse(file.originalname).ext}`);
@@ -58,7 +39,7 @@ app.listen(port, "0.0.0.0", () => {
 	console.log(`Example app listening at http://localhost:${port}`);
 });
 
-app.post("/api/dbconnect", (req, res) => {
+app.post("/api/dbconnect", FBAuth, (req, res) => {
 	sql.connect(connConfig, () => {
 		let request = new sql.Request();
 
@@ -82,47 +63,39 @@ app.post("/api/dbconnect", (req, res) => {
 	});
 });
 
-app.post("/api/login", (req, res) => {
-	console.log("Request Login");
-	sql.connect(connConfig, (err) => {
-		if (err) console.log(err);
-		let request = new sql.Request();
-		let username = req.body.username;
-		let password = sha256(req.body.password);
+app.post(
+	"/api/uploadFile",
+	FBAuth,
+	uploadFile.single("file"),
+	async (req, res) => {
+		res.status(200).send("File uploaded successfully");
+	},
+	(error, req, res, next) => {
+		if (error) {
+			console.log(error);
+			res.status(500).send(error.message);
+		}
+	}
+);
 
-		request.input("username", username);
-		request.input("password", password);
-		request.execute("anbar.user_login_check", (err, result) => {
-			if (err != null) console.log(err);
-			res.json(result.recordset);
-		});
-	});
+app.post("/api/downloadFile", FBAuth, (req, res) => {
+	const fileName = req.body.fileName;
+	if (!fileName) return res.status(400).json({ error: "Specify fileName" });
+
+	const fileExt = path.parse(fileName).ext;
+	res.download(
+		`${__dirname}/uploadedFiles/${fileName}`,
+		`AttachedFile${fileExt}`,
+		(err) => {
+			if (err) {
+				if (err.code == "ENOENT") {
+					res.status(404).json({ error: `File not found`, fileName });
+				} else {
+					res.status(400).json({ error: `Unknown error` });
+				}
+			}
+		}
+	);
+
+	return;
 });
-
-app.post(
-	"/api/uploadTransferFile",
-	uploadTransfer.single("file"),
-	async (req, res) => {
-		res.status(200).send("File uploaded successfully");
-	},
-	(error, req, res, next) => {
-		if (error) {
-			console.log(error);
-			res.status(500).send(error.message);
-		}
-	}
-);
-
-app.post(
-	"/api/uploadWarehouseRemoveFile",
-	uploadWarehouseRemove.single("file"),
-	async (req, res) => {
-		res.status(200).send("File uploaded successfully");
-	},
-	(error, req, res, next) => {
-		if (error) {
-			console.log(error);
-			res.status(500).send(error.message);
-		}
-	}
-);

@@ -1,9 +1,3 @@
-// ! BUG
-// ! Data for downloading report will be taken from current state i.e
-// ! donloaded report will be the report generated from input not the showed one
-
-// TODO: Deal with invetory part
-
 import React, { Component } from "react";
 import styled from "styled-components";
 import { GlobalDataContext } from "../components/GlobalDataProvider";

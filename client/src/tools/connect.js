@@ -38,11 +38,11 @@ class API {
 		});
 	}
 
-	uploadTransferFile(data) {
+	uploadFile(data) {
 		return new Promise((resolve, reject) => {
 			axios({
 				method: "post",
-				url: "/uploadTransferFile",
+				url: "/uploadFile",
 				data,
 				timeout: timeoutDelay,
 				headers: {
@@ -59,22 +59,20 @@ class API {
 		});
 	}
 
-	uploadWarehouseRemoveFile(data) {
+	downloadFile(fileName) {
 		return new Promise((resolve, reject) => {
 			axios({
-				method: "post",
-				url: "/uploadWarehouseRemoveFile",
-				data,
+				method: "POST",
+				url: "/downloadFile",
+				data: { fileName },
 				timeout: timeoutDelay,
-				headers: {
-					"Content-Type": "multipart/form-data",
-				},
+				responseType: "blob",
 			})
 				.then((res) => {
 					resolve(res);
 				})
 				.catch((err) => {
-					console.log(err.response);
+					console.log(err.error);
 					reject(err);
 				});
 		});
@@ -86,6 +84,23 @@ class API {
 				method: "post",
 				baseURL: "http://172.16.3.101:54321/api/login",
 				data: { username, password },
+				timeout: timeoutDelay,
+			})
+				.then((res) => {
+					resolve(res);
+				})
+				.catch((err) => {
+					reject(err);
+				});
+		});
+	}
+
+	createNewOrder(data) {
+		return new Promise((resolve, reject) => {
+			axios({
+				method: "post",
+				baseURL: "http://172.16.3.101:54321/api/new-order",
+				data,
 				timeout: timeoutDelay,
 			})
 				.then((res) => {

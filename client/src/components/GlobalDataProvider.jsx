@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
 import { AlertDialogContext } from "./AlertDialogContext";
 import jwtDecode from "jwt-decode";
+import axios from "axios";
 import dayjs from "dayjs";
 
 const StyledToastContainer = styled(ToastContainer)`
@@ -89,24 +90,30 @@ export class GlobalDataProvider extends React.Component {
 				userData: null,
 				token: null,
 			});
+
+			localStorage.removeItem("warehouseAccessToken");
+			axios.defaults.headers.common["Authorization"] = "";
 			return;
 		}
 		const userData = jwtDecode(token);
 
-		this.setState({
-			userId: userData.data.id,
-			userData: userData.data,
-			token,
-		});
+		if (userData) {
+			axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+			this.setState({
+				userId: userData.data.id,
+				userData: userData.data,
+				token,
+			});
 
-		if (!localStorage.getItem("warehouseAccessToken")) {
-			localStorage.setItem(
-				"warehouseAccessToken",
-				JSON.stringify({
-					token,
-					timestamp: dayjs().unix(),
-				})
-			);
+			if (!localStorage.getItem("warehouseAccessToken")) {
+				localStorage.setItem(
+					"warehouseAccessToken",
+					JSON.stringify({
+						token,
+						timestamp: dayjs().unix(),
+					})
+				);
+			}
 		}
 	}
 

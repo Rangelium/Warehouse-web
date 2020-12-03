@@ -166,6 +166,10 @@ export default class Navbar extends Component {
 			})
 			.catch((err) => {
 				console.log(err);
+
+				if (err.error.response.data.error === "unauthorized") {
+					this.context.setToken(null);
+				}
 			});
 	}
 
@@ -255,7 +259,6 @@ export default class Navbar extends Component {
 							.alert({ title: "Logout", description: "Are you sure you want to logout?" })
 							.then(() => {
 								this.context.setToken(null);
-								localStorage.removeItem("warehouseAccessToken");
 							})
 							.catch(() => {});
 					}}

@@ -179,7 +179,11 @@ export default class OverallInfo extends Component {
 						</StyledPaper>
 						<StyledPaper elevation={3}>
 							<p className="title">Anbarın ümumi dəyəri</p>
-							<p>{this.props.overallInfo.cost ? this.props.overallInfo.cost : 0}</p>
+							<p>
+								{this.props.overallInfo.cost
+									? `${this.props.overallInfo.cost} ${this.props.overallInfo.last_in_currency}`
+									: 0}
+							</p>
 						</StyledPaper>
 					</div>
 				</div>
@@ -211,9 +215,9 @@ export default class OverallInfo extends Component {
 										Tarix:
 										<span className="dataElVal">
 											{this.props.overallInfo.last_in_date
-												? dayjs(this.props.overallInfo.last_in_date).format(
-														"MMMM DD YYYY, HH:mm"
-												  )
+												? dayjs(this.props.overallInfo.last_in_date)
+														.subtract(4, "hour")
+														.format("MMMM DD YYYY, HH:mm")
 												: 0}
 										</span>
 									</p>
@@ -241,7 +245,6 @@ export default class OverallInfo extends Component {
 												: 0}
 										</span>
 									</p>
-
 									<p className="dataEl">
 										Faktura nömrəsi:
 										<span className="dataElVal">
@@ -285,9 +288,9 @@ export default class OverallInfo extends Component {
 										Tarix:
 										<span className="dataElVal">
 											{this.props.overallInfo.last_out_date
-												? dayjs(this.props.overallInfo.last_out_date).format(
-														"MMMM DD YYYY, HH:mm"
-												  )
+												? dayjs(this.props.overallInfo.last_out_date)
+														.subtract(4, "hour")
+														.format("MMMM DD YYYY, HH:mm")
 												: 0}
 										</span>
 									</p>

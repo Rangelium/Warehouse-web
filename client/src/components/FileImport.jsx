@@ -19,6 +19,12 @@ const StyledSection = styled.div`
 			pointer-events: none;
 		}
 
+		.file-info {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
 		&:focus {
 			outline: none;
 		}
@@ -63,8 +69,9 @@ export default class FileImport extends Component {
 							<input {...getInputProps()} />
 							<p>Drag and drop a file OR click here to select a file</p>
 							{this.props.file && (
-								<div>
-									<strong>Selected file:</strong> {this.props.file.name}
+								<div className="file-info">
+									<strong>Selected file:</strong>
+									<p>{this.props.file.name}</p>
 								</div>
 							)}
 						</div>
