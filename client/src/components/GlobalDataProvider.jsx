@@ -92,13 +92,13 @@ export class GlobalDataProvider extends React.Component {
 			});
 
 			localStorage.removeItem("warehouseAccessToken");
-			axios.defaults.headers.common["Authorization"] = "";
+			axios.defaults.headers.common["Authentication"] = "";
 			return;
 		}
 		const userData = jwtDecode(token);
 
 		if (userData) {
-			axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+			axios.defaults.headers.common["Authentication"] = `Bearer ${token}`;
 			this.setState({
 				userId: userData.data.id,
 				userData: userData.data,
