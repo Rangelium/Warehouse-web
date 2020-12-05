@@ -42,10 +42,12 @@ export default class ArchiveTable extends Component {
                 {/* <TableCell align="center">{el.title[2]}</TableCell> */}
                 <TableCell align="center">{el.product_cell}</TableCell>
                 <TableCell align="center">
-                  {dayjs(el.exp_date).format("MM.DD.YYYY")}
+                  {dayjs(el.exp_date).format("MM-DD-YYYY")}
                 </TableCell>
                 <TableCell align="center">
-                  {dayjs(el.decommission_date).format("MM.DD.YYYY")}
+                  {dayjs(el.decommission_date)
+                    .subtract(4, "hour")
+                    .format("MM-DD-YYYY, HH:mm")}
                 </TableCell>
               </TableRow>
             ))}

@@ -52,10 +52,6 @@ export default class WarehouseAddForm extends Component {
         isValid = false;
         return;
       }
-      if (!Boolean(inputsData[`clusterId${i}`])) {
-        isValid = false;
-        return;
-      }
     });
 
     if (!isValid) {
@@ -68,7 +64,7 @@ export default class WarehouseAddForm extends Component {
       if (!isRight) return;
       isRight = await api
         .executeProcedure("[SalaryDB].anbar.[order_acception_handle]", {
-          cluster_id: inputsData[`clusterId${i}`],
+          cluster_id: this.props.dataForFill[i].cluster_id,
           product_cell: inputsData[`productCell${i}`],
           currency: inputsData[`currency${i}`],
           exp_date: inputsData[`expDate${i}`],

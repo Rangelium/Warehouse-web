@@ -133,7 +133,9 @@ export default class SingleProductInfo extends Component {
             <TableBody>
               {this.props.tableData.map((product) => (
                 <TableRow key={uuid()}>
-                  <TableCell className="dataEl">{product.title}</TableCell>
+                  <TableCell className="dataEl" align="center">
+                    {product.title}
+                  </TableCell>
                   <TableCell align="center" className="dataEl">
                     {`${product.quantity} ${product.unit_title}`}
                   </TableCell>
@@ -144,7 +146,11 @@ export default class SingleProductInfo extends Component {
                     {`${product.total_price} ${product.currency}`}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {dayjs(product.exp_date).format("YYYY-MM-DD")}
+                    {product.exp_date ? (
+                      dayjs(product.exp_date).format("YYYY-MM-DD")
+                    ) : (
+                      <RemoveIcon />
+                    )}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
                     {product.reason ? product.reason : <RemoveIcon />}

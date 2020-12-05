@@ -1,121 +1,395 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import uuid from "react-uuid";
+import dayjs from "dayjs";
 import { GlobalDataContext } from "../../components/GlobalDataProvider";
 import api from "../../tools/connect";
 
+import TransferProductForm from "./InventoryWriteOffTransferForm";
 import { CustomButton } from "../../components/UtilComponents";
 import {
-  Paper,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Stepper,
+  Step,
+  StepLabel,
+  Divider,
   TableContainer,
   Table,
   TableHead,
   TableBody,
   TableRow,
   TableCell,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from "@material-ui/core";
+
+// Icons
+import DoubleArrowOutlinedIcon from "@material-ui/icons/DoubleArrowOutlined";
+import RemoveIcon from "@material-ui/icons/Remove";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 
 export default class InventoryWriteOffForm extends Component {
   static contextType = GlobalDataContext;
   state = {
-    givenTableData: [],
+    activeStep: 0,
+    loading: true,
+
+    existingProducts: [],
+    forOrderProducts: [],
+
+    selectedAmounts: Array(this.props.data.length).fill(0),
+    selectedProduct: null,
+
+    showProductAuthForm: false,
   };
 
   async componentDidMount() {
-    const givenTableData = await api
-      .executeProcedure("[SalaryDB].anbar.[inventory_session_info_selection_fix_out]", {
-        inventory_session_id: this.props.sessionId,
+    await this.getProductData(this.props.data[this.state.activeStep].product_title);
+
+    this.setState({
+      loading: false,
+    });
+  }
+  async getProductData(productTitle) {
+    const existingProducts = await api
+      .executeProcedure("[SalaryDB].anbar.[inventory_session_fix_out_product_search]", {
+        storage_id: this.context.storageId,
+        title: productTitle,
       })
       .catch((err) => {
-        console.log(err.errText);
+        console.error(err.errText);
         return [];
       });
 
+    const forOrderProducts = await api
+      .executeProcedure(
+        "[SalaryDB].anbar.[inventory_session_fix_out_inner_info_selection]",
+        {
+          inventory_session_id: this.props.inventoryId,
+          product_num: this.state.activeStep,
+        }
+      )
+      .catch((err) => {
+        console.error(err.errText);
+        return [];
+      });
+
+    let selectedAmount = 0;
+    forOrderProducts.forEach((product) => {
+      if (
+        product.product_title === this.props.data[this.state.activeStep].product_title
+      ) {
+        selectedAmount += product.quantity;
+      }
+    });
+
+    this.setState(
+      (prevState) => {
+        return {
+          existingProducts,
+          forOrderProducts,
+          selectedAmounts: prevState.selectedAmounts.map((el, i) =>
+            i === prevState.activeStep ? selectedAmount : el
+          ),
+        };
+      },
+      () => {
+        return;
+      }
+    );
+  }
+  handleChange(e) {
     this.setState({
-      givenTableData,
+      [e.target.name]: e.target.value,
     });
   }
-
-  async createSession(e) {
+  async handleSubmit(e) {
     e.preventDefault();
 
-    let isSuccess = true;
-    const data = this.state.givenTableData;
-    for (let i = 0; i < data.length; i++) {
-      if (!isSuccess) break;
-
-      isSuccess = await api
-        .executeProcedure("[SalaryDB].anbar.[inventory_fix_out]", {
-          row_id: data[i].id,
-          storage_id: this.context.storageId,
-        })
-        .then(() => true)
-        .catch((err) => {
-          this.context.error(err.errText);
-          return false;
+    for (let i = 0; i < this.state.selectedAmounts.length; i++) {
+      if (this.state.selectedAmounts[i] !== parseInt(this.props.data[i].amount)) {
+        this.setState({
+          showProductAuthForm: true,
         });
+
+        this.context.error("Not enough products selected");
+        return;
+      }
     }
 
-    if (!isSuccess) return;
-    this.props.refresh();
-    this.context.success(`Write-off complete`);
-    this.props.close();
+    // Finish
+    api
+      .executeProcedure("[SalaryDB].anbar.[inventory_session_fix_out_complete]", {
+        inventory_session_id: this.props.inventoryId,
+      })
+      .then(() => {
+        this.context.success("Order complete");
+        this.props.refresh();
+        this.props.close();
+
+        // Remove session from localstorage
+        const data = localStorage.getItem("InventoryUnfinished");
+        let arr = JSON.parse(data);
+        arr = arr.filter((el) => el !== this.props.retailSaleId);
+        if (arr.length) {
+          localStorage.setItem("InventoryUnfinished", JSON.stringify(arr));
+        } else {
+          localStorage.removeItem("InventoryUnfinished");
+        }
+      })
+      .catch((err) => this.context.error(err.errText));
+  }
+  handlePrevStep() {
+    this.getProductData(this.props.data[this.state.activeStep - 1].product_title);
+    this.setState((prevState) => {
+      return { activeStep: prevState.activeStep - 1 };
+    });
+  }
+  handleNextStep() {
+    if (
+      this.state.selectedAmounts[this.state.activeStep] !==
+      parseInt(this.props.data[this.state.activeStep].quantity_difference)
+    ) {
+      this.context.error(
+        `You need to select ${
+          this.props.data[this.state.activeStep].quantity_difference
+        } product`
+      );
+      return;
+    }
+    this.getProductData(this.props.data[this.state.activeStep + 1].product_title);
+    this.setState((prevState) => {
+      return { activeStep: prevState.activeStep + 1 };
+    });
+  }
+  handleFormClose() {
+    api
+      .executeProcedure(
+        "[SalaryDB].anbar.[inventory_session_fix_out_info_delete_onPopupClose]",
+        {
+          inventory_session_id: this.props.inventoryId,
+        }
+      )
+      .then(() => {
+        this.props.close();
+
+        console.log(this.props.inventoryId);
+
+        const data = localStorage.getItem("InventoryUnfinished");
+        let arr = JSON.parse(data);
+        arr = arr.filter((el) => el !== this.props.inventoryId);
+        if (arr.length) {
+          localStorage.setItem("InventoryUnfinished", JSON.stringify(arr));
+        } else {
+          localStorage.removeItem("InventoryUnfinished");
+        }
+      })
+      .catch((err) => console.log(err));
+  }
+  removeSelectedItem(id) {
+    api
+      .executeProcedure(
+        "[SalaryDB].anbar.[inventory_session_fix_out_inner_info_selection_delete]",
+        {
+          id,
+        }
+      )
+      .then(() => {
+        this.getProductData(this.props.data[this.state.activeStep].product_title);
+      })
+      .catch((err) => console.log(err.errText));
   }
 
   render() {
+    if (this.state.loading) return null;
+
     return (
       <StyledDialog
-        style={{ zIndex: 2 }}
+        style={{ zIndex: 21 }}
         open={this.props.open}
-        onClose={this.props.close}
+        onClose={this.handleFormClose.bind(this)}
       >
-        <form autoComplete="off" onSubmit={this.createSession.bind(this)}>
-          <DialogTitle>Processing products</DialogTitle>
+        <form autoComplete="off" onSubmit={this.handleSubmit.bind(this)}>
+          <div className="head">
+            <Stepper activeStep={this.state.activeStep} alternativeLabel>
+              {this.props.data.map((step) => (
+                <Step key={uuid()}>
+                  <StepLabel>{step.product_title}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </div>
 
-          <DialogContent>
-            <StyledTableContainer component={Paper}>
-              <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">Məhsul</TableCell>
-                    <TableCell align="center">Vahid qiymət</TableCell>
-                    <TableCell align="center">Kəmiyyət fərqi</TableCell>
-                    <TableCell align="center">Qiymət fərqi</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {this.state.givenTableData.map((el, i) => (
-                    <TableRow key={uuid()}>
-                      <TableCell align="center">{el.product_title}</TableCell>
-                      <TableCell align="center">{`${parseFloat(el.unit_price).toFixed(
-                        2
-                      )} ${el.currency_title}`}</TableCell>
-                      <TableCell align="center">{el.quantity_difference}</TableCell>
-                      <TableCell align="center">{`${parseFloat(
-                        el.price_difference
-                      ).toFixed(2)} ${el.currency_title}`}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </StyledTableContainer>
-          </DialogContent>
+          <StyledContent>
+            <Divider />
+
+            <div className="header">
+              <h1>
+                Order amount:
+                <span>{this.props.data[this.state.activeStep].quantity_difference}</span>
+              </h1>
+              <h1>
+                Selected amount:
+                <span>{this.state.selectedAmounts[this.state.activeStep]}</span>
+              </h1>
+              <h1>
+                Need to select:
+                <span>
+                  {parseInt(this.props.data[this.state.activeStep].quantity_difference) -
+                    this.state.selectedAmounts[this.state.activeStep]}
+                </span>
+              </h1>
+            </div>
+
+            <div className="tablesContainer">
+              <div className="table">
+                <StyledTableContainer>
+                  <Table stickyHeader>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">Məhsul</TableCell>
+                        <TableCell align="center">K-yət</TableCell>
+                        <TableCell align="center">Qiymət</TableCell>
+                        <TableCell align="center">Expire date</TableCell>
+                        <TableCell align="center">Hüceyrə nömrəsi</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {this.state.existingProducts.map((row) => (
+                        <TableRow
+                          hover
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            this.setState({
+                              selectedProduct: row,
+                            });
+                          }}
+                          key={uuid()}
+                        >
+                          <TableCell align="center">{row.product_title}</TableCell>
+                          <TableCell align="center">
+                            {row.left !== null ? (
+                              `${row.left} ${row.unit_title}`
+                            ) : (
+                              <RemoveIcon />
+                            )}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.unit_price !== null ? (
+                              `${parseFloat(row.unit_price).toFixed(2)} ${
+                                row.currency_title
+                              }`
+                            ) : (
+                              <RemoveIcon />
+                            )}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.exp_date ? (
+                              `${dayjs(row.exp_date).format("YYYY-MM-DD")}`
+                            ) : (
+                              <RemoveIcon />
+                            )}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.product_cell !== null ? (
+                              row.product_cell
+                            ) : (
+                              <RemoveIcon />
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </StyledTableContainer>
+              </div>
+
+              <DoubleArrowOutlinedIcon />
+
+              <div className="table">
+                <StyledTableContainer>
+                  <Table stickyHeader>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">Məhsul</TableCell>
+                        <TableCell align="center">K-yət</TableCell>
+                        <TableCell align="center">Qiymət</TableCell>
+                        <TableCell align="center">Hüceyrə nömrəsi</TableCell>
+                        <TableCell align="center"></TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {this.state.forOrderProducts.map((row) => (
+                        <TableRow key={uuid()}>
+                          <TableCell align="center">{row.product_title}</TableCell>
+                          <TableCell align="center">{`${row.quantity} ${row.unit_title}`}</TableCell>
+                          <TableCell align="center">{`${row.sum_price} ${row.currency_title}`}</TableCell>
+                          <TableCell align="center">
+                            {row.product_cell !== null ? (
+                              row.product_cell
+                            ) : (
+                              <RemoveIcon />
+                            )}
+                          </TableCell>
+                          <TableCell align="center">
+                            <IconButton onClick={() => this.removeSelectedItem(row.id)}>
+                              <HighlightOffIcon />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </StyledTableContainer>
+              </div>
+            </div>
+          </StyledContent>
 
           <DialogActions>
-            <CustomButton onClick={this.props.close}>İmtina</CustomButton>
-            <div className="gap" style={{ flexGrow: 1 }}></div>
+            <Divider />
+
+            <CustomButton onClick={this.handleFormClose.bind(this)}>Close</CustomButton>
             <CustomButton
-              type="submit"
-              disabled={!Boolean(this.state.givenTableData.length)}
+              disabled={this.state.activeStep === 0}
+              onClick={this.handlePrevStep.bind(this)}
             >
-              Process
+              Previous
             </CustomButton>
+            <CustomButton
+              disabled={this.state.activeStep === this.props.data.length - 1}
+              onClick={this.handleNextStep.bind(this)}
+            >
+              Next
+            </CustomButton>
+
+            <div className="gap" style={{ flexGrow: 1 }}></div>
+            {Boolean(this.state.activeStep === this.props.data.length - 1) && (
+              <CustomButton type="submit">Bitir</CustomButton>
+            )}
           </DialogActions>
         </form>
+
+        {Boolean(this.state.selectedProduct) && (
+          <TransferProductForm
+            open={true}
+            close={() => {
+              this.setState({
+                selectedProduct: null,
+              });
+            }}
+            product={this.state.selectedProduct}
+            inventoryId={this.props.inventoryId}
+            neededAmount={
+              parseInt(this.props.data[this.state.activeStep].quantity_difference) -
+              this.state.selectedAmounts[this.state.activeStep]
+            }
+            activeStep={this.state.activeStep}
+            refresh={() =>
+              this.getProductData(this.props.data[this.state.activeStep].product_title)
+            }
+          />
+        )}
       </StyledDialog>
     );
   }
@@ -126,38 +400,117 @@ export default class InventoryWriteOffForm extends Component {
 // ===============================================================================================================================
 
 const StyledDialog = styled(Dialog)`
-  .MuiPaper-root {
+  .MuiDialog-container > .MuiPaper-root {
+    min-width: 800px;
     max-width: unset;
+    height: 100%;
 
     form {
       width: 100%;
       height: 100%;
-      display: flex;
-      flex-direction: column;
+
+      display: grid;
+      grid-template-columns: 100%;
+      grid-template-rows: 70px 1fr auto;
     }
   }
 
-  .MuiDialogTitle-root {
+  .head {
     background-color: #f5f5f5;
-
-    .MuiTypography-root {
-      font-size: 1.6rem;
-    }
-  }
-
-  .MuiDialogContent-root {
     display: flex;
-    flex-grow: 1;
-    padding: 0;
-    max-height: 400px;
+    justify-content: center;
+    align-items: center;
+
+    .MuiStepper-root {
+      background-color: transparent;
+      width: 90%;
+      padding-top: 10px;
+      padding-bottom: 0;
+      /* padding: 0 0 10px 0; */
+    }
+    .MuiStepIcon-root.MuiStepIcon-active {
+      color: #ffaa00;
+    }
+    .MuiStepIcon-root.MuiStepIcon-completed {
+      color: #ffaa00;
+    }
+    .MuiStepLabel-label.MuiStepLabel-alternativeLabel {
+      margin-top: 10px;
+    }
   }
 
   .MuiDialogActions-root {
-    padding: 8px 12px;
+    padding: 8px 24px 8px 6px;
     justify-content: flex-start;
+    position: relative;
+
+    hr {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+  }
+`;
+const StyledContent = styled(DialogContent)`
+  padding: 0;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "header" "tables";
+
+  .header {
+    grid-area: header;
+    padding: 7px 0 0 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    h1 {
+      font-size: 1.4rem;
+
+      span {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-left: 5px;
+      }
+    }
+  }
+
+  .tablesContainer {
+    overflow-y: hidden;
+    grid-area: tables;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: auto auto auto; // for equal tables 1fr auto 1fr
+    justify-items: center;
+    align-items: center;
+    gap: 5px;
+
+    .table.withDropdown {
+      display: grid;
+      grid-template-rows: auto 1fr;
+
+      > .MuiFormControl-root {
+        width: 100%;
+        margin-top: 6px;
+      }
+    }
+    .table {
+      overflow-y: hidden;
+      height: 100%;
+      width: 100%;
+    }
+
+    .MuiSvgIcon-root {
+      color: #ffaa00;
+      transform: scale(1.2);
+    }
   }
 `;
 const StyledTableContainer = styled(TableContainer)`
+  border: 1px solid rgba(224, 224, 224, 1);
   overflow-y: auto;
   height: 100%;
 
