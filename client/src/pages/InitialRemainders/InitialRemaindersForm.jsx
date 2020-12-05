@@ -37,7 +37,7 @@ export default class InitialRemaindersForm extends Component {
 
   async componentDidMount() {
     const searchResult = await api.executeProcedure(
-      "anbar.bulk_buying_session_info_search",
+      "[SalaryDB].anbar.[initial_remainders_info_search]",
       { title: "" }
     );
 
@@ -50,7 +50,6 @@ export default class InitialRemaindersForm extends Component {
       [e.target.name]: e.target.value,
     });
   }
-
   handleSubmit(e) {
     e.preventDefault();
     this.setState({
@@ -100,7 +99,6 @@ export default class InitialRemaindersForm extends Component {
         });
       });
   }
-
   async prepareForm(product) {
     this.setState({
       loading: true,
@@ -157,7 +155,8 @@ export default class InitialRemaindersForm extends Component {
               ))}
             </CustomSelect>
 
-            <CustomSelect
+            <CustomTextInput disabled label="Barkod" value={this.state.barcode} />
+            {/* <CustomSelect
               required
               label="Barkod"
               name="barcode"
@@ -173,7 +172,7 @@ export default class InitialRemaindersForm extends Component {
                   {product.barcode}
                 </CustomSelectItem>
               ))}
-            </CustomSelect>
+            </CustomSelect> */}
 
             <CustomTextInput
               disabled={this.state.productId ? false : true}

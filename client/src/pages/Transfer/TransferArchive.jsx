@@ -49,7 +49,7 @@ export default class TransferArchive extends Component {
                 <TableCell align="center">{el.storage_from}</TableCell>
                 <TableCell align="center">{el.storage_to}</TableCell>
                 <TableCell align="center">
-                  {dayjs(el.transfered_date).format("MM.DD.YYYY")}
+                  {dayjs(el.transfered_date).format("YYYY-MM-DD")}
                 </TableCell>
                 <TableCell align="center">
                   {Boolean(el.document_num_path) ? (

@@ -45,7 +45,6 @@ class Row extends Component {
       })
       .catch((err) => this.context.error(err.errText));
   }
-
   handleExpandRowClick() {
     this.setState(
       (prevState) => {
@@ -93,7 +92,7 @@ class Row extends Component {
             </IconButton>
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
-            {dayjs(data.begin_date).subtract(4, "hour").format("DD MMMM YYYY, HH:mm:ss")}
+            {dayjs(data.begin_date).subtract(4, "hour").format("YYYY-MM-DD, HH:mm")}
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.number_of_products}
