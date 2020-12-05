@@ -116,13 +116,7 @@ export default class ProductAuthForm extends Component {
     e.preventDefault();
     const mats = this.state.tableData.map(
       ({ id, comment, neededAmount, approx_price, sub_category_id }) => {
-        return [
-          id,
-          neededAmount,
-          approx_price * neededAmount,
-          comment,
-          sub_category_id,
-        ];
+        return [id, neededAmount, approx_price * neededAmount, comment, sub_category_id];
       }
     );
     const data = {
@@ -158,8 +152,7 @@ export default class ProductAuthForm extends Component {
             return {};
           });
         arr.push({
-          neededAmount:
-            this.props.neededData[i].amount - this.props.selectedAmounts[i],
+          neededAmount: this.props.neededData[i].amount - this.props.selectedAmounts[i],
           comment: "",
           ...data,
         });
