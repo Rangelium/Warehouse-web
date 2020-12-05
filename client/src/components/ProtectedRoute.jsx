@@ -3,32 +3,32 @@ import { Route, Redirect } from "react-router-dom";
 import { GlobalDataContext } from "./GlobalDataProvider";
 
 export default class ProtectedRoute extends React.Component {
-	static contextType = GlobalDataContext;
+  static contextType = GlobalDataContext;
 
-	render() {
-		const { Component, ...rest } = this.props;
+  render() {
+    const { Component, ...rest } = this.props;
 
-		return (
-			<Route
-				{...rest}
-				render={(props) => {
-					if (Boolean(this.context.userId)) {
-						return <Component {...props} />;
-					} else {
-						console.log("kek");
-						return (
-							<Redirect
-								to={{
-									pathname: "/login",
-									state: {
-										from: this.props.location,
-									},
-								}}
-							/>
-						);
-					}
-				}}
-			/>
-		);
-	}
+    return (
+      <Route
+        {...rest}
+        render={(props) => {
+          if (Boolean(this.context.userId)) {
+            return <Component {...props} />;
+          } else {
+            console.log("kek");
+            return (
+              <Redirect
+                to={{
+                  pathname: "/login",
+                  state: {
+                    from: this.props.location,
+                  },
+                }}
+              />
+            );
+          }
+        }}
+      />
+    );
+  }
 }

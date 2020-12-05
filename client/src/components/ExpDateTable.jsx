@@ -95,10 +95,7 @@ export class ExpDateOverTable extends Component {
                   {dayjs(el.exp_date).format("MM.DD.YYYY")}
                 </TableCell>
                 <TableCell align="center">
-                  <Button
-                    variant="outlined"
-                    onClick={() => this.handleClick(el)}
-                  >
+                  <Button variant="outlined" onClick={() => this.handleClick(el)}>
                     silin
                   </Button>
                 </TableCell>
