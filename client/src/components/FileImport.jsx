@@ -2,35 +2,6 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import Dropzone from "react-dropzone";
 
-const StyledSection = styled.div`
-  width: 100%;
-  height: 100%;
-
-  .drop-zone {
-    height: inherit;
-    border: 2px dashed #acacac;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-
-    p {
-      pointer-events: none;
-    }
-
-    .file-info {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    &:focus {
-      outline: none;
-    }
-  }
-`;
-
 export default class FileImport extends Component {
   constructor() {
     super();
@@ -44,7 +15,6 @@ export default class FileImport extends Component {
 
     this.dropRef.current.style.border = "2px dashed #ffaa00";
   };
-
   updateBorder = (dragState) => {
     if (dragState === "over") {
       this.dropRef.current.style.border = "2px dashed #ffaa00";
@@ -81,3 +51,36 @@ export default class FileImport extends Component {
     );
   }
 }
+
+// ===============================================================================================================================
+//                                              STYLES
+// ===============================================================================================================================
+
+const StyledSection = styled.div`
+  width: 100%;
+  height: 100%;
+
+  .drop-zone {
+    height: inherit;
+    border: 2px dashed #acacac;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    p {
+      pointer-events: none;
+    }
+
+    .file-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+`;
