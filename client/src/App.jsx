@@ -12,18 +12,18 @@ import Navbar from "./components/Navbar";
 import { CircularProgress } from "@material-ui/core";
 
 // Pages
-import WarehouseInfo from "./pages/WarehouseInfo";
-import WarehouseAdd from "./pages/WarehouseAdd";
-import WarehouseRemove from "./pages/WarehouseRemove";
-import Currency from "./pages/Currency";
-import ExpireDate from "./pages/ExpireDate";
-import Transfer from "./pages/Transfer";
-import Reports from "./pages/Reports";
-import Invetory from "./pages/Invetory";
-import InitialRemainders from "./pages/InitialRemainders";
-import ManageWarehouses from "./pages/ManageWarehouses";
-import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
+import WarehouseInfo from "./pages/WarehouseInfo/WarehouseInfo";
+import WarehouseAdd from "./pages/WarehouseAdd/WarehouseAdd";
+import WarehouseRemove from "./pages/WarehouseRemove/WarehouseRemove";
+import Currency from "./pages/Currency/Currency";
+import ExpireDate from "./pages/ExpireDate/ExpireDate";
+import Transfer from "./pages/Transfer/Transfer";
+import Reports from "./pages/Reports/Reports";
+import Invetory from "./pages/Inventory/Inventory";
+import InitialRemainders from "./pages/InitialRemainders/InitialRemainders";
+import ManageWarehouses from "./pages/ManageWarehouses/ManageWarehouses";
+import NotFound from "./pages/NotFound/NotFound";
+import Login from "./pages/Login/Login";
 
 const routes = [
   { name: "Anbar haqqında", path: "/", Component: WarehouseInfo },
