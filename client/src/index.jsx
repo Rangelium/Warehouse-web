@@ -5,7 +5,7 @@ import * as serviceWorker from "./serviceWorker";
 
 import { StylesProvider } from "@material-ui/core";
 import { GlobalDataProvider } from "./components/GlobalDataProvider";
-import { AlertDialogProvider } from "./components/AlertDialogContext";
+import { AlertDialogProvider } from "./components/AlertDialog/AlertDialogContext";
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`

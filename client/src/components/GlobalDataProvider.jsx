@@ -2,35 +2,10 @@ import React from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components";
-import { AlertDialogContext } from "./AlertDialogContext";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
 import dayjs from "dayjs";
-
-const StyledToastContainer = styled(ToastContainer)`
-  width: fit-content;
-  min-width: 320px;
-  max-width: 400px;
-
-  .Toastify__toast--success {
-    background-color: #167a16;
-    color: #f3ffe9;
-    height: 30px;
-
-    .Toastify__progress-bar {
-      background-color: #a8aaa5;
-    }
-  }
-  .Toastify__toast--error {
-    background-color: #c41b1b;
-    color: #f3ffe9;
-    height: 30px;
-
-    .Toastify__progress-bar {
-      background-color: #a8aaa5;
-    }
-  }
-`;
+import { AlertDialogContext } from "./AlertDialog/AlertDialogContext";
 
 export const GlobalDataContext = React.createContext();
 
@@ -141,3 +116,32 @@ export class GlobalDataProvider extends React.Component {
     );
   }
 }
+
+// ===============================================================================================================================
+//                                              STYLES
+// ===============================================================================================================================
+
+const StyledToastContainer = styled(ToastContainer)`
+  width: fit-content;
+  min-width: 320px;
+  max-width: 400px;
+
+  .Toastify__toast--success {
+    background-color: #167a16;
+    color: #f3ffe9;
+    height: 30px;
+
+    .Toastify__progress-bar {
+      background-color: #a8aaa5;
+    }
+  }
+  .Toastify__toast--error {
+    background-color: #c41b1b;
+    color: #f3ffe9;
+    height: 30px;
+
+    .Toastify__progress-bar {
+      background-color: #a8aaa5;
+    }
+  }
+`;
