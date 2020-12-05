@@ -19,6 +19,133 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import { ReactComponent as ExpressLogo } from "../assets/expressLogo.svg";
 
+export default class Navbar extends Component {
+  static contextType = GlobalDataContext;
+  state = {
+    storageData: [],
+
+    loading: true,
+  };
+
+  componentDidMount() {
+    api
+      .executeProcedure("anbar.storage_select_all")
+      .then((data) => {
+        this.context.setStorage(data[0].id, data[0].storage_name);
+        this.setState({
+          storageData: data,
+          loading: false,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+
+        if (err.error.response.data.error === "unauthorized") {
+          this.context.setToken(null);
+        }
+      });
+  }
+  handleChange(event) {
+    const selectedTitle = this.state.storageData.find(
+      (storage) => storage.id === event.target.value
+    ).storage_name;
+
+    this.context.setStorage(event.target.value, selectedTitle);
+  }
+
+  render() {
+    return (
+      <StyledAppbar position="relative">
+        <Logo />
+        <Divider orientation="vertical" />
+        {!this.state.loading && (
+          <Select
+            disableUnderline
+            value={this.context.storageId}
+            onChange={(e) => this.handleChange(e)}
+            IconComponent={ExpandMoreIcon}
+            MenuProps={{
+              style: { zIndex: 10000000 },
+              anchorOrigin: {
+                vertical: "bottom",
+                horizontal: "center",
+              },
+              transformOrigin: {
+                vertical: "top",
+                horizontal: "center",
+              },
+              getContentAnchorEl: null,
+            }}
+          >
+            {this.state.storageData.map((storage) => (
+              <MenuItem key={uuid()} value={storage.id}>
+                {storage.storage_name}
+              </MenuItem>
+            ))}
+          </Select>
+        )}
+        <div className="links">
+          {this.props.routes.map(({ name, path, children }) => {
+            if (children) {
+              return (
+                <div key={uuid()} className="link navGroup">
+                  <Typography className="group">{name}</Typography>
+                  <ExpandMoreIcon className="groupIcon" />
+                  <List>
+                    {children.map(({ name, path, hidden }) => (
+                      <ListItem button key={uuid()}>
+                        <NavLink
+                          className="link"
+                          title={name}
+                          activeClassName="selectedLink"
+                          exact
+                          to={path}
+                        >
+                          <ListItemText>{name}</ListItemText>
+                        </NavLink>
+                      </ListItem>
+                    ))}
+                  </List>
+                </div>
+              );
+            }
+            return (
+              <NavLink
+                className="link"
+                key={uuid()}
+                title={name}
+                activeClassName="selectedLink"
+                exact
+                to={path}
+              >
+                <Typography>{name}</Typography>
+              </NavLink>
+            );
+          })}
+        </div>
+
+        <CustomButton
+          style={{ marginRight: 15 }}
+          onClick={() => {
+            this.context
+              .alert({ title: "Logout", description: "Are you sure you want to logout?" })
+              .then(() => {
+                this.context.setToken(null);
+              })
+              .catch(() => {});
+          }}
+        >
+          Logout
+        </CustomButton>
+      </StyledAppbar>
+    );
+  }
+}
+
+// ===============================================================================================================================
+//                                              STYLES
+// ===============================================================================================================================
+
 const StyledAppbar = styled.nav`
   background-color: #ffffff;
   box-shadow: none;
@@ -145,127 +272,3 @@ const StyledAppbar = styled.nav`
 const Logo = styled(ExpressLogo)`
   height: 2rem;
 `;
-
-export default class Navbar extends Component {
-  static contextType = GlobalDataContext;
-  state = {
-    storageData: [],
-
-    loading: true,
-  };
-
-  componentDidMount() {
-    api
-      .executeProcedure("anbar.storage_select_all")
-      .then((data) => {
-        this.context.setStorage(data[0].id, data[0].storage_name);
-        this.setState({
-          storageData: data,
-          loading: false,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-
-        if (err.error.response.data.error === "unauthorized") {
-          this.context.setToken(null);
-        }
-      });
-  }
-
-  handleChange(event) {
-    const selectedTitle = this.state.storageData.find(
-      (storage) => storage.id === event.target.value
-    ).storage_name;
-
-    this.context.setStorage(event.target.value, selectedTitle);
-  }
-
-  render() {
-    return (
-      <StyledAppbar position="relative">
-        <Logo />
-        <Divider orientation="vertical" />
-        {!this.state.loading && (
-          <Select
-            disableUnderline
-            value={this.context.storageId}
-            onChange={(e) => this.handleChange(e)}
-            IconComponent={ExpandMoreIcon}
-            MenuProps={{
-              style: { zIndex: 10000000 },
-              anchorOrigin: {
-                vertical: "bottom",
-                horizontal: "center",
-              },
-              transformOrigin: {
-                vertical: "top",
-                horizontal: "center",
-              },
-              getContentAnchorEl: null,
-            }}
-          >
-            {this.state.storageData.map((storage) => (
-              <MenuItem key={uuid()} value={storage.id}>
-                {storage.storage_name}
-              </MenuItem>
-            ))}
-          </Select>
-        )}
-        <div className="links">
-          {this.props.routes.map(({ name, path, children }) => {
-            if (children) {
-              return (
-                <div key={uuid()} className="link navGroup">
-                  <Typography className="group">{name}</Typography>
-                  <ExpandMoreIcon className="groupIcon" />
-                  <List>
-                    {children.map(({ name, path, hidden }) => (
-                      <ListItem button key={uuid()}>
-                        <NavLink
-                          className="link"
-                          title={name}
-                          activeClassName="selectedLink"
-                          exact
-                          to={path}
-                        >
-                          <ListItemText>{name}</ListItemText>
-                        </NavLink>
-                      </ListItem>
-                    ))}
-                  </List>
-                </div>
-              );
-            }
-            return (
-              <NavLink
-                className="link"
-                key={uuid()}
-                title={name}
-                activeClassName="selectedLink"
-                exact
-                to={path}
-              >
-                <Typography>{name}</Typography>
-              </NavLink>
-            );
-          })}
-        </div>
-
-        <CustomButton
-          style={{ marginRight: 15 }}
-          onClick={() => {
-            this.context
-              .alert({ title: "Logout", description: "Are you sure you want to logout?" })
-              .then(() => {
-                this.context.setToken(null);
-              })
-              .catch(() => {});
-          }}
-        >
-          Logout
-        </CustomButton>
-      </StyledAppbar>
-    );
-  }
-}
