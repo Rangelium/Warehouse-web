@@ -63,7 +63,6 @@ export default class InventoryNewSessionForm extends Component {
       },
     });
   }
-
   async createSession(e) {
     e.preventDefault();
 
@@ -144,12 +143,21 @@ export default class InventoryNewSessionForm extends Component {
                 </TableHead>
                 <TableBody>
                   {this.state.givenTableData.map(
-                    ({ title, quantity_inDB, avg_price_for_1 }, i) => (
+                    (
+                      {
+                        title,
+                        quantity_inDB,
+                        avg_price_for_1,
+                        unit_title,
+                        currency_title,
+                      },
+                      i
+                    ) => (
                       <TableRow key={`${title}${i}`}>
                         <TableCell align="center">{title}</TableCell>
-                        <TableCell align="center">{quantity_inDB}</TableCell>
+                        <TableCell align="center">{`${quantity_inDB} ${unit_title}`}</TableCell>
                         <TableCell align="center">
-                          {parseFloat(avg_price_for_1).toFixed(2)}
+                          {`${parseFloat(avg_price_for_1).toFixed(2)} ${currency_title}`}
                         </TableCell>
                         <TableCell align="center">
                           <CustomTextInput
@@ -164,23 +172,45 @@ export default class InventoryNewSessionForm extends Component {
                             onChange={this.handleChange.bind(this)}
                           />
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell
+                          style={{
+                            color:
+                              parseInt(this.state.tableInputs[`quantity${i}`]) -
+                                parseInt(quantity_inDB) >
+                              0
+                                ? "green"
+                                : "red",
+                          }}
+                          align="center"
+                        >
                           {this.state.tableInputs[`quantity${i}`] ? (
-                            parseInt(this.state.tableInputs[`quantity${i}`]) -
-                            parseInt(quantity_inDB)
+                            `${
+                              parseInt(this.state.tableInputs[`quantity${i}`]) -
+                              parseInt(quantity_inDB)
+                            } ${unit_title}`
                           ) : (
-                            <RemoveIcon />
+                            <RemoveIcon style={{ color: "rgba(0, 0, 0, 0.87)" }} />
                           )}
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell
+                          style={{
+                            color:
+                              parseInt(this.state.tableInputs[`quantity${i}`]) -
+                                parseInt(quantity_inDB) >
+                              0
+                                ? "green"
+                                : "red",
+                          }}
+                          align="center"
+                        >
                           {this.state.tableInputs[`quantity${i}`] ? (
-                            Math.abs(
+                            `${(
                               (parseInt(this.state.tableInputs[`quantity${i}`]) -
                                 parseInt(quantity_inDB)) *
-                                parseFloat(avg_price_for_1)
-                            ).toFixed(2)
+                              parseFloat(avg_price_for_1)
+                            ).toFixed(2)} ${currency_title}`
                           ) : (
-                            <RemoveIcon />
+                            <RemoveIcon style={{ color: "rgba(0, 0, 0, 0.87)" }} />
                           )}
                         </TableCell>
                       </TableRow>

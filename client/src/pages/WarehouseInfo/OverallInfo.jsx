@@ -79,7 +79,7 @@ export default class OverallInfo extends Component {
                       {this.props.overallInfo.last_in_date
                         ? dayjs(this.props.overallInfo.last_in_date)
                             .subtract(4, "hour")
-                            .format("MMMM DD YYYY, HH:mm")
+                            .format("YYYY-MM-DD, HH:mm")
                         : 0}
                     </span>
                   </p>
@@ -152,7 +152,7 @@ export default class OverallInfo extends Component {
                       {this.props.overallInfo.last_out_date
                         ? dayjs(this.props.overallInfo.last_out_date)
                             .subtract(4, "hour")
-                            .format("MMMM DD YYYY, HH:mm")
+                            .format("YYYY-MM-DD, HH:mm")
                         : 0}
                     </span>
                   </p>

@@ -51,33 +51,6 @@ export default class Currency extends Component {
       .then((res) => this.setState({ defaultCurrency: res[0].id }))
       .catch((err) => console.log(err.errText));
   }
-
-  loadDataForCurrencySelect(id = "") {
-    api.executeProcedure("anbar.currency_select").then((data) => {
-      this.setState({
-        currencyData: data,
-        currencyId: id,
-      });
-    });
-  }
-
-  async getCurrencyData() {
-    this.setState({
-      loading: true,
-    });
-
-    const currencyTableData = await api
-      .executeProcedure("anbar.exchange_rate_last", {})
-      .catch(() => {
-        return [];
-      });
-
-    this.setState({
-      loading: false,
-      currencyTableData,
-    });
-  }
-
   handleChange(e) {
     if (
       e.target.name === "defaultCurrency" &&
@@ -95,10 +68,34 @@ export default class Currency extends Component {
       [e.target.name]: e.target.value,
     });
   }
+  loadDataForCurrencySelect(id = "") {
+    api.executeProcedure("anbar.currency_select").then((data) => {
+      this.setState({
+        currencyData: data,
+        currencyId: id,
+      });
+    });
+  }
+  async getCurrencyData() {
+    this.setState({
+      loading: true,
+    });
+
+    const currencyTableData = await api
+      .executeProcedure("[SalaryDB].anbar.[exchange_rate_last]")
+      .catch((err) => {
+        console.log(err.errText);
+        return [];
+      });
+
+    this.setState({
+      loading: false,
+      currencyTableData,
+    });
+  }
 
   handleAddCurrency(e) {
     e.preventDefault();
-    console.log(dayjs(this.state.currencyDate).format("YYYY.MM.DD HH:mm:ss"));
 
     api
       .executeProcedure("anbar.exchange_rate_insert", {
@@ -229,6 +226,7 @@ export default class Currency extends Component {
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">Adı</TableCell>
+                    <TableCell align="center">Qısa adı</TableCell>
                     <TableCell align="center">Dəyər</TableCell>
                     <TableCell align="center">Tarix</TableCell>
                   </TableRow>
@@ -236,12 +234,13 @@ export default class Currency extends Component {
                 <TableBody>
                   {this.state.currencyTableData.map((currency) => (
                     <TableRow key={uuid()}>
+                      <TableCell align="center">{currency.full_title}</TableCell>
                       <TableCell align="center">{currency.title}</TableCell>
-                      <TableCell align="center">{currency.value}</TableCell>
+                      <TableCell align="center">{`${currency.value} AZN`}</TableCell>
                       <TableCell align="center">
                         {dayjs(currency.time)
                           .subtract(4, "hour")
-                          .format("DD MMMM YYYY, HH:mm:ss")}
+                          .format("YYYY-MM-DD, HH:mm")}
                       </TableCell>
                     </TableRow>
                   ))}

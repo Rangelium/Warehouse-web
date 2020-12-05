@@ -64,7 +64,6 @@ class Row extends Component {
       }
     );
   }
-
   async showRemoveForm() {
     const dataForForm = await api
       .executeProcedure("[SalaryDB].procurement.[get_order_req_data]", {

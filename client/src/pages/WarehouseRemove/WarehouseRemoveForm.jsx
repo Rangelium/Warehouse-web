@@ -32,6 +32,7 @@ import {
 import DoubleArrowOutlinedIcon from "@material-ui/icons/DoubleArrowOutlined";
 import RemoveIcon from "@material-ui/icons/Remove";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import dayjs from "dayjs";
 
 export default class WarehouseRemoveForm extends Component {
   static contextType = GlobalDataContext;
@@ -170,7 +171,6 @@ export default class WarehouseRemoveForm extends Component {
       })
       .catch((err) => this.context.error(err.errText));
   }
-
   handleNextStep() {
     // if (this.state.selectedAmounts[this.state.activeStep] !== 0) {
     // 	this.context.error(`You need to select at least 1 product`);
@@ -218,7 +218,6 @@ export default class WarehouseRemoveForm extends Component {
       })
       .catch((err) => console.log(err.errText));
   }
-
   addFile(file) {
     let newArr = [...this.state.createdFiles];
     newArr.push({ ...file });
@@ -314,6 +313,7 @@ export default class WarehouseRemoveForm extends Component {
                         <TableCell align="center">Məhsul</TableCell>
                         <TableCell align="center">K-yət</TableCell>
                         <TableCell align="center">Qiymət</TableCell>
+                        <TableCell align="center">Expire date</TableCell>
                         <TableCell align="center">Hüceyrə nömrəsi</TableCell>
                       </TableRow>
                     </TableHead>
@@ -336,6 +336,15 @@ export default class WarehouseRemoveForm extends Component {
                           <TableCell align="center">
                             {row.unit_price !== null ? (
                               `${parseFloat(row.unit_price).toFixed(2)} ${
+                                row.currency_title
+                              }`
+                            ) : (
+                              <RemoveIcon />
+                            )}
+                          </TableCell>
+                          <TableCell align="center">
+                            {row.exp_date ? (
+                              `${dayjs(row.exp_date).format("YYYY-MM-DD")} ${
                                 row.currency_title
                               }`
                             ) : (
@@ -546,7 +555,7 @@ const StyledContent = styled(DialogContent)`
     grid-area: tables;
     padding: 10px;
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr auto auto; // for equal tables 1fr auto 1fr
     justify-items: center;
     align-items: center;
     gap: 5px;

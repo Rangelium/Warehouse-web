@@ -40,10 +40,10 @@ export default class WarehouseAddArchive extends Component {
                 <TableCell align="center">{`${el.sum_price} ${el.currency_title}`}</TableCell>
                 <TableCell align="center">{el.product_cell}</TableCell>
                 <TableCell align="center">
-                  {dayjs(el.exp_date).format("MM.DD.YYYY")}
+                  {dayjs(el.exp_date).format("YYYY-MM-DD")}
                 </TableCell>
                 <TableCell align="center">
-                  {dayjs(el.inserted_date).format("MM.DD.YYYY")}
+                  {dayjs(el.inserted_date).format("YYYY-MM-DD")}
                 </TableCell>
               </TableRow>
             ))}

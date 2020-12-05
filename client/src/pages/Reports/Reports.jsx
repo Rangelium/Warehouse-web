@@ -5,7 +5,7 @@ import uuid from "react-uuid";
 import axios from "axios";
 import { Document, Page, pdfjs } from "react-pdf";
 import { GlobalDataContext } from "../../components/GlobalDataProvider";
-import api from "../../tools/connect";
+// import api from "../../tools/connect";
 
 import {
   CustomSelect,
@@ -83,12 +83,12 @@ export default class Reports extends Component {
     speedDealOpen: false,
   };
 
-  componentDidMount() {
-    api
-      .executeProcedure("[SalaryDB].inventory.[tables_list]")
-      .then((res) => this.setState({ tablesNames: res, tableName: res[0].table_name }))
-      .catch((err) => console.log(err));
-  }
+  // componentDidMount() {
+  //   api
+  //     .executeProcedure("[SalaryDB].inventory.[tables_list]")
+  //     .then((res) => this.setState({ tablesNames: res, tableName: res[0].table_name }))
+  //     .catch((err) => console.log(err));
+  // }
   handleChange(e) {
     this.setState({
       [e.target.name]: e.target.value,
@@ -270,9 +270,10 @@ export default class Reports extends Component {
           <Divider />
         </ToolBar>
 
-        <ReportContainer>
+        <ReportContainer key="reportContainer">
           {Boolean(this.state.pdfUrl) && (
             <Document
+              key="reportDocument"
               className="pdfDocument"
               file={this.state.pdfUrl}
               loading={<></>}

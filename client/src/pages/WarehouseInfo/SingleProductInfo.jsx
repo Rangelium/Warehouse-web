@@ -15,6 +15,7 @@ import {
 
 // Icons
 import ArrowBackIosOutlinedIcon from "@material-ui/icons/ArrowBackIosOutlined";
+import RemoveIcon from "@material-ui/icons/Remove";
 
 export default class SingleProductInfo extends Component {
   render() {
@@ -122,10 +123,8 @@ export default class SingleProductInfo extends Component {
               <TableRow>
                 <TableCell className="head">Məhsul</TableCell>
                 <TableCell className="head">K-yyət</TableCell>
-                <TableCell className="head">Ölçü vahidi</TableCell>
                 <TableCell className="head">Vahid qiyməti</TableCell>
                 <TableCell className="head">Ümumi qiymət</TableCell>
-                <TableCell className="head">Valyuta</TableCell>
                 <TableCell className="head">Yararlıq müddəti</TableCell>
                 <TableCell className="head">Fəaliyyət</TableCell>
                 <TableCell className="head">Hüceyrə nömrəsi</TableCell>
@@ -136,28 +135,22 @@ export default class SingleProductInfo extends Component {
                 <TableRow key={uuid()}>
                   <TableCell className="dataEl">{product.title}</TableCell>
                   <TableCell align="center" className="dataEl">
-                    {product.quantity}
+                    {`${product.quantity} ${product.unit_title}`}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {product.unit_title}
+                    {`${product.unit_price} ${product.currency}`}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {product.unit_price}
+                    {`${product.total_price} ${product.currency}`}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {product.total_price}
+                    {dayjs(product.exp_date).format("YYYY-MM-DD")}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {product.currency}
+                    {product.reason ? product.reason : <RemoveIcon />}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {dayjs(product.exp_date).format("DD-MM-YYYY")}
-                  </TableCell>
-                  <TableCell align="center" className="dataEl">
-                    {product.reason}
-                  </TableCell>
-                  <TableCell align="center" className="dataEl">
-                    {product.product_cell}
+                    {product.product_cell ? product.product_cell : <RemoveIcon />}
                   </TableCell>
                 </TableRow>
               ))}

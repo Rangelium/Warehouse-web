@@ -89,7 +89,7 @@ export default class Inventory extends Component {
                         <TableCell align="center">
                           {dayjs(begin_date)
                             .subtract(4, "hour")
-                            .format("DD MMMM YYYY, HH:mm:ss")}
+                            .format("YYYY-MM-DD, HH:mm")}
                         </TableCell>
                         <TableCell align="center">
                           {total_price_difference ? (
