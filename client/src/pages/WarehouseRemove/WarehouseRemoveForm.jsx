@@ -171,6 +171,12 @@ export default class WarehouseRemoveForm extends Component {
       })
       .catch((err) => this.context.error(err.errText));
   }
+  handlePrevStep() {
+    this.getProductData(this.props.data[this.state.activeStep - 1].title);
+    this.setState((prevState) => {
+      return { activeStep: prevState.activeStep - 1 };
+    });
+  }
   handleNextStep() {
     // if (this.state.selectedAmounts[this.state.activeStep] !== 0) {
     // 	this.context.error(`You need to select at least 1 product`);
@@ -344,9 +350,7 @@ export default class WarehouseRemoveForm extends Component {
                           </TableCell>
                           <TableCell align="center">
                             {row.exp_date ? (
-                              `${dayjs(row.exp_date).format("YYYY-MM-DD")} ${
-                                row.currency_title
-                              }`
+                              `${dayjs(row.exp_date).format("YYYY-MM-DD")}`
                             ) : (
                               <RemoveIcon />
                             )}
@@ -410,11 +414,7 @@ export default class WarehouseRemoveForm extends Component {
             <CustomButton onClick={this.handleFormClose.bind(this)}>Close</CustomButton>
             <CustomButton
               disabled={this.state.activeStep === 0}
-              onClick={() => {
-                this.setState((prevState) => {
-                  return { activeStep: prevState.activeStep - 1 };
-                });
-              }}
+              onClick={this.handlePrevStep.bind(this)}
             >
               Previous
             </CustomButton>

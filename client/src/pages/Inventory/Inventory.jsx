@@ -31,14 +31,37 @@ export default class Inventory extends Component {
     tableData: [],
     loading: true,
     newSessionForm: false,
-    selectedSessionId: null,
 
+    selectedInventoryId: null,
     processingForm: false,
+    processingData: [],
     writeOffForm: false,
+    writeOffData: [],
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this.getTableData();
+
+    // Finish all unfinished Inventory if existed
+    const data = localStorage.getItem("InventoryUnfinished");
+    const arr = JSON.parse(data);
+
+    if (arr) {
+      await Promise.all(
+        arr.map((id) =>
+          api
+            .executeProcedure(
+              "[SalaryDB].anbar.[inventory_session_fix_out_info_delete_onPopupClose]",
+              {
+                inventory_session_id: id,
+              }
+            )
+            .catch((err) => console.log(err.errText))
+        )
+      );
+
+      localStorage.removeItem("InventoryUnfinished");
+    }
   }
   getTableData() {
     api
@@ -47,6 +70,63 @@ export default class Inventory extends Component {
       })
       .then((res) => this.setState({ tableData: res, loading: false }))
       .catch((err) => console.log(err));
+  }
+  async showWriteOffForm(id) {
+    const writeOffData = await api
+      .executeProcedure("[SalaryDB].anbar.[inventory_session_fix_out_info_selection]", {
+        inventory_session_id: id,
+      })
+      .catch((err) => {
+        this.context.error(err.errText);
+        return [];
+      });
+
+    if (!writeOffData.length) {
+      this.context.error("No products for write-off");
+      return;
+    }
+
+    this.setState(
+      {
+        writeOffForm: true,
+        selectedInventoryId: id,
+        writeOffData,
+      },
+      () => {
+        const data = localStorage.getItem("InventoryUnfinished");
+        if (data) {
+          const arr = JSON.parse(data);
+          arr.push(this.state.selectedInventoryId);
+          localStorage.setItem("InventoryUnfinished", JSON.stringify(arr));
+        } else {
+          localStorage.setItem(
+            "InventoryUnfinished",
+            JSON.stringify([this.state.selectedInventoryId])
+          );
+        }
+      }
+    );
+  }
+  async showProcessingForm(id) {
+    const processingData = await api
+      .executeProcedure("[SalaryDB].anbar.[inventory_session_info_selection_fix_in]", {
+        inventory_session_id: id,
+      })
+      .catch((err) => {
+        this.context.error(err.errText);
+        return [];
+      });
+
+    if (!processingData.length) {
+      this.context.error("No products for processing");
+      return;
+    }
+
+    this.setState({
+      processingForm: true,
+      selectedInventoryId: id,
+      processingData,
+    });
   }
 
   render() {
@@ -110,23 +190,11 @@ export default class Inventory extends Component {
                           <CustomButton
                             disabled={!Boolean(numberOf_products)}
                             style={{ marginRight: 5 }}
-                            onClick={() => {
-                              this.setState({
-                                selectedSessionId: id,
-                                processingForm: true,
-                              });
-                            }}
+                            onClick={() => this.showProcessingForm(id)}
                           >
                             Processing
                           </CustomButton>
-                          <CustomButton
-                            onClick={() => {
-                              this.setState({
-                                selectedSessionId: id,
-                                writeOffForm: true,
-                              });
-                            }}
-                          >
+                          <CustomButton onClick={() => this.showWriteOffForm(id)}>
                             Write-off
                           </CustomButton>
                         </TableCell>
@@ -151,7 +219,8 @@ export default class Inventory extends Component {
               open={true}
               close={() => this.setState({ processingForm: false })}
               refresh={this.getTableData.bind(this)}
-              sessionId={this.state.selectedSessionId}
+              inventoryId={this.state.selectedInventoryId}
+              tableData={this.state.processingData}
             />
           )}
           {this.state.writeOffForm && (
@@ -159,7 +228,8 @@ export default class Inventory extends Component {
               open={true}
               close={() => this.setState({ writeOffForm: false })}
               refresh={this.getTableData.bind(this)}
-              sessionId={this.state.selectedSessionId}
+              inventoryId={this.state.selectedInventoryId}
+              data={this.state.writeOffData}
             />
           )}
 

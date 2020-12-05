@@ -21,30 +21,12 @@ import {
 
 export default class InventoryProcessingForm extends Component {
   static contextType = GlobalDataContext;
-  state = {
-    givenTableData: [],
-  };
-
-  async componentDidMount() {
-    const givenTableData = await api
-      .executeProcedure("[SalaryDB].anbar.[inventory_session_info_selection_fix_in]", {
-        inventory_session_id: this.props.sessionId,
-      })
-      .catch((err) => {
-        console.log(err.errText);
-        return [];
-      });
-
-    this.setState({
-      givenTableData,
-    });
-  }
 
   async createSession(e) {
     e.preventDefault();
 
     let isSuccess = true;
-    const data = this.state.givenTableData;
+    const data = this.props.tableData;
     for (let i = 0; i < data.length; i++) {
       if (!isSuccess) break;
 
@@ -96,7 +78,7 @@ export default class InventoryProcessingForm extends Component {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {this.state.givenTableData.map((el, i) => (
+                  {this.props.tableData.map((el, i) => (
                     <TableRow key={uuid()}>
                       <TableCell align="center">{el.product_title}</TableCell>
                       <TableCell align="center">{`${parseFloat(el.unit_price).toFixed(

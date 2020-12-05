@@ -21,6 +21,8 @@ import RemoveIcon from "@material-ui/icons/Remove";
 import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
 import { ReactComponent as ExcelIcon } from "../../assets/excel.svg";
 import { ReactComponent as HtmlIcon } from "../../assets/html.svg";
+import ZoomInIcon from "@material-ui/icons/ZoomIn";
+import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 
 // *
 // * GLOBALS
@@ -30,22 +32,6 @@ const REPORTS_TYPES = [
   { name: "Məxaric Report", value: "reportSale" },
   { name: "Silinmələr Report", value: "Decomission" },
   { name: "Malların dövriyəsi", value: "CommodityCirculationOfAllProducts" },
-  // { name: "Bütün malların dövriyyəsi", value: "CommodityCirculationOfAllProducts" },
-];
-const REPORTS_FORMATS = [
-  { name: "PDF", value: "PDF", ext: ".pdf", icon: <PictureAsPdfIcon /> },
-  {
-    name: "HTML",
-    value: "HTML",
-    ext: ".html",
-    icon: <HtmlIcon className="MuiSvgIcon-root" />,
-  },
-  {
-    name: "EXCEL",
-    value: "EXCEL",
-    ext: ".xls",
-    icon: <ExcelIcon className="MuiSvgIcon-root" />,
-  },
 ];
 
 const giveReportURL = ({ reportType, reportFormat, startDate, endDate, storageId }) => {
@@ -61,9 +47,6 @@ const giveReportURL = ({ reportType, reportFormat, startDate, endDate, storageId
   if (reportType === "CommodityCirculationOfAllProducts")
     return `http://172.16.3.42:88/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[storageid]=${storageId}`;
 };
-const giveInvetoryURL = ({ reportType, reportFormat, tableName }) =>
-  `http://172.16.3.42:88/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[table_name]=${tableName}`;
-
 // react-pdf setup for create-react-app src = "https://github.com/wojtekmaj/react-pdf/blob/v4.x/README.md#standard-browserify-and-others"
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -81,14 +64,10 @@ export default class Reports extends Component {
     pdfUrl: null,
     loading: false,
     speedDealOpen: false,
+
+    maximized: true,
   };
 
-  // componentDidMount() {
-  //   api
-  //     .executeProcedure("[SalaryDB].inventory.[tables_list]")
-  //     .then((res) => this.setState({ tablesNames: res, tableName: res[0].table_name }))
-  //     .catch((err) => console.log(err));
-  // }
   handleChange(e) {
     this.setState({
       [e.target.name]: e.target.value,
@@ -96,68 +75,33 @@ export default class Reports extends Component {
       loading: false,
     });
   }
-
-  //  TODO: use react-pdf
   loadReport() {
-    if (this.state.reportType === "Inventory") {
-      const config = {
-        reportType: this.state.reportType,
-        reportFormat: "PDF",
-        tableName: this.state.tableName,
-      };
+    const url = giveReportURL({
+      reportType: this.state.reportType,
+      reportFormat: "PDF",
+      startDate: this.state.startDate,
+      endDate: this.state.endDate,
+      storageId: this.context.storageId,
+    });
 
-      const url = giveInvetoryURL(config);
-
-      if (url !== this.state.pdfUrl) {
-        this.setState({
-          pdfUrl: url,
-          loading: true,
-        });
-      } else {
-        this.context.error("Already loaded");
-      }
+    if (url !== this.state.pdfUrl) {
+      this.setState({
+        pdfUrl: url,
+        loading: true,
+      });
     } else {
-      const config = {
-        reportType: this.state.reportType,
-        reportFormat: "PDF",
-        startDate: this.state.startDate,
-        endDate: this.state.endDate,
-        storageId: this.context.storageId,
-      };
-
-      const url = giveReportURL(config);
-
-      if (url !== this.state.pdfUrl) {
-        this.setState({
-          pdfUrl: url,
-          loading: true,
-        });
-      } else {
-        this.context.error("Already loaded");
-      }
+      this.context.error("Already loaded");
     }
   }
   downloadReport(format, ext) {
-    let url = null;
-    if (this.state.reportType === "Inventory") {
-      const config = {
-        reportType: this.state.reportType,
-        reportFormat: format.toUpperCase(),
-        tableName: this.state.tableName,
-      };
+    const url = giveReportURL({
+      reportType: this.state.reportType,
+      reportFormat: format.toUpperCase(),
+      startDate: this.state.startDate,
+      endDate: this.state.endDate,
+      storageId: this.context.storageId,
+    });
 
-      url = giveInvetoryURL(config);
-    } else {
-      const config = {
-        reportType: this.state.reportType,
-        reportFormat: format.toUpperCase(),
-        startDate: this.state.startDate,
-        endDate: this.state.endDate,
-        storageId: this.context.storageId,
-      };
-
-      url = giveReportURL(config);
-    }
     axios({
       url,
       method: "GET",
@@ -270,13 +214,13 @@ export default class Reports extends Component {
           <Divider />
         </ToolBar>
 
-        <ReportContainer key="reportContainer">
+        <ReportContainer key="reportContainer" maxScreen={this.state.maximized ? 1 : 0}>
           {Boolean(this.state.pdfUrl) && (
             <Document
               key="reportDocument"
               className="pdfDocument"
               file={this.state.pdfUrl}
-              loading={<></>}
+              loading=""
               onLoadSuccess={({ numPages }) =>
                 this.setState({ loading: false, numOfPages: numPages })
               }
@@ -323,20 +267,39 @@ export default class Reports extends Component {
           onOpen={() => this.setState({ speedDealOpen: true })}
           open={this.state.speedDealOpen}
         >
-          {REPORTS_FORMATS.map(({ name, value, ext, icon }) => (
-            <SpeedDialAction
-              key={uuid()}
-              icon={icon}
-              tooltipTitle={name}
-              value={value}
-              onClick={() => {
-                this.downloadReport(value, ext);
-                this.setState({ speedDealOpen: false });
-              }}
-            >
-              PDF
-            </SpeedDialAction>
-          ))}
+          <SpeedDialAction
+            icon={<PictureAsPdfIcon />}
+            tooltipTitle="PDF"
+            onClick={() => {
+              this.downloadReport("PDF", ".pdf");
+              this.setState({ speedDealOpen: false });
+            }}
+          />
+          <SpeedDialAction
+            icon={<HtmlIcon className="MuiSvgIcon-root" />}
+            tooltipTitle="HTML"
+            onClick={() => {
+              this.downloadReport("HTML", ".html");
+              this.setState({ speedDealOpen: false });
+            }}
+          />
+          <SpeedDialAction
+            icon={<ExcelIcon className="MuiSvgIcon-root" />}
+            tooltipTitle="EXCEL"
+            onClick={() => {
+              this.downloadReport("EXCEL", ".xls");
+              this.setState({ speedDealOpen: false });
+            }}
+          />
+          <SpeedDialAction
+            icon={this.state.maximized ? <ZoomOutIcon /> : <ZoomInIcon />}
+            tooltipTitle={this.state.maximized ? "Zoom out" : "Zoom in"}
+            onClick={() => {
+              this.setState((prevState) => {
+                return { maximized: !prevState.maximized };
+              });
+            }}
+          />
         </SpeedDial>
       </StyledSection>
     );
@@ -422,6 +385,9 @@ const ReportContainer = styled.div`
         position: relative;
         left: 50%;
         transform: translateX(-50%);
+
+        width: ${(props) => (props.maxScreen ? "100%!important" : "unset")};
+        height: ${(props) => (props.maxScreen ? "100%!important" : "unset")};
       }
     }
   }
