@@ -22,17 +22,17 @@ const GlobalStyles = createGlobalStyle`
 `;
 
 ReactDOM.render(
-	<React.StrictMode>
-		<AlertDialogProvider>
-			<GlobalDataProvider>
-				<StylesProvider injectFirst>
-					<GlobalStyles />
-					<App />
-				</StylesProvider>
-			</GlobalDataProvider>
-		</AlertDialogProvider>
-	</React.StrictMode>,
-	document.getElementById("root")
+  <React.StrictMode>
+    <AlertDialogProvider>
+      <GlobalDataProvider>
+        <StylesProvider injectFirst>
+          <GlobalStyles />
+          <App />
+        </StylesProvider>
+      </GlobalDataProvider>
+    </AlertDialogProvider>
+  </React.StrictMode>,
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

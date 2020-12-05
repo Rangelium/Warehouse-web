@@ -75,9 +75,7 @@ export default class InitialRemainders extends Component {
   async componentDidMount() {
     const vendors = await api.executeProcedure("anbar.select_express_vendors");
 
-    const dataForTreeview = await api.executeProcedure(
-      "anbar.warehouse_tree_select"
-    );
+    const dataForTreeview = await api.executeProcedure("anbar.warehouse_tree_select");
 
     const unfinSessionStr = localStorage.getItem("unfinishedSession");
     const unfinSession = JSON.parse(unfinSessionStr);
@@ -225,9 +223,7 @@ export default class InitialRemainders extends Component {
             }}
             open={Boolean(!this.state.sessionId)}
           >
-            <p
-              style={{ fontSize: "1.6rem", color: "#fff", userSelect: "none" }}
-            >
+            <p style={{ fontSize: "1.6rem", color: "#fff", userSelect: "none" }}>
               Başlamaq üçün sessiyanı yarat
             </p>
           </Backdrop>

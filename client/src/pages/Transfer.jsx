@@ -8,13 +8,7 @@ import TransferArchive from "../components/TransferArchive";
 import TransferTable from "../components/TransferTable";
 import NewTransferForm from "../components/NewTransferForm";
 import { CustomTextInput, CustomButton } from "../components/UtilComponents";
-import {
-  Tabs,
-  Tab,
-  Divider,
-  Backdrop,
-  CircularProgress,
-} from "@material-ui/core";
+import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
 
 // Icons
 import RemoveIcon from "@material-ui/icons/Remove";
@@ -214,10 +208,7 @@ class Transfer extends Component {
         </Header>
 
         <MainData>
-          <Tabs
-            value={this.state._tabValue}
-            onChange={this.handleTabChange.bind(this)}
-          >
+          <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
             <Tab label="Təstiq gözləyənlər" />
             <Tab label="Arxiv" />
           </Tabs>
@@ -226,9 +217,7 @@ class Transfer extends Component {
 
           <TabItem hidden={this.state._tabValue !== 0}>
             <TransferTable
-              showNewTransferForm={(id) =>
-                this.setState({ selectedSessionId: id })
-              }
+              showNewTransferForm={(id) => this.setState({ selectedSessionId: id })}
               refresh={this.getTransferData.bind(this)}
               tableData={this.state.transferTableData}
             />
