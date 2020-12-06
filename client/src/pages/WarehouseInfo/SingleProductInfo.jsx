@@ -19,8 +19,7 @@ import RemoveIcon from "@material-ui/icons/Remove";
 
 export default class SingleProductInfo extends Component {
   render() {
-    if (!this.props.product)
-      return <SingleProduct active={this.props.active ? 1 : 0} />;
+    if (!this.props.product) return <SingleProduct active={this.props.active ? 1 : 0} />;
 
     if (this.props.product.length <= 1 && !this.props.tableData.length)
       return (
@@ -39,9 +38,7 @@ export default class SingleProductInfo extends Component {
               width: "100%",
             }}
           >
-            <h1
-              style={{ color: "#000", fontSize: "3rem", marginBottom: "15px" }}
-            >
+            <h1 style={{ color: "#000", fontSize: "3rem", marginBottom: "15px" }}>
               No information
             </h1>
             <p style={{ fontSize: "1.2rem" }}>Məhsul haqqında məlumat yoxdur</p>
@@ -69,7 +66,7 @@ export default class SingleProductInfo extends Component {
             <p className="title">Ümumi daxil olunan miqdar</p>
             <p>
               {this.props.product.in_quantity
-                ? this.props.product.in_quantity
+                ? `${this.props.product.in_quantity} ${this.props.product.unit_title}`
                 : DefaultText}
             </p>
           </StyledPaper>
@@ -77,7 +74,7 @@ export default class SingleProductInfo extends Component {
             <p className="title">Ümumi xaric olunan miqdar</p>
             <p>
               {this.props.product.out_quantity
-                ? this.props.product.out_quantity
+                ? `${this.props.product.out_quantity} ${this.props.product.unit_title}`
                 : DefaultText}
             </p>
           </StyledPaper>
@@ -85,7 +82,7 @@ export default class SingleProductInfo extends Component {
             <p className="title">Anbardan Transfer olunan miqdar</p>
             <p>
               {this.props.product.transfer_quantity
-                ? this.props.product.transfer_quantity
+                ? `${this.props.product.transfer_quantity} ${this.props.product.unit_title}`
                 : DefaultText}
             </p>
           </StyledPaper>
@@ -94,6 +91,14 @@ export default class SingleProductInfo extends Component {
             <p>
               {this.props.product.avg_price
                 ? `${this.props.product.avg_price} ${this.props.product.currency}`
+                : DefaultText}
+            </p>
+          </StyledPaper>
+          <StyledPaper variant="outlined">
+            <p className="title">Məhsulun ümumi dəyəri</p>
+            <p>
+              {this.props.product.total_sum
+                ? `${this.props.product.total_sum} ${this.props.product.currency}`
                 : DefaultText}
             </p>
           </StyledPaper>
@@ -108,14 +113,8 @@ export default class SingleProductInfo extends Component {
           <StyledPaper variant="outlined">
             <p className="title">Qalıq</p>
             <p>
-              {this.props.product.left ? this.props.product.left : DefaultText}
-            </p>
-          </StyledPaper>
-          <StyledPaper variant="outlined">
-            <p className="title">Ölçü vahidi</p>
-            <p>
-              {this.props.product.unit_title
-                ? this.props.product.unit_title
+              {this.props.product.left
+                ? `${this.props.product.left} ${this.props.product.unit_title}`
                 : DefaultText}
             </p>
           </StyledPaper>
@@ -129,6 +128,11 @@ export default class SingleProductInfo extends Component {
                 <TableCell className="head">Vahid qiyməti</TableCell>
                 <TableCell className="head">Ümumi qiymət</TableCell>
                 <TableCell className="head">Yararlıq müddəti</TableCell>
+                <TableCell className="head">Müqavilə №</TableCell>
+                <TableCell className="head">Akt №</TableCell>
+                <TableCell className="head">Hesab-faktura №</TableCell>
+                <TableCell className="head">İnventar №</TableCell>
+                <TableCell className="head">Vendor</TableCell>
                 <TableCell className="head">Fəaliyyət</TableCell>
                 <TableCell className="head">Hücrə №</TableCell>
               </TableRow>
@@ -156,14 +160,25 @@ export default class SingleProductInfo extends Component {
                     )}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
+                    {product.contract_num ? product.contract_num : <RemoveIcon />}
+                  </TableCell>
+                  <TableCell align="center" className="dataEl">
+                    {product.akt_num ? product.akt_num : <RemoveIcon />}
+                  </TableCell>
+                  <TableCell align="center" className="dataEl">
+                    {product.invoice_num ? product.invoice_num : <RemoveIcon />}
+                  </TableCell>
+                  <TableCell align="center" className="dataEl">
+                    {product.inventory_num ? product.inventory_num : <RemoveIcon />}
+                  </TableCell>
+                  <TableCell align="center" className="dataEl">
+                    {product.vendor_name ? product.vendor_name : <RemoveIcon />}
+                  </TableCell>
+                  <TableCell align="center" className="dataEl">
                     {product.reason ? product.reason : <RemoveIcon />}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {product.product_cell ? (
-                      product.product_cell
-                    ) : (
-                      <RemoveIcon />
-                    )}
+                    {product.product_cell ? product.product_cell : <RemoveIcon />}
                   </TableCell>
                 </TableRow>
               ))}
@@ -269,6 +284,7 @@ const StyledTableContainer = styled(TableContainer)`
 
   &::-webkit-scrollbar {
     width: 5px;
+    height: 8px;
   }
   /* Track */
   &::-webkit-scrollbar-track {
