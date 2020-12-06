@@ -11,12 +11,7 @@ import {
   CustomTextInput,
   CustomButton,
 } from "../../components/UtilComponents";
-import {
-  Typography,
-  Paper,
-  Backdrop,
-  CircularProgress,
-} from "@material-ui/core";
+import { Typography, Paper, Backdrop, CircularProgress } from "@material-ui/core";
 
 export default class InitialRemaindersForm extends Component {
   static contextType = GlobalDataContext;
@@ -27,7 +22,6 @@ export default class InitialRemaindersForm extends Component {
     searchData: [],
     quantity: "",
     clusterId: "",
-    clustersData: [],
     price: "",
     currency: "",
     currencyData: [],
@@ -35,6 +29,7 @@ export default class InitialRemaindersForm extends Component {
     productCell: "",
     manufactorer: "",
     manufactorerData: [],
+    inventoryNum: "",
     reason: "",
 
     loading: false,
@@ -57,6 +52,11 @@ export default class InitialRemaindersForm extends Component {
   }
   handleSubmit(e) {
     e.preventDefault();
+    if (!this.props.sessionId) {
+      this.context.error("Something went wrong, try loading page");
+      return;
+    }
+
     this.setState({
       loading: true,
     });
@@ -68,9 +68,7 @@ export default class InitialRemaindersForm extends Component {
         cluster_id: this.state.clusterId ? this.state.clusterId : 1,
         session_id: this.props.sessionId ? this.props.sessionId : null,
         barcode: this.state.barcode ? this.state.barcode : null,
-        inventory_num: this.state.inventory_num
-          ? this.state.inventory_num
-          : null,
+        inventory_num: this.state.inventoryNum ? this.state.inventoryNum : null,
         exp_date: this.state.expDate
           ? dayjs(this.state.expDate).format("YYYY.MM.DD")
           : null,
@@ -90,7 +88,6 @@ export default class InitialRemaindersForm extends Component {
           searchData: [],
           quantity: "",
           clusterId: "",
-          clustersData: [],
           price: "",
           currency: "",
           currencyData: [],
@@ -110,9 +107,6 @@ export default class InitialRemaindersForm extends Component {
     this.setState({
       loading: true,
     });
-    const clustersData = await api.executeProcedure(
-      "[SalaryDB].anbar.[cluster_names_select_all]"
-    );
 
     const currencyData = await api.executeProcedure("anbar.currency_select");
 
@@ -120,18 +114,18 @@ export default class InitialRemaindersForm extends Component {
       productId: product.product_id,
       title: product.title,
       barcode: product.barcode,
-      clustersData,
       currencyData,
-      loading: false,
+      clusterId: product.unit_title,
 
       quantity: "",
-      clusterId: "",
       price: "",
       currency: "",
-      inventory_num: "",
+      inventoryNum: "",
       expDate: dayjs().format("YYYY-MM-DD"),
       productCell: "",
       reason: "",
+
+      loading: false,
     });
   }
 
@@ -162,11 +156,7 @@ export default class InitialRemaindersForm extends Component {
               ))}
             </CustomSelect>
 
-            <CustomTextInput
-              disabled
-              label="Barkod"
-              value={this.state.barcode}
-            />
+            <CustomTextInput disabled label="Barkod" value={this.state.barcode} />
             {/* <CustomSelect
               required
               label="Barkod"
@@ -220,7 +210,8 @@ export default class InitialRemaindersForm extends Component {
               onChange={this.handleChange.bind(this)}
             />
 
-            <CustomSelect
+            <CustomTextInput disabled label="Ölçü vahidi" value={this.state.clusterId} />
+            {/* <CustomSelect
               disabled={this.state.productId ? false : true}
               label="Ölçü vahidi"
               name="clusterId"
@@ -232,7 +223,7 @@ export default class InitialRemaindersForm extends Component {
                   {cluster.title}
                 </CustomSelectItem>
               ))}
-            </CustomSelect>
+            </CustomSelect> */}
 
             <CustomTextInput
               disabled={this.state.productId ? false : true}
@@ -255,7 +246,7 @@ export default class InitialRemaindersForm extends Component {
               variant="outlined"
               label="Inventar №"
               name="inventoryNum"
-              value={this.state.inventory_num}
+              value={this.state.inventoryNum}
               onChange={this.handleChange.bind(this)}
             />
             <CustomTextInput

@@ -73,6 +73,7 @@ export default class WarehouseRemoveTransferProductForm extends Component {
         left: this.props.product.left,
         product_num: this.props.activeStep,
         is_out: 1,
+        reference_id: this.props.referenceId,
       })
       .then(() => {
         this.props.close();
@@ -108,8 +109,7 @@ export default class WarehouseRemoveTransferProductForm extends Component {
                     inputProps: {
                       min: 0,
                       max:
-                        parseInt(this.props.product.left) >
-                        this.props.neededAmount
+                        parseInt(this.props.product.left) > this.props.neededAmount
                           ? this.props.neededAmount
                           : parseInt(this.props.product.left),
                     },
