@@ -66,12 +66,12 @@ export default class WarehouseAddFormFillBulk extends Component {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell align="center">Məhsull</TableCell>
+                <TableCell align="center">Məhsul</TableCell>
                 <TableCell align="center">Barkod</TableCell>
-                <TableCell align="center">Kəmiyyət</TableCell>
+                <TableCell align="center">Miqdar</TableCell>
                 <TableCell align="center">Qiymət</TableCell>
                 <TableCell align="center">Valyuta</TableCell>
-                <TableCell align="center">Hüceyrə nömrəsi</TableCell>
+                <TableCell align="center">Hücrə №</TableCell>
                 <TableCell align="center">Yararlılıq müddəti</TableCell>
                 <TableCell align="center">İnventar №</TableCell>
               </TableRow>

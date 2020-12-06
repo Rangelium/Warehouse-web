@@ -77,7 +77,7 @@ export default class NewTransferSelectProductTable extends Component {
       <StyledSection active={this.props.active}>
         <CustomTextInput
           style={{ width: "100%" }}
-          label="Search product by name or barcode"
+          label="Məhsulun adı / barkod"
           name="productSearch"
           value={this.state.productSearch}
           onChange={this.handleSearchChange.bind(this)}
@@ -89,9 +89,9 @@ export default class NewTransferSelectProductTable extends Component {
                 <TableRow>
                   <TableCell align="center">Məhsul</TableCell>
                   <TableCell align="center">Barkod</TableCell>
-                  <TableCell align="center">K-yət</TableCell>
+                  <TableCell align="center">Miqdar</TableCell>
                   <TableCell align="center">Qiymət</TableCell>
-                  <TableCell align="center">Hüceyrə nömrəsi</TableCell>
+                  <TableCell align="center">Hücrə №</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -127,7 +127,11 @@ export default class NewTransferSelectProductTable extends Component {
                       )}
                     </TableCell>
                     <TableCell align="center">
-                      {row.product_cell !== null ? row.product_cell : <RemoveIcon />}
+                      {row.product_cell !== null ? (
+                        row.product_cell
+                      ) : (
+                        <RemoveIcon />
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

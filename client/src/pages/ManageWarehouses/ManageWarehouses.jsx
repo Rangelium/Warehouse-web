@@ -43,7 +43,9 @@ export default class ManageWarehouses extends Component {
         <Header>
           <h1 className="title">Anbarın quraşdırılması</h1>
 
-          <CustomButton onClick={() => this.setState({ newWarehouseForm: true })}>
+          <CustomButton
+            onClick={() => this.setState({ newWarehouseForm: true })}
+          >
             Yeni Anbar yarat
           </CustomButton>
 
@@ -56,20 +58,27 @@ export default class ManageWarehouses extends Component {
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center">Department</TableCell>
-                    <TableCell align="center">Warehouse name</TableCell>
-                    <TableCell align="center">Warehouse type</TableCell>
-                    <TableCell align="center">Responsible</TableCell>
+                    <TableCell align="center">Şöbə/Kurasiya</TableCell>
+                    <TableCell align="center">Anbarın adı</TableCell>
+                    <TableCell align="center">Anbarın tipi</TableCell>
+                    <TableCell align="center">Məsul şəxs</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {this.state.tablesData.map(
-                    ({ name, storage_name, storage_type, responsible_person }) => (
+                    ({
+                      name,
+                      storage_name,
+                      storage_type,
+                      responsible_person,
+                    }) => (
                       <TableRow key={uuid()}>
                         <TableCell align="center">{name}</TableCell>
                         <TableCell align="center">{storage_name}</TableCell>
                         <TableCell align="center">{storage_type}</TableCell>
-                        <TableCell align="center">{responsible_person}</TableCell>
+                        <TableCell align="center">
+                          {responsible_person}
+                        </TableCell>
                       </TableRow>
                     )
                   )}

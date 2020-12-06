@@ -11,7 +11,12 @@ import {
   CustomTextInput,
   CustomButton,
 } from "../../components/UtilComponents";
-import { Typography, Paper, Backdrop, CircularProgress } from "@material-ui/core";
+import {
+  Typography,
+  Paper,
+  Backdrop,
+  CircularProgress,
+} from "@material-ui/core";
 
 export default class InitialRemaindersForm extends Component {
   static contextType = GlobalDataContext;
@@ -63,7 +68,9 @@ export default class InitialRemaindersForm extends Component {
         cluster_id: this.state.clusterId ? this.state.clusterId : 1,
         session_id: this.props.sessionId ? this.props.sessionId : null,
         barcode: this.state.barcode ? this.state.barcode : null,
-        inventory_num: this.state.inventory_num ? this.state.inventory_num : null,
+        inventory_num: this.state.inventory_num
+          ? this.state.inventory_num
+          : null,
         exp_date: this.state.expDate
           ? dayjs(this.state.expDate).format("YYYY.MM.DD")
           : null,
@@ -74,7 +81,7 @@ export default class InitialRemaindersForm extends Component {
         reason: this.state.reason ? this.state.reason : null,
       })
       .then(() => {
-        this.context.success(`Added ${this.state.title}`);
+        this.context.success(`Əlavə edildi ${this.state.title}`);
         this.setState({
           loading: false,
           title: "",
@@ -155,7 +162,11 @@ export default class InitialRemaindersForm extends Component {
               ))}
             </CustomSelect>
 
-            <CustomTextInput disabled label="Barkod" value={this.state.barcode} />
+            <CustomTextInput
+              disabled
+              label="Barkod"
+              value={this.state.barcode}
+            />
             {/* <CustomSelect
               required
               label="Barkod"

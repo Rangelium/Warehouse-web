@@ -4,7 +4,12 @@ import { GlobalDataContext } from "../../components/GlobalDataProvider";
 import api from "../../tools/connect";
 
 import { CustomTextInput, CustomButton } from "../../components/UtilComponents";
-import { Dialog, DialogTitle, DialogContent, DialogActions } from "@material-ui/core";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@material-ui/core";
 
 export default class CreateClusterForm extends Component {
   static contextType = GlobalDataContext;
@@ -53,7 +58,7 @@ export default class CreateClusterForm extends Component {
             <CustomTextInput
               required
               variant="outlined"
-              label="Full title"
+              label="Adı"
               name="fullTitle"
               value={this.state.fullTitle}
               onChange={this.handleChange.bind(this)}
@@ -61,7 +66,7 @@ export default class CreateClusterForm extends Component {
             <CustomTextInput
               required
               variant="outlined"
-              label="Title"
+              label="Abbreviatura"
               name="title"
               value={this.state.title}
               onChange={this.handleChange.bind(this)}

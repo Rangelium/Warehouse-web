@@ -42,7 +42,7 @@ export default class NewTransferForm extends Component {
 
     warehouseData: [],
     activeStep: 0,
-    steps: ["Choose product", "Fill transfer info"],
+    steps: ["Məhsul seçimi", "Təstiqlə"],
   };
 
   componentDidMount() {
@@ -73,28 +73,33 @@ export default class NewTransferForm extends Component {
     }
 
     api
-      .executeProcedure("[SalaryDB].anbar.[transfer_products_session_info_insert]", {
-        quantity: this.state.transferInfoData.quantity,
-        reason: this.state.transferInfoData.reason,
-        currency: this.state.selectedProduct.currency_id,
-        storage_from: this.context.storageId,
-        storage_to: this.state.toWarehouseId,
-        transfer_session_id: this.props.sessionId,
-        document_num: this.state.transferInfoData.contractNum,
-        document_num_path: fileName,
-        cluster_order_default: this.state.selectedProduct.cluster_default,
-        price: this.state.selectedProduct.unit_price,
-        exp_date: this.state.selectedProduct.exp_date,
-        product_cell: this.state.transferInfoData.productCell,
-        barcode: this.state.selectedProduct.barcode,
-        product_id: this.state.selectedProduct.product_id,
-        product_manufacturer: this.state.selectedProduct.product_manufacturer,
-        left: this.state.selectedProduct.left,
-        document_id_as_parent_id: this.state.selectedProduct.document_id,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[transfer_products_session_info_insert]",
+        {
+          quantity: this.state.transferInfoData.quantity,
+          reason: this.state.transferInfoData.reason,
+          currency: this.state.selectedProduct.currency_id,
+          storage_from: this.context.storageId,
+          storage_to: this.state.toWarehouseId,
+          transfer_session_id: this.props.sessionId,
+          document_num: this.state.transferInfoData.contractNum,
+          document_num_path: fileName,
+          cluster_order_default: this.state.selectedProduct.cluster_default,
+          price: this.state.selectedProduct.unit_price,
+          exp_date: this.state.selectedProduct.exp_date,
+          product_cell: this.state.transferInfoData.productCell,
+          barcode: this.state.selectedProduct.barcode,
+          product_id: this.state.selectedProduct.product_id,
+          product_manufacturer: this.state.selectedProduct.product_manufacturer,
+          left: this.state.selectedProduct.left,
+          document_id_as_parent_id: this.state.selectedProduct.document_id,
+        }
+      )
       .then(() => {
         this.props.refresh();
-        this.context.success(`Added ${this.state.selectedProduct.product_title}`);
+        this.context.success(
+          `Əlavə edildi ${this.state.selectedProduct.product_title}`
+        );
         this.handleClose();
       })
       .catch((err) => this.context.error(err.errText));
@@ -105,16 +110,22 @@ export default class NewTransferForm extends Component {
   }
   async getProductData() {
     const subCategory = await api
-      .executeProcedure("[SalaryDB].anbar.[warehouse_select_products_subcategory]", {
-        product_id: this.state.selectedProduct.product_id,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[warehouse_select_products_subcategory]",
+        {
+          product_id: this.state.selectedProduct.product_id,
+        }
+      )
       .then((res) => res[0])
       .catch((err) => console.log(err));
 
     const category = await api
-      .executeProcedure("[SalaryDB].anbar.[warehouse_select_products_category]", {
-        parent_id: subCategory.parent_id,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[warehouse_select_products_category]",
+        {
+          parent_id: subCategory.parent_id,
+        }
+      )
       .then((res) => res[0])
       .catch((err) => console.log(err));
 
@@ -147,20 +158,20 @@ export default class NewTransferForm extends Component {
         onClose={this.handleClose.bind(this)}
       >
         <form autoComplete="off" onSubmit={this.handleSubmit.bind(this)}>
-          <DialogTitle>Yeni transfer</DialogTitle>
+          <DialogTitle>Məhsulların Transferi</DialogTitle>
 
           <StyledContent>
             <div className="heading">
               <CustomTextInput
                 style={{ minWidth: "200px" }}
                 disabled={true}
-                label="From Warehouse"
+                label="Anbardan"
                 value={this.context.storageTitle}
               />
 
               <div className="block">
                 <Typography noWrap variant="h3">
-                  Transfer
+                  TRANSFER
                 </Typography>
                 <DoubleArrowOutlinedIcon className="icon" />
               </div>
@@ -168,7 +179,7 @@ export default class NewTransferForm extends Component {
               <CustomSelect
                 required
                 style={{ minWidth: "200px" }}
-                label="To Warehouse"
+                label="Anbara"
                 name="toWarehouseId"
                 value={this.state.toWarehouseId}
                 onChange={this.handleChange.bind(this)}
@@ -218,7 +229,9 @@ export default class NewTransferForm extends Component {
 
           <DialogActions>
             <Divider />
-
+            <CustomButton onClick={this.handleClose.bind(this)}>
+              İmtina
+            </CustomButton>
             <CustomButton
               disabled={this.state.activeStep === 0}
               onClick={() => {
@@ -227,7 +240,7 @@ export default class NewTransferForm extends Component {
                 });
               }}
             >
-              Previous
+              Geriyə
             </CustomButton>
 
             {Boolean(this.state.activeStep === this.state.steps.length - 1) && (
@@ -243,10 +256,9 @@ export default class NewTransferForm extends Component {
                   });
                 }}
               >
-                Next
+                İrəli
               </CustomButton>
             )}
-            <CustomButton onClick={this.handleClose.bind(this)}>İmtina</CustomButton>
             <div className="div" style={{ flexGrow: 1 }}></div>
             {this.state.activeStep === 1 && this.state.file && (
               <CustomButton
