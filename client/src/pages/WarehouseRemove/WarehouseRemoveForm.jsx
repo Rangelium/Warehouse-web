@@ -154,7 +154,7 @@ export default class WarehouseRemoveForm extends Component {
         user_id: this.context.userId,
         retail_sale_session_id: this.props.retailSaleId,
         order_id: this.props.order_id,
-        status: !authComplete ? 20 : 21, // if selectedAmount === required will be 20, after productAuth will be 21
+        status: !authComplete ? 20 : 0, // if selectedAmount === required will be 20, after productAuth will be 21
       })
       .then(() => {
         this.context.success("Order complete");

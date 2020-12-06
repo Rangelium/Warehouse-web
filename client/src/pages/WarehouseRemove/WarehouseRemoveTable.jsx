@@ -48,10 +48,13 @@ class Row extends Component {
       () => {
         if (this.state.infoTable) {
           api
-            .executeProcedure("[SalaryDB].procurement.[get_order_req_data]", {
-              ord_numb: this.props.row.ord_numb,
-              emp_version: this.props.row.emp_id,
-            })
+            .executeProcedure(
+              "[SalaryDB].anbar.procurement_get_order_req_data",
+              {
+                ord_numb: this.props.row.ord_numb,
+                emp_version: this.props.row.emp_id,
+              }
+            )
             .then((res) => {
               this.setState({
                 productsTableData: res,
@@ -66,10 +69,13 @@ class Row extends Component {
   }
   async showRemoveForm() {
     const dataForForm = await api
-      .executeProcedure("[SalaryDB].procurement.[get_order_req_data]", {
-        ord_numb: this.props.row.ord_numb,
-        emp_version: this.props.row.emp_id,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.procurement_get_order_req_data_for_removeForm",
+        {
+          ord_numb: this.props.row.ord_numb,
+          emp_version: this.props.row.emp_id,
+        }
+      )
       .catch((err) => {
         console.error(err.errText);
         return [];
