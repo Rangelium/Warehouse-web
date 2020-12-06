@@ -29,13 +29,13 @@ export default class TransferArchive extends Component {
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell align="center">Məhsull</TableCell>
+              <TableCell align="center">Məhsul</TableCell>
               <TableCell align="center">Barkod</TableCell>
-              <TableCell align="center">Kəmiyyət</TableCell>
+              <TableCell align="center">Miqdar</TableCell>
               <TableCell align="center">Ümumi Qiymət</TableCell>
-              <TableCell align="center">Storage from</TableCell>
-              <TableCell align="center">Storage to</TableCell>
-              <TableCell align="center">Transfer date</TableCell>
+              <TableCell align="center">Anbar</TableCell>
+              <TableCell align="center">Transfer olunan anbara</TableCell>
+              <TableCell align="center">Transfer tarixi</TableCell>
               <TableCell align="center">File</TableCell>
             </TableRow>
           </TableHead>
@@ -59,7 +59,9 @@ export default class TransferArchive extends Component {
                         api
                           .downloadFile(el.document_num_path)
                           .then((res) => {
-                            const url = window.URL.createObjectURL(new Blob([res.data]));
+                            const url = window.URL.createObjectURL(
+                              new Blob([res.data])
+                            );
                             const link = document.createElement("a");
                             link.href = url;
                             link.setAttribute(
@@ -75,7 +77,10 @@ export default class TransferArchive extends Component {
                       <DescriptionIcon style={{ color: "#ffaa00" }} />
                     </IconButton>
                   ) : (
-                    <NoSimIcon title="No file attached" style={{ color: "#ffaa00" }} />
+                    <NoSimIcon
+                      title="No file attached"
+                      style={{ color: "#ffaa00" }}
+                    />
                   )}
                 </TableCell>
               </TableRow>

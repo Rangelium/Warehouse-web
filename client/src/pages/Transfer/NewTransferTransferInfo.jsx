@@ -34,7 +34,6 @@ export default class NewTransferTransferInfo extends Component {
           </Typography>
 
           <Typography noWrap variant="body1" className="path">
-            {"Path:"}
             <Typography variant="caption" noWrap className="path-data">
               {this.props.path.category}
             </Typography>
@@ -50,20 +49,20 @@ export default class NewTransferTransferInfo extends Component {
               InputProps={{
                 inputProps: { min: 0, max: this.props.selectedProduct.left },
               }}
-              label="Kəmiyyət"
+              label="Miqdar"
               type="number"
               name="quantity"
               value={this.state.quantity}
               onChange={this.handleInputsChange.bind(this)}
             />
             <CustomTextInput
-              label="Hüceyrə nömrəsi"
+              label="Hücrə №"
               name="productCell"
               value={this.state.productCell}
               onChange={this.handleInputsChange.bind(this)}
             />
             <CustomTextInput
-              label="Müqavilə nömrəsi"
+              label="Müqavilə №"
               name="contractNum"
               value={this.state.contractNum}
               onChange={this.handleInputsChange.bind(this)}

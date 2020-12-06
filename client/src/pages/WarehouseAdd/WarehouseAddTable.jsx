@@ -47,10 +47,13 @@ class Row extends Component {
       () => {
         if (this.state.infoTable) {
           api
-            .executeProcedure("[SalaryDB].procurement.[get_order_req_data]", {
-              ord_numb: this.props.row.ord_numb,
-              emp_version: this.props.row.emp_id,
-            })
+            .executeProcedure(
+              "[SalaryDB].anbar.procurement_get_order_req_data",
+              {
+                ord_numb: this.props.row.ord_numb,
+                emp_version: this.props.row.emp_id,
+              }
+            )
             .then((res) => {
               this.setState({
                 productsTableData: res,
@@ -71,8 +74,15 @@ class Row extends Component {
       <>
         <TableRow>
           <TableCell style={{ borderBottom: "unset" }}>
-            <IconButton size="small" onClick={this.handleExpandRowClick.bind(this)}>
-              {this.state.infoTable ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            <IconButton
+              size="small"
+              onClick={this.handleExpandRowClick.bind(this)}
+            >
+              {this.state.infoTable ? (
+                <KeyboardArrowUpIcon />
+              ) : (
+                <KeyboardArrowDownIcon />
+              )}
             </IconButton>
           </TableCell>
 
@@ -86,10 +96,13 @@ class Row extends Component {
             <CustomButton
               onClick={() => {
                 api
-                  .executeProcedure("[SalaryDB].procurement.[get_order_req_data]", {
-                    ord_numb: this.props.row.ord_numb,
-                    emp_version: this.props.row.emp_id,
-                  })
+                  .executeProcedure(
+                    "[SalaryDB].anbar.procurement_get_order_req_data",
+                    {
+                      ord_numb: this.props.row.ord_numb,
+                      emp_version: this.props.row.emp_id,
+                    }
+                  )
                   .then((dataForFill) => {
                     this.setState({
                       dataForFill,
@@ -106,12 +119,15 @@ class Row extends Component {
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
             <Collapse in={this.state.infoTable} timeout="auto" unmountOnExit>
-              <Paper style={{ padding: "10px 0", position: "relative" }} elevation={0}>
+              <Paper
+                style={{ padding: "10px 0", position: "relative" }}
+                elevation={0}
+              >
                 <Table size="small">
                   <TableHead>
                     <TableRow>
                       <TableCell align="center">Məhsul</TableCell>
-                      <TableCell align="center">Kəmiyyət</TableCell>
+                      <TableCell align="center">Miqdar</TableCell>
                       <TableCell align="center">Kurasiya</TableCell>
                     </TableRow>
                   </TableHead>
@@ -120,7 +136,9 @@ class Row extends Component {
                       <TableRow key={uuid()}>
                         <TableCell align="center">{product.title}</TableCell>
                         <TableCell align="center">{product.amount}</TableCell>
-                        <TableCell align="center">{product.department_name}</TableCell>
+                        <TableCell align="center">
+                          {product.department_name}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -167,9 +185,9 @@ export default class WarehouseAddTable extends Component {
           <TableHead>
             <TableRow>
               <TableCell />
-              <TableCell align="center">Məhsulların Kəmiyyəti</TableCell>
+              <TableCell align="center">Məhsulların miqdarı</TableCell>
               <TableCell align="center">Tarix</TableCell>
-              <TableCell align="center">Tesdiq</TableCell>
+              <TableCell align="center">Təstiq</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

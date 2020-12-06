@@ -33,7 +33,7 @@ export default class ExpDateOverTable extends Component {
           })
           .then((res) => {
             this.props.refresh();
-            this.context.success(`Removed ${data.product_title}`);
+            this.context.success(`${data.product_title} silindi!`);
           })
           .catch((err) => {
             this.context.error(err.errText);
@@ -53,8 +53,8 @@ export default class ExpDateOverTable extends Component {
               <TableCell align="center">Qiymət</TableCell>
               <TableCell align="center">Ümumi qiymət</TableCell>
               {/* <TableCell align="center">İstehsalçı</TableCell> */}
-              <TableCell align="center">Hüceyrə nömrəsi</TableCell>
-              <TableCell align="center">Yararlıq müddəti</TableCell>
+              <TableCell align="center">Hücrə №</TableCell>
+              <TableCell align="center">Yararlılıq müddəti</TableCell>
               <TableCell align="center" />
             </TableRow>
           </TableHead>
@@ -72,7 +72,10 @@ export default class ExpDateOverTable extends Component {
                   {dayjs(el.exp_date).format("MM.DD.YYYY")}
                 </TableCell>
                 <TableCell align="center">
-                  <Button variant="outlined" onClick={() => this.handleClick(el)}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => this.handleClick(el)}
+                  >
                     silin
                   </Button>
                 </TableCell>

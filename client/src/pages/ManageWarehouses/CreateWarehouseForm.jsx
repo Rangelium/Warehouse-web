@@ -12,7 +12,12 @@ import {
   CustomSelect,
   CustomSelectItem,
 } from "../../components/UtilComponents";
-import { Dialog, DialogTitle, DialogContent, DialogActions } from "@material-ui/core";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@material-ui/core";
 
 export default class CreateWarehouseForm extends Component {
   static contextType = GlobalDataContext;
@@ -49,7 +54,7 @@ export default class CreateWarehouseForm extends Component {
         responsible_person: this.state.responsiblePerson,
       })
       .then(() => {
-        this.context.success(`Created ${this.state.warehouseName}`);
+        this.context.success(`${this.state.warehouseName} yaradıldl`);
         this.props.refresh();
         this.handleClose();
       })
@@ -74,7 +79,7 @@ export default class CreateWarehouseForm extends Component {
         onClose={this.handleClose.bind(this)}
       >
         <form autoComplete="off" onSubmit={this.createWarehouse.bind(this)}>
-          <DialogTitle>Yeni anbarı yarat</DialogTitle>
+          <DialogTitle>Yeni anbar yarat</DialogTitle>
           <DialogContent>
             <CustomTextInput
               required
@@ -85,7 +90,7 @@ export default class CreateWarehouseForm extends Component {
             />
             <CustomSelect
               required
-              label="Department"
+              label="şöbə/kurasiya"
               name="warehouseDepartmentId"
               value={this.state.warehouseDepartmentId}
               onChange={this.handleChange.bind(this)}
@@ -98,14 +103,14 @@ export default class CreateWarehouseForm extends Component {
             </CustomSelect>
             <CustomTextInput
               required
-              label="Anbaın tipi"
+              label="Anbarın tipi"
               name="warehouseType"
               value={this.state.warehouseType}
               onChange={this.handleChange.bind(this)}
             />
             <CustomTextInput
               required
-              label="Responsible"
+              label="Məsul şəxs"
               name="responsiblePerson"
               value={this.state.responsiblePerson}
               onChange={this.handleChange.bind(this)}
@@ -113,7 +118,9 @@ export default class CreateWarehouseForm extends Component {
           </DialogContent>
           <DialogActions>
             <CustomButton type="submit">Yarat</CustomButton>
-            <CustomButton onClick={this.handleClose.bind(this)}>İmtina</CustomButton>
+            <CustomButton onClick={this.handleClose.bind(this)}>
+              İmtina
+            </CustomButton>
           </DialogActions>
         </form>
       </StyledDialog>

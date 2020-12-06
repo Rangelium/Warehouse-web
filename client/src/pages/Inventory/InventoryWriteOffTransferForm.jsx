@@ -60,7 +60,7 @@ export default class InventoryWriteOffTransferForm extends Component {
       .then(() => {
         this.props.close();
         this.props.refresh();
-        this.context.success(`Added`);
+        this.context.success(`Əlavə edildi`);
       })
       .catch((err) => {
         this.context.error(err.errText);
@@ -81,7 +81,7 @@ export default class InventoryWriteOffTransferForm extends Component {
           <DialogTitle>{this.props.product.product_title}</DialogTitle>
 
           <StyledContent>
-            <h1>Need to select: {this.props.neededAmount}</h1>
+            <h1>Tələb olunan miqdar: {this.props.neededAmount}</h1>
             <div className="inputs">
               <div className="amountBlock">
                 <CustomTextInput
@@ -91,18 +91,19 @@ export default class InventoryWriteOffTransferForm extends Component {
                     inputProps: {
                       min: 0,
                       max:
-                        parseInt(this.props.product.left) > this.props.neededAmount
+                        parseInt(this.props.product.left) >
+                        this.props.neededAmount
                           ? this.props.neededAmount
                           : parseInt(this.props.product.left),
                     },
                   }}
-                  label="Kəmiyyət"
+                  label="Miqdar"
                   type="number"
                   name="quantity"
                   value={this.state.quantity}
                   onChange={this.handleInputsChange.bind(this)}
                 />
-                <p className="product-left">out of {this.props.product.left}</p>
+                <p className="product-left"> / {this.props.product.left}</p>
               </div>
               <CustomTextInput
                 className="input-item"

@@ -29,14 +29,14 @@ export default class WarehouseRemoveArchive extends Component {
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell align="center">Məhsull</TableCell>
+              <TableCell align="center">Məhsul</TableCell>
               <TableCell align="center">Barkod</TableCell>
-              <TableCell align="center">Kəmiyyət</TableCell>
+              <TableCell align="center">Miqdar</TableCell>
               <TableCell align="center">Qiymət</TableCell>
               <TableCell align="center">Ümumi Qiymət</TableCell>
-              <TableCell align="center">Hüceyrə nömrəsi</TableCell>
-              <TableCell align="center">Yararlıq müddəti</TableCell>
-              <TableCell align="center">Creation müddəti</TableCell>
+              <TableCell align="center">Hücrə №</TableCell>
+              <TableCell align="center">Yararlılıq müddəti</TableCell>
+              <TableCell align="center">Yaradılış tarixi</TableCell>
               <TableCell align="center">File</TableCell>
             </TableRow>
           </TableHead>
@@ -63,7 +63,9 @@ export default class WarehouseRemoveArchive extends Component {
                         api
                           .downloadFile(el.document_num_path)
                           .then((res) => {
-                            const url = window.URL.createObjectURL(new Blob([res.data]));
+                            const url = window.URL.createObjectURL(
+                              new Blob([res.data])
+                            );
                             const link = document.createElement("a");
                             link.href = url;
                             link.setAttribute(
@@ -79,7 +81,10 @@ export default class WarehouseRemoveArchive extends Component {
                       <DescriptionIcon style={{ color: "#ffaa00" }} />
                     </IconButton>
                   ) : (
-                    <NoSimIcon title="No file attached" style={{ color: "#ffaa00" }} />
+                    <NoSimIcon
+                      title="No file attached"
+                      style={{ color: "#ffaa00" }}
+                    />
                   )}
                 </TableCell>
               </TableRow>

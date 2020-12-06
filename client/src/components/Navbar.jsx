@@ -128,14 +128,14 @@ export default class Navbar extends Component {
           style={{ marginRight: 15 }}
           onClick={() => {
             this.context
-              .alert({ title: "Logout", description: "Are you sure you want to logout?" })
+              .alert({ title: "Çıxış", description: "Əminsiniz?" })
               .then(() => {
                 this.context.setToken(null);
               })
               .catch(() => {});
           }}
         >
-          Logout
+          Çıxış
         </CustomButton>
       </StyledAppbar>
     );
@@ -246,7 +246,8 @@ const StyledAppbar = styled.nav`
         border-radius: 4px;
         background-color: white;
         box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2),
-          0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+          0px 8px 10px 1px rgba(0, 0, 0, 0.14),
+          0px 3px 14px 2px rgba(0, 0, 0, 0.12);
 
         .link {
           width: 100%;
