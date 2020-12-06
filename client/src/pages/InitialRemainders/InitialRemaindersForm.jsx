@@ -11,7 +11,12 @@ import {
   CustomTextInput,
   CustomButton,
 } from "../../components/UtilComponents";
-import { Typography, Paper, Backdrop, CircularProgress } from "@material-ui/core";
+import {
+  Typography,
+  Paper,
+  Backdrop,
+  CircularProgress,
+} from "@material-ui/core";
 
 export default class InitialRemaindersForm extends Component {
   static contextType = GlobalDataContext;
@@ -156,7 +161,11 @@ export default class InitialRemaindersForm extends Component {
               ))}
             </CustomSelect>
 
-            <CustomTextInput disabled label="Barkod" value={this.state.barcode} />
+            <CustomTextInput
+              disabled
+              label="Barkod"
+              value={this.state.barcode}
+            />
             {/* <CustomSelect
               required
               label="Barkod"
@@ -210,7 +219,11 @@ export default class InitialRemaindersForm extends Component {
               onChange={this.handleChange.bind(this)}
             />
 
-            <CustomTextInput disabled label="Ölçü vahidi" value={this.state.clusterId} />
+            <CustomTextInput
+              disabled
+              label="Ölçü vahidi"
+              value={this.state.clusterId}
+            />
             {/* <CustomSelect
               disabled={this.state.productId ? false : true}
               label="Ölçü vahidi"
@@ -236,7 +249,7 @@ export default class InitialRemaindersForm extends Component {
 
             <CustomTextInput
               disabled={this.state.productId ? false : true}
-              label="Hüceyrə nömrəsi"
+              label="Hücrə №"
               name="productCell"
               value={this.state.productCell}
               onChange={this.handleChange.bind(this)}
