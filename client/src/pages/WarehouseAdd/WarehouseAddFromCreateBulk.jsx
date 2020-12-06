@@ -34,9 +34,12 @@ export default class WarehouseAddFromCreateBulk extends Component {
   }
   handleVendorChange(e) {
     api
-      .executeProcedure("[SalaryDB].procurement.[express_get_vendor_contracts]", {
-        vendor_id: e.target.value,
-      })
+      .executeProcedure(
+        "[SalaryDB].procurement.[express_get_vendor_contracts]",
+        {
+          vendor_id: e.target.value,
+        }
+      )
       .then((contractsList) => {
         this.setState({
           vendorId: e.target.value,
@@ -47,28 +50,31 @@ export default class WarehouseAddFromCreateBulk extends Component {
   }
   createBulk() {
     if (!Boolean(this.state.vendorId)) {
-      this.context.error("You must select vendor!");
+      this.context.error("Vendoru seçin!");
       return;
     }
     if (!Boolean(this.state.contractNum)) {
-      this.context.error("You must select contractNum!");
+      this.context.error("Müqavilə № seçin!");
       return;
     }
     if (!Boolean(this.state.aktNum)) {
-      this.context.error("You must fill aktNum!");
+      this.context.error("akt № daxil edin!");
       return;
     }
     if (!Boolean(this.state.fakturaNum)) {
-      this.context.error("You must fill fakturaNum!");
+      this.context.error("Hesab-faktura № daxil edin!");
       return;
     }
 
     api
-      .executeProcedure("[SalaryDB].anbar.[order_acception_handle_session_create]", {
-        invoice_num: this.state.fakturaNum,
-        contract_num: this.state.contractNum,
-        akt_num: this.state.aktNum,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[order_acception_handle_session_create]",
+        {
+          invoice_num: this.state.fakturaNum,
+          contract_num: this.state.contractNum,
+          akt_num: this.state.aktNum,
+        }
+      )
       .then((res) => {
         this.props.finishCreation(res[0][""]);
       })

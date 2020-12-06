@@ -26,13 +26,15 @@ export default class OverallInfo extends Component {
 
           <div className="row special">
             <StyledPaper elevation={3}>
-              <p className="title">Məhsulun miqdarı</p>
+              <p className="title">Məhsulların ümumi miqdarı</p>
               <p>
-                {this.props.overallInfo.quantity ? this.props.overallInfo.quantity : 0}
+                {this.props.overallInfo.quantity
+                  ? this.props.overallInfo.quantity
+                  : 0}
               </p>
             </StyledPaper>
             <StyledPaper elevation={3}>
-              <p className="title">Məhsulların qalan hissəsi</p>
+              <p className="title">Unikal məhsulların sayı</p>
               <p>
                 {this.props.overallInfo.remaining_products
                   ? this.props.overallInfo.remaining_products
@@ -57,7 +59,8 @@ export default class OverallInfo extends Component {
             <StyledPaper elevation={3}>
               <div className="specialBlock">
                 <p className="specialUtil specialRow">
-                  <InfoOutlinedIcon className="specialIcon" /> Son daxil olunmuş məhsul
+                  <InfoOutlinedIcon className="specialIcon" /> Son sifariş
+                  (mədaxil)
                 </p>
                 <h2 className="specialTitle specialRow">
                   {this.props.overallInfo.last_in_name
@@ -108,7 +111,7 @@ export default class OverallInfo extends Component {
                     </span>
                   </p>
                   <p className="dataEl">
-                    Faktura nömrəsi:
+                    Faktura №:
                     <span className="dataElVal">
                       {this.props.overallInfo.last_in_invoice_num
                         ? this.props.overallInfo.last_in_invoice_num
@@ -116,7 +119,7 @@ export default class OverallInfo extends Component {
                     </span>
                   </p>
                   <p className="dataEl">
-                    Akt nömrəsi:
+                    Akt №:
                     <span className="dataElVal">
                       {this.props.overallInfo.last_in_act_num
                         ? this.props.overallInfo.last_in_act_num
@@ -130,7 +133,8 @@ export default class OverallInfo extends Component {
             <StyledPaper elevation={3}>
               <div className="specialBlock">
                 <p className="specialUtil specialRow">
-                  <InfoOutlinedIcon className="specialIcon" /> Son satılan məhsul
+                  <InfoOutlinedIcon className="specialIcon" /> Son sifariş
+                  (məxaric)
                 </p>
                 <h2 className="specialTitle specialRow">
                   {this.props.overallInfo.last_out_name

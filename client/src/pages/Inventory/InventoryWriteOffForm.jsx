@@ -45,7 +45,9 @@ export default class InventoryWriteOffForm extends Component {
   };
 
   async componentDidMount() {
-    await this.getProductData(this.props.data[this.state.activeStep].product_title);
+    await this.getProductData(
+      this.props.data[this.state.activeStep].product_title
+    );
 
     this.setState({
       loading: false,
@@ -53,10 +55,13 @@ export default class InventoryWriteOffForm extends Component {
   }
   async getProductData(productTitle) {
     const existingProducts = await api
-      .executeProcedure("[SalaryDB].anbar.[inventory_session_fix_out_product_search]", {
-        storage_id: this.context.storageId,
-        title: productTitle,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[inventory_session_fix_out_product_search]",
+        {
+          storage_id: this.context.storageId,
+          title: productTitle,
+        }
+      )
       .catch((err) => {
         console.error(err.errText);
         return [];
@@ -78,7 +83,8 @@ export default class InventoryWriteOffForm extends Component {
     let selectedAmount = 0;
     forOrderProducts.forEach((product) => {
       if (
-        product.product_title === this.props.data[this.state.activeStep].product_title
+        product.product_title ===
+        this.props.data[this.state.activeStep].product_title
       ) {
         selectedAmount += product.quantity;
       }
@@ -108,7 +114,9 @@ export default class InventoryWriteOffForm extends Component {
     e.preventDefault();
 
     for (let i = 0; i < this.state.selectedAmounts.length; i++) {
-      if (this.state.selectedAmounts[i] !== parseInt(this.props.data[i].amount)) {
+      if (
+        this.state.selectedAmounts[i] !== parseInt(this.props.data[i].amount)
+      ) {
         this.setState({
           showProductAuthForm: true,
         });
@@ -120,9 +128,12 @@ export default class InventoryWriteOffForm extends Component {
 
     // Finish
     api
-      .executeProcedure("[SalaryDB].anbar.[inventory_session_fix_out_complete]", {
-        inventory_session_id: this.props.inventoryId,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[inventory_session_fix_out_complete]",
+        {
+          inventory_session_id: this.props.inventoryId,
+        }
+      )
       .then(() => {
         this.context.success("Order complete");
         this.props.refresh();
@@ -141,7 +152,9 @@ export default class InventoryWriteOffForm extends Component {
       .catch((err) => this.context.error(err.errText));
   }
   handlePrevStep() {
-    this.getProductData(this.props.data[this.state.activeStep - 1].product_title);
+    this.getProductData(
+      this.props.data[this.state.activeStep - 1].product_title
+    );
     this.setState((prevState) => {
       return { activeStep: prevState.activeStep - 1 };
     });
@@ -158,7 +171,9 @@ export default class InventoryWriteOffForm extends Component {
       );
       return;
     }
-    this.getProductData(this.props.data[this.state.activeStep + 1].product_title);
+    this.getProductData(
+      this.props.data[this.state.activeStep + 1].product_title
+    );
     this.setState((prevState) => {
       return { activeStep: prevState.activeStep + 1 };
     });
@@ -196,7 +211,9 @@ export default class InventoryWriteOffForm extends Component {
         }
       )
       .then(() => {
-        this.getProductData(this.props.data[this.state.activeStep].product_title);
+        this.getProductData(
+          this.props.data[this.state.activeStep].product_title
+        );
       })
       .catch((err) => console.log(err.errText));
   }
@@ -226,18 +243,21 @@ export default class InventoryWriteOffForm extends Component {
 
             <div className="header">
               <h1>
-                Order amount:
-                <span>{this.props.data[this.state.activeStep].quantity_difference}</span>
+                Silinmə miqdarı:
+                <span>
+                  {this.props.data[this.state.activeStep].quantity_difference}
+                </span>
               </h1>
               <h1>
-                Selected amount:
+                Əlavə edilib:
                 <span>{this.state.selectedAmounts[this.state.activeStep]}</span>
               </h1>
               <h1>
-                Need to select:
+                Qalıb:
                 <span>
-                  {parseInt(this.props.data[this.state.activeStep].quantity_difference) -
-                    this.state.selectedAmounts[this.state.activeStep]}
+                  {parseInt(
+                    this.props.data[this.state.activeStep].quantity_difference
+                  ) - this.state.selectedAmounts[this.state.activeStep]}
                 </span>
               </h1>
             </div>
@@ -249,10 +269,10 @@ export default class InventoryWriteOffForm extends Component {
                     <TableHead>
                       <TableRow>
                         <TableCell align="center">Məhsul</TableCell>
-                        <TableCell align="center">K-yət</TableCell>
+                        <TableCell align="center">Miqdar</TableCell>
                         <TableCell align="center">Qiymət</TableCell>
-                        <TableCell align="center">Expire date</TableCell>
-                        <TableCell align="center">Hüceyrə nömrəsi</TableCell>
+                        <TableCell align="center">Yararlılıq müddəti</TableCell>
+                        <TableCell align="center">Hücrə №</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -267,7 +287,9 @@ export default class InventoryWriteOffForm extends Component {
                           }}
                           key={uuid()}
                         >
-                          <TableCell align="center">{row.product_title}</TableCell>
+                          <TableCell align="center">
+                            {row.product_title}
+                          </TableCell>
                           <TableCell align="center">
                             {row.left !== null ? (
                               `${row.left} ${row.unit_title}`
@@ -313,16 +335,18 @@ export default class InventoryWriteOffForm extends Component {
                     <TableHead>
                       <TableRow>
                         <TableCell align="center">Məhsul</TableCell>
-                        <TableCell align="center">K-yət</TableCell>
+                        <TableCell align="center">Miqdar</TableCell>
                         <TableCell align="center">Qiymət</TableCell>
-                        <TableCell align="center">Hüceyrə nömrəsi</TableCell>
+                        <TableCell align="center">Hücrə №</TableCell>
                         <TableCell align="center"></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {this.state.forOrderProducts.map((row) => (
                         <TableRow key={uuid()}>
-                          <TableCell align="center">{row.product_title}</TableCell>
+                          <TableCell align="center">
+                            {row.product_title}
+                          </TableCell>
                           <TableCell align="center">{`${row.quantity} ${row.unit_title}`}</TableCell>
                           <TableCell align="center">{`${row.sum_price} ${row.currency_title}`}</TableCell>
                           <TableCell align="center">
@@ -333,7 +357,9 @@ export default class InventoryWriteOffForm extends Component {
                             )}
                           </TableCell>
                           <TableCell align="center">
-                            <IconButton onClick={() => this.removeSelectedItem(row.id)}>
+                            <IconButton
+                              onClick={() => this.removeSelectedItem(row.id)}
+                            >
                               <HighlightOffIcon />
                             </IconButton>
                           </TableCell>
@@ -349,18 +375,20 @@ export default class InventoryWriteOffForm extends Component {
           <DialogActions>
             <Divider />
 
-            <CustomButton onClick={this.handleFormClose.bind(this)}>Close</CustomButton>
+            <CustomButton onClick={this.handleFormClose.bind(this)}>
+              Close
+            </CustomButton>
             <CustomButton
               disabled={this.state.activeStep === 0}
               onClick={this.handlePrevStep.bind(this)}
             >
-              Previous
+              Geriyə
             </CustomButton>
             <CustomButton
               disabled={this.state.activeStep === this.props.data.length - 1}
               onClick={this.handleNextStep.bind(this)}
             >
-              Next
+              İrəli
             </CustomButton>
 
             <div className="gap" style={{ flexGrow: 1 }}></div>
@@ -381,12 +409,15 @@ export default class InventoryWriteOffForm extends Component {
             product={this.state.selectedProduct}
             inventoryId={this.props.inventoryId}
             neededAmount={
-              parseInt(this.props.data[this.state.activeStep].quantity_difference) -
-              this.state.selectedAmounts[this.state.activeStep]
+              parseInt(
+                this.props.data[this.state.activeStep].quantity_difference
+              ) - this.state.selectedAmounts[this.state.activeStep]
             }
             activeStep={this.state.activeStep}
             refresh={() =>
-              this.getProductData(this.props.data[this.state.activeStep].product_title)
+              this.getProductData(
+                this.props.data[this.state.activeStep].product_title
+              )
             }
           />
         )}

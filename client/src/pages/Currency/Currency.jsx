@@ -60,7 +60,7 @@ export default class Currency extends Component {
         .executeProcedure("[SalaryDB].anbar.[settings_change_currency]", {
           id: e.target.value,
         })
-        .then(() => this.context.success("Default currency changed"))
+        .then(() => this.context.success("Defolt valyuta dəyişdirildi"))
         .catch((err) => this.context.error(err.errText));
     }
 
@@ -105,7 +105,7 @@ export default class Currency extends Component {
         user_id: this.context.userId,
       })
       .then(() => {
-        this.context.success(`Added`);
+        this.context.success(`Əlavə edildi`);
         this.getCurrencyData();
         this.setState({
           currencyId: "",
@@ -189,8 +189,14 @@ export default class Currency extends Component {
                 onChange={this.handleChange.bind(this)}
               />
 
-              <CustomButton type="submit" variant="outlined" style={{ height: "100%" }}>
-                <AddCircleOutlineOutlinedIcon style={{ transform: "scale(1.3)" }} />
+              <CustomButton
+                type="submit"
+                variant="outlined"
+                style={{ height: "100%" }}
+              >
+                <AddCircleOutlineOutlinedIcon
+                  style={{ transform: "scale(1.3)" }}
+                />
               </CustomButton>
             </form>
 
@@ -207,7 +213,7 @@ export default class Currency extends Component {
                 getContentAnchorEl: null,
               }}
               style={{ minWidth: "240px" }}
-              label="Default currency"
+              label="Defolt valyuta"
               name="defaultCurrency"
               value={this.state.defaultCurrency}
               onChange={this.handleChange.bind(this)}
@@ -226,7 +232,7 @@ export default class Currency extends Component {
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">Adı</TableCell>
-                    <TableCell align="center">Qısa adı</TableCell>
+                    <TableCell align="center">Abbreviatura</TableCell>
                     <TableCell align="center">Dəyər</TableCell>
                     <TableCell align="center">Tarix</TableCell>
                   </TableRow>
@@ -234,7 +240,9 @@ export default class Currency extends Component {
                 <TableBody>
                   {this.state.currencyTableData.map((currency) => (
                     <TableRow key={uuid()}>
-                      <TableCell align="center">{currency.full_title}</TableCell>
+                      <TableCell align="center">
+                        {currency.full_title}
+                      </TableCell>
                       <TableCell align="center">{currency.title}</TableCell>
                       <TableCell align="center">{`${currency.value} AZN`}</TableCell>
                       <TableCell align="center">

@@ -116,7 +116,10 @@ export default class Login extends React.Component {
   }
   handleSubmit(event) {
     event.preventDefault();
-    if (!this.checkValidity(this.state.username.value, this.state.password.value)) return;
+    if (
+      !this.checkValidity(this.state.username.value, this.state.password.value)
+    )
+      return;
 
     api
       .login(this.state.username.value, this.state.password.value)
@@ -148,17 +151,19 @@ export default class Login extends React.Component {
             onSubmit={this.handleSubmit}
             autoComplete="off"
           >
-            <h1>Login</h1>
+            <h1>GIRIŞ</h1>
             <div className="row">
               <CustomTextInput
                 autoFocus={true}
                 name="username"
                 value={this.state.username.value}
                 onChange={this.handleChange}
-                label="Username:"
+                label="İstifadəçi adı"
                 error={this.state.username.error}
                 helperText={
-                  this.state.username.errorText ? this.state.username.errorText : false
+                  this.state.username.errorText
+                    ? this.state.username.errorText
+                    : false
                 }
                 InputProps={{
                   endAdornment: (
@@ -173,16 +178,21 @@ export default class Login extends React.Component {
                 value={this.state.password.value}
                 onChange={this.handleChange}
                 type={this.state.password.showPassword ? "text" : "password"}
-                label="Password"
+                label="Şifrə"
                 variant="outlined"
                 error={this.state.password.error}
                 helperText={
-                  this.state.password.errorText ? this.state.password.errorText : false
+                  this.state.password.errorText
+                    ? this.state.password.errorText
+                    : false
                 }
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={this.handleClickShowPassword} edge="end">
+                      <IconButton
+                        onClick={this.handleClickShowPassword}
+                        edge="end"
+                      >
                         {this.state.password.showPassword ? (
                           <VisibilityOff />
                         ) : (
@@ -195,7 +205,7 @@ export default class Login extends React.Component {
               />
             </div>
             <CustomButton variant="outlined" size="large" type="submit">
-              LOGIN
+              DAXİL OL
             </CustomButton>
           </StyledForm>
         </div>

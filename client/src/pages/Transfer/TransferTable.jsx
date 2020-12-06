@@ -88,11 +88,17 @@ class Row extends Component {
               size="small"
               onClick={this.handleExpandRowClick.bind(this)}
             >
-              {this.state.infoTable ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              {this.state.infoTable ? (
+                <KeyboardArrowUpIcon />
+              ) : (
+                <KeyboardArrowDownIcon />
+              )}
             </IconButton>
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
-            {dayjs(data.begin_date).subtract(4, "hour").format("YYYY-MM-DD, HH:mm")}
+            {dayjs(data.begin_date)
+              .subtract(4, "hour")
+              .format("YYYY-MM-DD, HH:mm")}
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.number_of_products}
@@ -116,7 +122,10 @@ class Row extends Component {
               disabled={data.done === "+" ? true : false}
               onClick={() => {
                 this.context
-                  .alert({ title: "Finish session", description: "Are you sure?" })
+                  .alert({
+                    title: "Sessiyanı bitir",
+                    description: "Əminsiniz?",
+                  })
                   .then(() => this.finishSession())
                   .catch(() => {});
               }}
@@ -128,17 +137,22 @@ class Row extends Component {
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
             <Collapse in={this.state.infoTable} timeout="auto" unmountOnExit>
-              <Paper style={{ padding: "10px 0", position: "relative" }} elevation={0}>
+              <Paper
+                style={{ padding: "10px 0", position: "relative" }}
+                elevation={0}
+              >
                 <Table size="small">
                   <TableHead>
                     <TableRow>
                       <TableCell align="center">Məhsul</TableCell>
                       <TableCell align="center">Barkod</TableCell>
-                      <TableCell align="center">Kəmiyyət</TableCell>
+                      <TableCell align="center">Miqdar</TableCell>
                       <TableCell align="center">Qiymət</TableCell>
                       <TableCell align="center">Ümumi Qiymət</TableCell>
-                      <TableCell align="center">Hüceyrə nömrəsi</TableCell>
-                      <TableCell align="center">Transfer olunan anbarın adı</TableCell>
+                      <TableCell align="center">Hücrə №</TableCell>
+                      <TableCell align="center">
+                        Transfer olunan anbarın adı
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -149,8 +163,12 @@ class Row extends Component {
                         <TableCell align="center">{`${product.quantity} ${product.unit_title}`}</TableCell>
                         <TableCell align="center">{`${product["price for 1"]} ${product.title[1]}`}</TableCell>
                         <TableCell align="center">{`${product.sum_price} ${product.title[1]}`}</TableCell>
-                        <TableCell align="center">{product.product_cell}</TableCell>
-                        <TableCell align="center">{product.storage_name}</TableCell>
+                        <TableCell align="center">
+                          {product.product_cell}
+                        </TableCell>
+                        <TableCell align="center">
+                          {product.storage_name}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -184,10 +202,10 @@ export default class TransferTable extends Component {
             <TableRow>
               <TableCell />
               <TableCell align="center">Yaradılış tarixi</TableCell>
-              <TableCell align="center">Kəmiyyət</TableCell>
+              <TableCell align="center">Miqdar</TableCell>
               <TableCell align="center">Ümumi qiymət</TableCell>
               <TableCell align="center">Təsdiq edilib</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              <TableCell align="center">Fəaliyyət</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

@@ -5,7 +5,13 @@ import api from "../../tools/connect";
 
 import WarehouseAddArchive from "./WarehouseAddArchive";
 import WarehouseAddTable from "./WarehouseAddTable";
-import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
+import {
+  Tabs,
+  Tab,
+  Divider,
+  Backdrop,
+  CircularProgress,
+} from "@material-ui/core";
 
 export default class WarehouseAdd extends Component {
   static contextType = GlobalDataContext;
@@ -31,7 +37,9 @@ export default class WarehouseAdd extends Component {
     });
 
     const procurementTableData = await api
-      .executeProcedure("[SalaryDB].procurement.[orders_for_warehouse]", { result: 11 })
+      .executeProcedure("[SalaryDB].procurement.[orders_for_warehouse]", {
+        result: 11,
+      })
       .catch(() => {
         return [];
       });
@@ -59,7 +67,10 @@ export default class WarehouseAdd extends Component {
         </Header>
 
         <MainData>
-          <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
+          <Tabs
+            value={this.state._tabValue}
+            onChange={this.handleTabChange.bind(this)}
+          >
             <Tab label="Təstiq gözləyənlər" />
             <Tab label="Arxiv" />
           </Tabs>

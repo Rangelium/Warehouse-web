@@ -20,14 +20,14 @@ export default class WarehouseAddArchive extends Component {
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell align="center">Məhsull</TableCell>
+              <TableCell align="center">Məhsul</TableCell>
               <TableCell align="center">Barkod</TableCell>
-              <TableCell align="center">Kəmiyyət</TableCell>
+              <TableCell align="center">Miqdar</TableCell>
               <TableCell align="center">Qiymət</TableCell>
               <TableCell align="center">Ümumi Qiymət</TableCell>
-              <TableCell align="center">Hüceyrə nömrəsi</TableCell>
+              <TableCell align="center">Hücrə nömrəsi</TableCell>
               <TableCell align="center">Yararlıq müddəti</TableCell>
-              <TableCell align="center">Creation müddəti</TableCell>
+              <TableCell align="center">Yaradılış tarixi</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

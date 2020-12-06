@@ -54,7 +54,13 @@ export default class ProductAuthForm extends Component {
     e.preventDefault();
     const mats = this.state.tableData.map(
       ({ id, comment, neededAmount, approx_price, sub_category_id }) => {
-        return [id, neededAmount, approx_price * neededAmount, comment, sub_category_id];
+        return [
+          id,
+          neededAmount,
+          approx_price * neededAmount,
+          comment,
+          sub_category_id,
+        ];
       }
     );
     const data = {
@@ -90,7 +96,8 @@ export default class ProductAuthForm extends Component {
             return {};
           });
         arr.push({
-          neededAmount: this.props.neededData[i].amount - this.props.selectedAmounts[i],
+          neededAmount:
+            this.props.neededData[i].amount - this.props.selectedAmounts[i],
           comment: "",
           ...data,
         });
@@ -119,7 +126,7 @@ export default class ProductAuthForm extends Component {
                   <TableRow>
                     <TableCell align="center">Məhsul</TableCell>
                     <TableCell align="center">Qiymət</TableCell>
-                    <TableCell align="center">Lazım Kəmiyyət</TableCell>
+                    <TableCell align="center">Tələb olunan miqdar</TableCell>
                     <TableCell align="center">Comment</TableCell>
                   </TableRow>
                 </TableHead>
@@ -131,7 +138,7 @@ export default class ProductAuthForm extends Component {
                       <TableCell align="center">{row.neededAmount}</TableCell>
                       <TableCell align="center">
                         <CustomTextInput
-                          placeholder="Your comment..."
+                          placeholder="comment..."
                           name="comment"
                           value={this.state.tableData[i].comment}
                           onChange={(e) => this.handleChange(e, i)}
@@ -146,9 +153,9 @@ export default class ProductAuthForm extends Component {
 
           <DialogActions>
             <Divider />
-            <CustomButton onClick={this.props.close}>Close</CustomButton>
+            <CustomButton onClick={this.props.close}>İmtına</CustomButton>
             <div className="gap" style={{ flexGrow: 1 }}></div>
-            <CustomButton type="submit">Sifariş</CustomButton>
+            <CustomButton type="submit">Sifariş et</CustomButton>
           </DialogActions>
         </form>
       </StyledDialog>
