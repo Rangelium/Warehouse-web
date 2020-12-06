@@ -58,7 +58,7 @@ export default class ManageWarehouses extends Component {
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center"></TableCell>
+                    <TableCell align="center">Şöbə/Kurasiya</TableCell>
                     <TableCell align="center">Anbarın adı</TableCell>
                     <TableCell align="center">Anbarın tipi</TableCell>
                     <TableCell align="center">Məsul şəxs</TableCell>
