@@ -19,7 +19,8 @@ import RemoveIcon from "@material-ui/icons/Remove";
 
 export default class SingleProductInfo extends Component {
   render() {
-    if (!this.props.product) return <SingleProduct active={this.props.active ? 1 : 0} />;
+    if (!this.props.product)
+      return <SingleProduct active={this.props.active ? 1 : 0} />;
 
     if (this.props.product.length <= 1 && !this.props.tableData.length)
       return (
@@ -38,7 +39,9 @@ export default class SingleProductInfo extends Component {
               width: "100%",
             }}
           >
-            <h1 style={{ color: "#000", fontSize: "3rem", marginBottom: "15px" }}>
+            <h1
+              style={{ color: "#000", fontSize: "3rem", marginBottom: "15px" }}
+            >
               No information
             </h1>
             <p style={{ fontSize: "1.2rem" }}>Məhsul haqqında məlumat yoxdur</p>
@@ -87,7 +90,7 @@ export default class SingleProductInfo extends Component {
             </p>
           </StyledPaper>
           <StyledPaper variant="outlined">
-            <p className="title">Orta alış qiyməti</p>
+            <p className="title">Orta vahid alış qiyməti</p>
             <p>
               {this.props.product.avg_price
                 ? `${this.props.product.avg_price} ${this.props.product.currency}`
@@ -128,13 +131,13 @@ export default class SingleProductInfo extends Component {
                 <TableCell className="head">Vahid qiyməti</TableCell>
                 <TableCell className="head">Ümumi qiymət</TableCell>
                 <TableCell className="head">Yararlıq müddəti</TableCell>
+                <TableCell className="head">Fəaliyyət</TableCell>
+                <TableCell className="head">Hücrə №</TableCell>
                 <TableCell className="head">Müqavilə №</TableCell>
                 <TableCell className="head">Akt №</TableCell>
                 <TableCell className="head">Hesab-faktura №</TableCell>
                 <TableCell className="head">İnventar №</TableCell>
-                <TableCell className="head">Vendor</TableCell>
-                <TableCell className="head">Fəaliyyət</TableCell>
-                <TableCell className="head">Hücrə №</TableCell>
+                <TableCell className="head">Kontragent</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -160,7 +163,21 @@ export default class SingleProductInfo extends Component {
                     )}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {product.contract_num ? product.contract_num : <RemoveIcon />}
+                    {product.product_cell ? (
+                      product.product_cell
+                    ) : (
+                      <RemoveIcon />
+                    )}
+                  </TableCell>
+                  <TableCell align="center" className="dataEl">
+                    {product.reason ? product.reason : <RemoveIcon />}
+                  </TableCell>
+                  <TableCell align="center" className="dataEl">
+                    {product.contract_num ? (
+                      product.contract_num
+                    ) : (
+                      <RemoveIcon />
+                    )}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
                     {product.akt_num ? product.akt_num : <RemoveIcon />}
@@ -169,16 +186,14 @@ export default class SingleProductInfo extends Component {
                     {product.invoice_num ? product.invoice_num : <RemoveIcon />}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {product.inventory_num ? product.inventory_num : <RemoveIcon />}
+                    {product.inventory_num ? (
+                      product.inventory_num
+                    ) : (
+                      <RemoveIcon />
+                    )}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
                     {product.vendor_name ? product.vendor_name : <RemoveIcon />}
-                  </TableCell>
-                  <TableCell align="center" className="dataEl">
-                    {product.reason ? product.reason : <RemoveIcon />}
-                  </TableCell>
-                  <TableCell align="center" className="dataEl">
-                    {product.product_cell ? product.product_cell : <RemoveIcon />}
                   </TableCell>
                 </TableRow>
               ))}
