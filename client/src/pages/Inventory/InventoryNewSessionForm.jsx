@@ -113,9 +113,12 @@ export default class InventoryNewSessionForm extends Component {
   }
   handleClose() {
     this.props.close();
-    api.executeProcedure("[SalaryDB].anbar.[inventory_session_delete_onPopupClose]", {
-      inventory_session_id: this.state.sessionId,
-    });
+    api.executeProcedure(
+      "[SalaryDB].anbar.[inventory_session_delete_onPopupClose]",
+      {
+        inventory_session_id: this.state.sessionId,
+      }
+    );
   }
 
   render() {
@@ -134,9 +137,9 @@ export default class InventoryNewSessionForm extends Component {
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">Məhsul</TableCell>
-                    <TableCell align="center">Anbardaki kəmiyyət</TableCell>
+                    <TableCell align="center">Anbardaki miqdar</TableCell>
                     <TableCell align="center">Orta qiymət</TableCell>
-                    <TableCell align="center">Həqiqi kəmiyyət</TableCell>
+                    <TableCell align="center">Həqiqi miqdar</TableCell>
                     <TableCell align="center">Fərq</TableCell>
                     <TableCell align="center">Qiymət fərqi</TableCell>
                   </TableRow>
@@ -157,7 +160,9 @@ export default class InventoryNewSessionForm extends Component {
                         <TableCell align="center">{title}</TableCell>
                         <TableCell align="center">{`${quantity_inDB} ${unit_title}`}</TableCell>
                         <TableCell align="center">
-                          {`${parseFloat(avg_price_for_1).toFixed(2)} ${currency_title}`}
+                          {`${parseFloat(avg_price_for_1).toFixed(
+                            2
+                          )} ${currency_title}`}
                         </TableCell>
                         <TableCell align="center">
                           <CustomTextInput
@@ -189,7 +194,9 @@ export default class InventoryNewSessionForm extends Component {
                               parseInt(quantity_inDB)
                             } ${unit_title}`
                           ) : (
-                            <RemoveIcon style={{ color: "rgba(0, 0, 0, 0.87)" }} />
+                            <RemoveIcon
+                              style={{ color: "rgba(0, 0, 0, 0.87)" }}
+                            />
                           )}
                         </TableCell>
                         <TableCell
@@ -205,12 +212,16 @@ export default class InventoryNewSessionForm extends Component {
                         >
                           {this.state.tableInputs[`quantity${i}`] ? (
                             `${(
-                              (parseInt(this.state.tableInputs[`quantity${i}`]) -
+                              (parseInt(
+                                this.state.tableInputs[`quantity${i}`]
+                              ) -
                                 parseInt(quantity_inDB)) *
                               parseFloat(avg_price_for_1)
                             ).toFixed(2)} ${currency_title}`
                           ) : (
-                            <RemoveIcon style={{ color: "rgba(0, 0, 0, 0.87)" }} />
+                            <RemoveIcon
+                              style={{ color: "rgba(0, 0, 0, 0.87)" }}
+                            />
                           )}
                         </TableCell>
                       </TableRow>
@@ -222,7 +233,9 @@ export default class InventoryNewSessionForm extends Component {
           </DialogContent>
 
           <DialogActions>
-            <CustomButton onClick={this.handleClose.bind(this)}>İmtina</CustomButton>
+            <CustomButton onClick={this.handleClose.bind(this)}>
+              İmtina
+            </CustomButton>
             <div className="gap" style={{ flexGrow: 1 }}></div>
             <CustomButton type="submit">Yarat</CustomButton>
           </DialogActions>

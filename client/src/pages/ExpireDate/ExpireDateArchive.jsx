@@ -26,8 +26,8 @@ export default class ArchiveTable extends Component {
               <TableCell align="center">Qiymət</TableCell>
               <TableCell align="center">Ümumi qiymət</TableCell>
               {/* <TableCell align="center">İstehsalçı</TableCell> */}
-              <TableCell align="center">Hüceyrə nömrəsi</TableCell>
-              <TableCell align="center">Yararlıq müddəti</TableCell>
+              <TableCell align="center">Hücrə №</TableCell>
+              <TableCell align="center">Yararlılıq müddəti</TableCell>
               <TableCell align="center">Silinmə tarixi</TableCell>
             </TableRow>
           </TableHead>

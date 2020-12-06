@@ -23,7 +23,7 @@ export default class WarehouseAddForm extends Component {
   constructor() {
     super();
     this.state = {
-      steps: ["Create bulk", "Fill data"],
+      steps: ["Sessiya yarat", "Təstiqlə"],
       activeStep: 0,
 
       sessionId: null,
@@ -44,7 +44,10 @@ export default class WarehouseAddForm extends Component {
     const inputsData = this.fillBulkFormRef.current.state.tableInputs;
     let isValid = true;
     this.props.dataForFill.forEach((el, i) => {
-      if (!Boolean(inputsData[`price${i}`]) || parseInt(inputsData[`price${i}`]) <= 0) {
+      if (
+        !Boolean(inputsData[`price${i}`]) ||
+        parseInt(inputsData[`price${i}`]) <= 0
+      ) {
         isValid = false;
         return;
       }
@@ -94,7 +97,7 @@ export default class WarehouseAddForm extends Component {
       })
       .then(() => {
         this.props.refresh();
-        this.context.success("Bulk finished");
+        this.context.success("Sifariş təstiq edildi!");
         this.props.close();
       })
       .catch((err) => this.context.error(err.errText));
@@ -169,18 +172,22 @@ export default class WarehouseAddForm extends Component {
 
           <DialogActions>
             <Divider />
-            <CustomButton onClick={this.handleFormClose.bind(this)}>Close</CustomButton>
+            <CustomButton onClick={this.handleFormClose.bind(this)}>
+              İmtına
+            </CustomButton>
             {this.state.activeStep === 1 && (
               <CustomButton onClick={this.handlePreviousBtn.bind(this)}>
-                Previous
+                Geriyə
               </CustomButton>
             )}
 
             <div className="gap" style={{ flexGrow: 1 }}></div>
 
             {this.state.activeStep === 0 && (
-              <CustomButton onClick={() => this.createBulkFormRef.current.createBulk()}>
-                Create bulk
+              <CustomButton
+                onClick={() => this.createBulkFormRef.current.createBulk()}
+              >
+                İrəli
               </CustomButton>
             )}
             {this.state.activeStep === 1 && (

@@ -19,7 +19,8 @@ import RemoveIcon from "@material-ui/icons/Remove";
 
 export default class SingleProductInfo extends Component {
   render() {
-    if (!this.props.product) return <SingleProduct active={this.props.active ? 1 : 0} />;
+    if (!this.props.product)
+      return <SingleProduct active={this.props.active ? 1 : 0} />;
 
     if (this.props.product.length <= 1 && !this.props.tableData.length)
       return (
@@ -38,12 +39,12 @@ export default class SingleProductInfo extends Component {
               width: "100%",
             }}
           >
-            <h1 style={{ color: "#000", fontSize: "3rem", marginBottom: "15px" }}>
+            <h1
+              style={{ color: "#000", fontSize: "3rem", marginBottom: "15px" }}
+            >
               No information
             </h1>
-            <p style={{ fontSize: "1.2rem" }}>
-              Looks like there is no information about this product yet
-            </p>
+            <p style={{ fontSize: "1.2rem" }}>Məhsul haqqında məlumat yoxdur</p>
           </div>
         </SingleProduct>
       );
@@ -73,7 +74,7 @@ export default class SingleProductInfo extends Component {
             </p>
           </StyledPaper>
           <StyledPaper variant="outlined">
-            <p className="title">Ümumi satılan miqdar</p>
+            <p className="title">Ümumi xaric olunan miqdar</p>
             <p>
               {this.props.product.out_quantity
                 ? this.props.product.out_quantity
@@ -81,7 +82,7 @@ export default class SingleProductInfo extends Component {
             </p>
           </StyledPaper>
           <StyledPaper variant="outlined">
-            <p className="title">Transfer olunan miqdar</p>
+            <p className="title">Anbardan Transfer olunan miqdar</p>
             <p>
               {this.props.product.transfer_quantity
                 ? this.props.product.transfer_quantity
@@ -97,7 +98,7 @@ export default class SingleProductInfo extends Component {
             </p>
           </StyledPaper>
           <StyledPaper variant="outlined">
-            <p className="title">Silinən miqdar</p>
+            <p className="title">Silinmə</p>
             <p>
               {this.props.product.decommission_quantity
                 ? `${this.props.product.decommission_quantity} ${this.props.product.unit_title}`
@@ -106,7 +107,9 @@ export default class SingleProductInfo extends Component {
           </StyledPaper>
           <StyledPaper variant="outlined">
             <p className="title">Qalıq</p>
-            <p>{this.props.product.left ? this.props.product.left : DefaultText}</p>
+            <p>
+              {this.props.product.left ? this.props.product.left : DefaultText}
+            </p>
           </StyledPaper>
           <StyledPaper variant="outlined">
             <p className="title">Ölçü vahidi</p>
@@ -122,12 +125,12 @@ export default class SingleProductInfo extends Component {
             <TableHead>
               <TableRow>
                 <TableCell className="head">Məhsul</TableCell>
-                <TableCell className="head">K-yyət</TableCell>
+                <TableCell className="head">Miqdar</TableCell>
                 <TableCell className="head">Vahid qiyməti</TableCell>
                 <TableCell className="head">Ümumi qiymət</TableCell>
                 <TableCell className="head">Yararlıq müddəti</TableCell>
                 <TableCell className="head">Fəaliyyət</TableCell>
-                <TableCell className="head">Hüceyrə nömrəsi</TableCell>
+                <TableCell className="head">Hücrə №</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -156,7 +159,11 @@ export default class SingleProductInfo extends Component {
                     {product.reason ? product.reason : <RemoveIcon />}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {product.product_cell ? product.product_cell : <RemoveIcon />}
+                    {product.product_cell ? (
+                      product.product_cell
+                    ) : (
+                      <RemoveIcon />
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

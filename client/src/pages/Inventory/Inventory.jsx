@@ -73,16 +73,19 @@ export default class Inventory extends Component {
   }
   async showWriteOffForm(id) {
     const writeOffData = await api
-      .executeProcedure("[SalaryDB].anbar.[inventory_session_fix_out_info_selection]", {
-        inventory_session_id: id,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[inventory_session_fix_out_info_selection]",
+        {
+          inventory_session_id: id,
+        }
+      )
       .catch((err) => {
         this.context.error(err.errText);
         return [];
       });
 
     if (!writeOffData.length) {
-      this.context.error("No products for write-off");
+      this.context.error("Malların silinməsinə ehtiyac yoxdur");
       return;
     }
 
@@ -109,16 +112,19 @@ export default class Inventory extends Component {
   }
   async showProcessingForm(id) {
     const processingData = await api
-      .executeProcedure("[SalaryDB].anbar.[inventory_session_info_selection_fix_in]", {
-        inventory_session_id: id,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[inventory_session_info_selection_fix_in]",
+        {
+          inventory_session_id: id,
+        }
+      )
       .catch((err) => {
         this.context.error(err.errText);
         return [];
       });
 
     if (!processingData.length) {
-      this.context.error("No products for processing");
+      this.context.error("Malların daxil edilməsinə ehtiyac yoxdur");
       return;
     }
 
@@ -133,7 +139,7 @@ export default class Inventory extends Component {
     return (
       <StyledSection className="pageData">
         <Header>
-          <h1 className="title">Inventorizasiya</h1>
+          <h1 className="title">İnventarizasiya</h1>
 
           <CustomButton onClick={() => this.setState({ newSessionForm: true })}>
             Yeni sessiya yarat
@@ -150,9 +156,9 @@ export default class Inventory extends Component {
                   <TableRow>
                     <TableCell align="center">Yaradıliş tarixi</TableCell>
                     <TableCell align="center">Ümumi qiymət fərqi</TableCell>
-                    <TableCell align="center">Ümumi kəmiyyət fərqi</TableCell>
+                    <TableCell align="center">Ümumi miqdar fərqi</TableCell>
                     <TableCell align="center">Məhsulların miqdarı</TableCell>
-                    <TableCell align="center">Actions</TableCell>
+                    <TableCell align="center">Fəaliyyət</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -185,17 +191,21 @@ export default class Inventory extends Component {
                             <RemoveIcon />
                           )}
                         </TableCell>
-                        <TableCell align="center">{numberOf_products}</TableCell>
+                        <TableCell align="center">
+                          {numberOf_products}
+                        </TableCell>
                         <TableCell align="center">
                           <CustomButton
                             disabled={!Boolean(numberOf_products)}
                             style={{ marginRight: 5 }}
                             onClick={() => this.showProcessingForm(id)}
                           >
-                            Processing
+                            Malları daxil edin
                           </CustomButton>
-                          <CustomButton onClick={() => this.showWriteOffForm(id)}>
-                            Write-off
+                          <CustomButton
+                            onClick={() => this.showWriteOffForm(id)}
+                          >
+                            Malları silin
                           </CustomButton>
                         </TableCell>
                       </TableRow>
