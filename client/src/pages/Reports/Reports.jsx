@@ -90,7 +90,18 @@ export default class Reports extends Component {
         loading: true,
       });
     } else {
-      this.context.error("Already loaded");
+      this.setState(
+        {
+          loading: true,
+          pdfUrl: null,
+        },
+        () => {
+          this.setState({
+            pdfUrl: url,
+          });
+        }
+      );
+      // this.context.error("Already loaded");
     }
   }
   downloadReport(format, ext) {
@@ -386,8 +397,8 @@ const ReportContainer = styled.div`
         left: 50%;
         transform: translateX(-50%);
 
-        width: ${(props) => (props.maxScreen ? "100%!important" : "unset")};
-        height: ${(props) => (props.maxScreen ? "100%!important" : "unset")};
+        width: ${(props) => (props.maxScreen ? "90%!important" : "unset")};
+        height: ${(props) => (props.maxScreen ? "90%!important" : "unset")};
       }
     }
   }

@@ -150,11 +150,13 @@ export default class Currency extends Component {
                 value={this.state.currencyId}
                 onChange={this.handleChange.bind(this)}
               >
-                {this.state.currencyData.map((product) => (
-                  <CustomSelectItem key={uuid()} value={product.id}>
-                    {product.full_title}
-                  </CustomSelectItem>
-                ))}
+                {this.state.currencyData.map((currency) =>
+                  currency.title !== "AZN" ? (
+                    <CustomSelectItem key={uuid()} value={currency.id}>
+                      {currency.full_title}
+                    </CustomSelectItem>
+                  ) : null
+                )}
                 <CustomSelectItem style={{}} value="">
                   <CustomButton
                     style={{ width: "100%" }}
@@ -189,14 +191,8 @@ export default class Currency extends Component {
                 onChange={this.handleChange.bind(this)}
               />
 
-              <CustomButton
-                type="submit"
-                variant="outlined"
-                style={{ height: "100%" }}
-              >
-                <AddCircleOutlineOutlinedIcon
-                  style={{ transform: "scale(1.3)" }}
-                />
+              <CustomButton type="submit" variant="outlined" style={{ height: "100%" }}>
+                <AddCircleOutlineOutlinedIcon style={{ transform: "scale(1.3)" }} />
               </CustomButton>
             </form>
 
@@ -240,9 +236,7 @@ export default class Currency extends Component {
                 <TableBody>
                   {this.state.currencyTableData.map((currency) => (
                     <TableRow key={uuid()}>
-                      <TableCell align="center">
-                        {currency.full_title}
-                      </TableCell>
+                      <TableCell align="center">{currency.full_title}</TableCell>
                       <TableCell align="center">{currency.title}</TableCell>
                       <TableCell align="center">{`${currency.value} AZN`}</TableCell>
                       <TableCell align="center">

@@ -9,7 +9,7 @@ import Treeview from "../../components/Treeview/Treeview";
 
 import { Backdrop, CircularProgress } from "@material-ui/core";
 
-const DrawerWidth = "380px"; // Width of Treeview
+const DrawerWidth = "340px"; // Width of Treeview
 
 export default class WarehouseInfo extends Component {
   static contextType = GlobalDataContext;
