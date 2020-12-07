@@ -119,7 +119,7 @@ export default class CreateWarehouseForm extends Component {
           <DialogActions>
             <CustomButton type="submit">Yarat</CustomButton>
             <CustomButton onClick={this.handleClose.bind(this)}>
-              İmtina
+              İmtına
             </CustomButton>
           </DialogActions>
         </form>
