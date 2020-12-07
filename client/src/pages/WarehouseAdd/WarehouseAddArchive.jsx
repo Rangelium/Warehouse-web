@@ -20,6 +20,7 @@ export default class WarehouseAddArchive extends Component {
         <Table stickyHeader>
           <TableHead>
             <TableRow>
+              <TableCell align="center">Yaradılış tarixi</TableCell>
               <TableCell align="center">Məhsul</TableCell>
               <TableCell align="center">Barkod</TableCell>
               <TableCell align="center">Miqdar</TableCell>
@@ -27,12 +28,19 @@ export default class WarehouseAddArchive extends Component {
               <TableCell align="center">Ümumi Qiymət</TableCell>
               <TableCell align="center">Hücrə nömrəsi</TableCell>
               <TableCell align="center">Yararlıq müddəti</TableCell>
-              <TableCell align="center">Yaradılış tarixi</TableCell>
+              <TableCell align="center">Kontragent</TableCell>
+              <TableCell align="center">Akt №</TableCell>
+              <TableCell align="center">Hesab-faktura №</TableCell>
+              <TableCell align="center">Inventar №</TableCell>
+              <TableCell align="center">Müqavilə №</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {this.props.tableData.map((el) => (
               <TableRow key={uuid()}>
+                <TableCell align="center">
+                  {dayjs(el.inserted_date).format("YYYY-MM-DD")}
+                </TableCell>
                 <TableCell align="center">{el.product_title}</TableCell>
                 <TableCell align="center">{el.barcode}</TableCell>
                 <TableCell align="center">{`${el.quantity} ${el.unit_title}`}</TableCell>
@@ -42,9 +50,11 @@ export default class WarehouseAddArchive extends Component {
                 <TableCell align="center">
                   {dayjs(el.exp_date).format("YYYY-MM-DD")}
                 </TableCell>
-                <TableCell align="center">
-                  {dayjs(el.inserted_date).format("YYYY-MM-DD")}
-                </TableCell>
+                <TableCell align="center">{el.vendor_name}</TableCell>
+                <TableCell align="center">{el.akt_num}</TableCell>
+                <TableCell align="center">{el.invoice_num}</TableCell>
+                <TableCell align="center">{el.inventory_num}</TableCell>
+                <TableCell align="center">{el.contract_num}</TableCell>
               </TableRow>
             ))}
           </TableBody>

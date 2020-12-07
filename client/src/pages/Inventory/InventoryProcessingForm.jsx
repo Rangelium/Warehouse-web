@@ -64,7 +64,7 @@ export default class InventoryProcessingForm extends Component {
         onClose={this.props.close}
       >
         <form autoComplete="off" onSubmit={this.createSession.bind(this)}>
-          <DialogTitle>Processing products</DialogTitle>
+          <DialogTitle>Malların daxil edilməsi</DialogTitle>
 
           <DialogContent>
             <StyledTableContainer component={Paper}>
@@ -73,7 +73,7 @@ export default class InventoryProcessingForm extends Component {
                   <TableRow>
                     <TableCell align="center">Məhsul</TableCell>
                     <TableCell align="center">Vahid qiymət</TableCell>
-                    <TableCell align="center">Kəmiyyət fərqi</TableCell>
+                    <TableCell align="center">Miqdar fərqi</TableCell>
                     <TableCell align="center">Qiymət fərqi</TableCell>
                   </TableRow>
                 </TableHead>
@@ -81,10 +81,12 @@ export default class InventoryProcessingForm extends Component {
                   {this.props.tableData.map((el, i) => (
                     <TableRow key={uuid()}>
                       <TableCell align="center">{el.product_title}</TableCell>
-                      <TableCell align="center">{`${parseFloat(el.unit_price).toFixed(
-                        2
-                      )} ${el.currency_title}`}</TableCell>
-                      <TableCell align="center">{el.quantity_difference}</TableCell>
+                      <TableCell align="center">{`${parseFloat(
+                        el.unit_price
+                      ).toFixed(2)} ${el.currency_title}`}</TableCell>
+                      <TableCell align="center">
+                        {el.quantity_difference}
+                      </TableCell>
                       <TableCell align="center">{`${parseFloat(
                         el.price_difference
                       ).toFixed(2)} ${el.currency_title}`}</TableCell>
@@ -96,13 +98,13 @@ export default class InventoryProcessingForm extends Component {
           </DialogContent>
 
           <DialogActions>
-            <CustomButton onClick={this.props.close}>İmtina</CustomButton>
+            <CustomButton onClick={this.props.close}>İmtına</CustomButton>
             <div className="gap" style={{ flexGrow: 1 }}></div>
             <CustomButton
               type="submit"
-              disabled={!Boolean(this.state.givenTableData.length)}
+              disabled={!Boolean(this.props.tableData.length)}
             >
-              Process
+              Daxil et
             </CustomButton>
           </DialogActions>
         </form>
