@@ -234,7 +234,7 @@ export default class InventoryNewSessionForm extends Component {
 
           <DialogActions>
             <CustomButton onClick={this.handleClose.bind(this)}>
-              İmtina
+              İmtına
             </CustomButton>
             <div className="gap" style={{ flexGrow: 1 }}></div>
             <CustomButton type="submit">Yarat</CustomButton>

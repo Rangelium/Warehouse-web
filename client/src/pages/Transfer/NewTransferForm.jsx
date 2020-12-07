@@ -230,7 +230,7 @@ export default class NewTransferForm extends Component {
           <DialogActions>
             <Divider />
             <CustomButton onClick={this.handleClose.bind(this)}>
-              İmtina
+              İmtına
             </CustomButton>
             <CustomButton
               disabled={this.state.activeStep === 0}
