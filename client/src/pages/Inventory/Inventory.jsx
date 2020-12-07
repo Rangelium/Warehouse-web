@@ -113,7 +113,7 @@ export default class Inventory extends Component {
   async showProcessingForm(id) {
     const processingData = await api
       .executeProcedure(
-        "[SalaryDB].anbar.[inventory_session_info_selection_fix_in]",
+        "[SalaryDB].anbar.inventory_session_info_selection_fix_in",
         {
           inventory_session_id: id,
         }

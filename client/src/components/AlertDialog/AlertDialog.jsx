@@ -47,8 +47,11 @@ export default class AlertDialog extends Component {
           >
             {this.state.title}
           </StyledButton>
-          <StyledButton variant="contained" onClick={() => this.props.onClose()}>
-            İmtina
+          <StyledButton
+            variant="contained"
+            onClick={() => this.props.onClose()}
+          >
+            İmtına
           </StyledButton>
         </DialogActions>
       </StyledDialog>

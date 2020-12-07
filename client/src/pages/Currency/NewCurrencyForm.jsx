@@ -77,7 +77,7 @@ export default class CreateClusterForm extends Component {
               Əlavə et
             </CustomButton>
             <CustomButton variant="outlined" onClick={this.props.close}>
-              İmtina
+              İmtına
             </CustomButton>
           </DialogActions>
         </form>

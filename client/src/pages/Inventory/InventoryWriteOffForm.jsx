@@ -376,7 +376,7 @@ export default class InventoryWriteOffForm extends Component {
             <Divider />
 
             <CustomButton onClick={this.handleFormClose.bind(this)}>
-              Close
+              Imtına
             </CustomButton>
             <CustomButton
               disabled={this.state.activeStep === 0}
