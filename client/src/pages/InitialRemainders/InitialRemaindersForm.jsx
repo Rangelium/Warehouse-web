@@ -120,7 +120,7 @@ export default class InitialRemaindersForm extends Component {
       title: product.title,
       barcode: product.barcode,
       currencyData,
-      clusterId: product.unit_title,
+      clusterId: product.cluster,
 
       quantity: "",
       price: "",
