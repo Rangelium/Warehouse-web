@@ -139,14 +139,14 @@ class Row extends Component {
             </IconButton>
           </TableCell>
 
-          <TableCell style={{ borderBottom: "unset" }} align="center">
-            {"PLACEHOLDER"}
-          </TableCell>
+          {/* <TableCell style={{ borderBottom: "unset" }} align="center">
+            {"Express vendor"}
+          </TableCell> */}
           <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.products_quantity}
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
-            {data.create_date_time}
+            {data.create_date_time}0 0{" "}
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             <CustomButton onClick={this.showRemoveForm.bind(this)}>
@@ -220,8 +220,8 @@ export default class WarehouseRemoveTable extends Component {
           <TableHead>
             <TableRow>
               <TableCell />
-              <TableCell align="center">Kontraqent</TableCell>
-              <TableCell align="center">Məhsulların Kəmiyyəti</TableCell>
+              {/* <TableCell align="center">Kontraqent</TableCell> */}
+              <TableCell align="center">Məhsulların miqdarı</TableCell>
               <TableCell align="center">Tarix</TableCell>
               <TableCell align="center">Təstiq</TableCell>
             </TableRow>

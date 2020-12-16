@@ -27,6 +27,7 @@ export default class InitialRemaindersForm extends Component {
     searchData: [],
     quantity: "",
     clusterId: "",
+    unit_title: "",
     price: "",
     currency: "",
     currencyData: [],
@@ -93,6 +94,7 @@ export default class InitialRemaindersForm extends Component {
           searchData: [],
           quantity: "",
           clusterId: "",
+          unit_title: "",
           price: "",
           currency: "",
           currencyData: [],
@@ -121,7 +123,7 @@ export default class InitialRemaindersForm extends Component {
       barcode: product.barcode,
       currencyData,
       clusterId: product.cluster,
-
+      unit_title: product.unit_title,
       quantity: "",
       price: "",
       currency: "",
@@ -129,7 +131,6 @@ export default class InitialRemaindersForm extends Component {
       expDate: dayjs().format("YYYY-MM-DD"),
       productCell: "",
       reason: "",
-
       loading: false,
     });
   }
@@ -222,7 +223,7 @@ export default class InitialRemaindersForm extends Component {
             <CustomTextInput
               disabled
               label="Ölçü vahidi"
-              value={this.state.clusterId}
+              value={this.state.unit_title}
             />
             {/* <CustomSelect
               disabled={this.state.productId ? false : true}
