@@ -34,7 +34,13 @@ export default class InitialRemainders extends Component {
   async componentDidMount() {
     const vendors = await api.executeProcedure("anbar.select_express_vendors");
 
-    const dataForTreeview = await api.executeProcedure("anbar.warehouse_tree_select");
+    const data = await api.executeProcedure("anbar.warehouse_tree_select");
+    const data2 = await api.executeProcedure("[anbar].[warehouse_tree_select_sub_cat]");
+    const dataForTreeview = [
+      ...data.splice(0, 2),
+      ...data2,
+      ...data.splice(2, data.length),
+    ];
 
     const unfinSessionStr = localStorage.getItem("unfinishedSession");
     const unfinSession = JSON.parse(unfinSessionStr);
@@ -232,4 +238,5 @@ const MainData = styled.div`
   flex-grow: 1;
   position: relative;
   display: flex;
+  overflow: hidden;
 `;

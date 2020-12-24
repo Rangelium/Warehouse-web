@@ -9,7 +9,7 @@ import Treeview from "../../components/Treeview/Treeview";
 
 import { Backdrop, CircularProgress } from "@material-ui/core";
 
-const DrawerWidth = "340px"; // Width of Treeview
+const DrawerWidth = "380px"; // Width of Treeview
 
 export default class WarehouseInfo extends Component {
   static contextType = GlobalDataContext;
@@ -27,13 +27,15 @@ export default class WarehouseInfo extends Component {
 
   async componentDidMount() {
     const data = await api.executeProcedure("anbar.warehouse_tree_select");
+    const data2 = await api.executeProcedure("[anbar].[warehouse_tree_select_sub_cat]");
+    const dataForTree = [...data.splice(0, 2), ...data2, ...data.splice(2, data.length)];
 
     let overallData = await api.executeProcedure("anbar.dashboard", {
       storage_id: this.context.storageId,
     });
 
     this.setState({
-      dataForTreeview: data,
+      dataForTreeview: dataForTree,
       overallInfo: overallData.length ? overallData[0] : {},
       loading: false,
     });

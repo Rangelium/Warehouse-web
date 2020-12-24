@@ -44,8 +44,14 @@ export default class Treeview extends Component {
       return;
     }
     data.forEach((product_2) => {
-      if (product.parent_id === product_2.id) {
-        product_2.children.push(product);
+      if (!product.product_id) {
+        if (product.parent_id === product_2.id) {
+          product_2.children.push(product);
+        }
+      } else {
+        if (product.sub_gl_category_id === product_2.id) {
+          product_2.children.push(product);
+        }
       }
       this.addToData(product, product_2.children);
     });
