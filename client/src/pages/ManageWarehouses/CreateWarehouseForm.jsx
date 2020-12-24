@@ -12,12 +12,7 @@ import {
   CustomSelect,
   CustomSelectItem,
 } from "../../components/UtilComponents";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@material-ui/core";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@material-ui/core";
 
 export default class CreateWarehouseForm extends Component {
   static contextType = GlobalDataContext;
@@ -55,6 +50,7 @@ export default class CreateWarehouseForm extends Component {
       })
       .then(() => {
         this.context.success(`${this.state.warehouseName} yaradıldl`);
+        this.props.reloadNavbarStorage();
         this.props.refresh();
         this.handleClose();
       })
@@ -118,9 +114,7 @@ export default class CreateWarehouseForm extends Component {
           </DialogContent>
           <DialogActions>
             <CustomButton type="submit">Yarat</CustomButton>
-            <CustomButton onClick={this.handleClose.bind(this)}>
-              İmtına
-            </CustomButton>
+            <CustomButton onClick={this.handleClose.bind(this)}>İmtına</CustomButton>
           </DialogActions>
         </form>
       </StyledDialog>

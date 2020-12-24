@@ -13,7 +13,12 @@ export default class ProtectedRoute extends React.Component {
         {...rest}
         render={(props) => {
           if (Boolean(this.context.userId)) {
-            return <Component {...props} />;
+            return (
+              <Component
+                {...props}
+                reloadNavbarStorage={this.props.reloadNavbarStorage}
+              />
+            );
           } else {
             console.log("kek");
             return (

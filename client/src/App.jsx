@@ -73,9 +73,14 @@ const StyledMain = styled.main`
 
 class App extends React.Component {
   static contextType = GlobalDataContext;
-  state = {
-    checkUser: true,
-  };
+  constructor() {
+    super();
+    this.state = {
+      checkUser: true,
+    };
+
+    this.NavbarRef = React.createRef();
+  }
 
   componentDidMount() {
     const data = localStorage.getItem("warehouseAccessToken");
@@ -99,7 +104,13 @@ class App extends React.Component {
       if (children) {
         children.forEach(({ path, Component }) => {
           renderRoutes.push(
-            <ProtectedRoute exact key={uuid()} path={path} Component={Component} />
+            <ProtectedRoute
+              reloadNavbarStorage={this.NavbarRef.current?.getStoragesList}
+              exact
+              key={uuid()}
+              path={path}
+              Component={Component}
+            />
           );
         });
       } else {
@@ -122,7 +133,7 @@ class App extends React.Component {
           )}
           {Boolean(this.context.userId) && (
             <StyledMain>
-              <Navbar routes={routes} />
+              <Navbar ref={this.NavbarRef} routes={routes} />
               {this.context.storageId && (
                 <Switch>
                   {renderRoutes}
