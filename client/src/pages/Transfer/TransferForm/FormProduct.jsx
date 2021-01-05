@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
-import FileImport from "../../components/FileImport";
-import { CustomTextInput } from "../../components/UtilComponents";
-import { Typography, Divider } from "@material-ui/core";
+import FileImport from "../../../components/FileImport";
+import { CustomTextInput } from "../../../components/UtilComponents";
+import { Typography } from "@material-ui/core";
 
-export default class NewTransferTransferInfo extends Component {
+export default class FormProduct extends Component {
   state = {
     quantity: "",
     productCell: "",
@@ -13,6 +13,14 @@ export default class NewTransferTransferInfo extends Component {
     reason: "",
   };
 
+  clearInputs() {
+    this.setState({
+      quantity: "",
+      productCell: "",
+      contractNum: "",
+      reason: "",
+    });
+  }
   handleInputsChange(e) {
     this.setState(
       {
@@ -27,7 +35,6 @@ export default class NewTransferTransferInfo extends Component {
   render() {
     return (
       <StyledSection active={this.props.active}>
-        <Divider />
         <div className="transferInfo">
           <Typography noWrap variant="h4" className="title">
             {this.props.selectedProduct.product_title}

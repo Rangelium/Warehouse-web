@@ -6,15 +6,9 @@ import api from "../../tools/connect";
 
 import TransferArchive from "./TransferArchive";
 import TransferTable from "./TransferTable";
-import NewTransferForm from "./NewTransferForm";
+import TransferForm from "./TransferForm/Form";
 import { CustomTextInput, CustomButton } from "../../components/UtilComponents";
-import {
-  Tabs,
-  Tab,
-  Divider,
-  Backdrop,
-  CircularProgress,
-} from "@material-ui/core";
+import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
 
 // Icons
 import RemoveIcon from "@material-ui/icons/Remove";
@@ -109,8 +103,7 @@ export default class Transfer extends Component {
               this.context
                 .alert({
                   title: "Yeni sessiya yarat",
-                  description:
-                    "Yeni bir sessiya yaratmaq istədiyinizə əminsiniz??",
+                  description: "Yeni bir sessiya yaratmaq istədiyinizə əminsiniz??",
                 })
                 .then(() => this.createNewSession())
                 .catch(() => {});
@@ -142,10 +135,7 @@ export default class Transfer extends Component {
         </Header>
 
         <MainData>
-          <Tabs
-            value={this.state._tabValue}
-            onChange={this.handleTabChange.bind(this)}
-          >
+          <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
             <Tab label="Təstiq gözləyənlər" />
             <Tab label="Arxiv" />
           </Tabs>
@@ -154,9 +144,7 @@ export default class Transfer extends Component {
 
           <TabItem hidden={this.state._tabValue !== 0}>
             <TransferTable
-              showNewTransferForm={(id) =>
-                this.setState({ selectedSessionId: id })
-              }
+              showNewTransferForm={(id) => this.setState({ selectedSessionId: id })}
               refresh={this.getTransferData.bind(this)}
               tableData={this.state.transferTableData}
             />
@@ -178,7 +166,7 @@ export default class Transfer extends Component {
           </Backdrop>
         </MainData>
 
-        <NewTransferForm
+        <TransferForm
           sessionId={this.state.selectedSessionId}
           refresh={this.getTransferData.bind(this)}
           open={Boolean(this.state.selectedSessionId)}

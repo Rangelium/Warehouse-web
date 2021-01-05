@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import uuid from "react-uuid";
-import { GlobalDataContext } from "../../components/GlobalDataProvider";
-import api from "../../tools/connect";
+import { GlobalDataContext } from "../../../components/GlobalDataProvider";
+import api from "../../../tools/connect";
 
-import { CustomTextInput } from "../../components/UtilComponents";
+import { CustomTextInput } from "../../../components/UtilComponents";
 
 import {
   TableContainer,
@@ -23,10 +22,12 @@ export default class NewTransferSelectProductTable extends Component {
   state = {
     productSearch: "",
     searchResult: [],
-    selectedRow: null,
   };
 
   componentDidMount() {
+    this.getAllProducts();
+  }
+  getAllProducts() {
     api
       .executeProcedure("[SalaryDB].anbar.[transfer_products_search]", {
         title: "",
@@ -40,7 +41,14 @@ export default class NewTransferSelectProductTable extends Component {
   }
   handleSearchChange(e) {
     const val = e.target.value;
-    // if (val !== "") {
+
+    if (!Boolean(val)) {
+      this.setState({
+        productSearch: "",
+      });
+      return this.getAllProducts();
+    }
+
     if (isNaN(val)) {
       api
         .executeProcedure("[SalaryDB].anbar.[transfer_products_search]", {
@@ -68,13 +76,20 @@ export default class NewTransferSelectProductTable extends Component {
 
     this.setState({
       productSearch: val,
-      // searchResult: [],
     });
+  }
+  isSelected(data) {
+    const array = this.props.selectedProducts;
+    for (let i = 0; i < array.length; i++) {
+      if (data.document_id === array[i].document_id) return true;
+    }
+
+    return false;
   }
 
   render() {
     return (
-      <StyledSection active={this.props.active}>
+      <StyledSection active={1}>
         <CustomTextInput
           style={{ width: "100%" }}
           label="Məhsulun adı / barkod"
@@ -82,6 +97,7 @@ export default class NewTransferSelectProductTable extends Component {
           value={this.state.productSearch}
           onChange={this.handleSearchChange.bind(this)}
         />
+
         <div className="table">
           <StyledTableContainer>
             <Table stickyHeader>
@@ -95,46 +111,43 @@ export default class NewTransferSelectProductTable extends Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.state.searchResult.map((row, i) => (
-                  <TableRow
-                    style={{ cursor: "pointer" }}
-                    selected={this.state.selectedRow === i}
-                    hover
-                    onClick={() => {
-                      this.props.selectProduct(row);
-                      this.setState({
-                        selectedRow: i,
-                      });
-                    }}
-                    key={uuid()}
-                  >
-                    <TableCell align="center">{row.product_title}</TableCell>
-                    <TableCell align="center">
-                      {row.barcode !== null ? row.barcode : <RemoveIcon />}
-                    </TableCell>
-                    <TableCell align="center">
-                      {row.left !== null ? (
-                        `${row.left} ${row.unit_title}`
-                      ) : (
-                        <RemoveIcon />
-                      )}
-                    </TableCell>
-                    <TableCell align="center">
-                      {row.unit_price !== null ? (
-                        `${row.unit_price} ${row.currency_title}`
-                      ) : (
-                        <RemoveIcon />
-                      )}
-                    </TableCell>
-                    <TableCell align="center">
-                      {row.product_cell !== null ? (
-                        row.product_cell
-                      ) : (
-                        <RemoveIcon />
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {this.state.searchResult.map((row) => {
+                  const isSelected = this.isSelected(row);
+
+                  return (
+                    <TableRow
+                      style={{ cursor: "pointer" }}
+                      selected={isSelected}
+                      hover
+                      onClick={() => {
+                        this.props.selectProduct(row);
+                      }}
+                      key={row.document_id}
+                    >
+                      <TableCell align="center">{row.product_title}</TableCell>
+                      <TableCell align="center">
+                        {row.barcode !== null ? row.barcode : <RemoveIcon />}
+                      </TableCell>
+                      <TableCell align="center">
+                        {row.left !== null ? (
+                          `${row.left} ${row.unit_title}`
+                        ) : (
+                          <RemoveIcon />
+                        )}
+                      </TableCell>
+                      <TableCell align="center">
+                        {row.unit_price !== null ? (
+                          `${row.unit_price} ${row.currency_title}`
+                        ) : (
+                          <RemoveIcon />
+                        )}
+                      </TableCell>
+                      <TableCell align="center">
+                        {row.product_cell !== null ? row.product_cell : <RemoveIcon />}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </StyledTableContainer>

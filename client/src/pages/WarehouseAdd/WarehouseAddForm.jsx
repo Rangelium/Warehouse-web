@@ -24,7 +24,7 @@ export default class WarehouseAddForm extends Component {
     super();
     this.state = {
       steps: ["Sessiya yarat", "Təstiqlə"],
-      activeStep: 0,
+      activeStep: 1,
 
       sessionId: null,
     };
@@ -44,10 +44,7 @@ export default class WarehouseAddForm extends Component {
     const inputsData = this.fillBulkFormRef.current.state.tableInputs;
     let isValid = true;
     this.props.dataForFill.forEach((el, i) => {
-      if (
-        !Boolean(inputsData[`price${i}`]) ||
-        parseInt(inputsData[`price${i}`]) <= 0
-      ) {
+      if (!Boolean(inputsData[`price${i}`]) || parseInt(inputsData[`price${i}`]) <= 0) {
         isValid = false;
         return;
       }
@@ -172,9 +169,7 @@ export default class WarehouseAddForm extends Component {
 
           <DialogActions>
             <Divider />
-            <CustomButton onClick={this.handleFormClose.bind(this)}>
-              İmtına
-            </CustomButton>
+            <CustomButton onClick={this.handleFormClose.bind(this)}>İmtına</CustomButton>
             {this.state.activeStep === 1 && (
               <CustomButton onClick={this.handlePreviousBtn.bind(this)}>
                 Geriyə
@@ -184,9 +179,7 @@ export default class WarehouseAddForm extends Component {
             <div className="gap" style={{ flexGrow: 1 }}></div>
 
             {this.state.activeStep === 0 && (
-              <CustomButton
-                onClick={() => this.createBulkFormRef.current.createBulk()}
-              >
+              <CustomButton onClick={() => this.createBulkFormRef.current.createBulk()}>
                 İrəli
               </CustomButton>
             )}
@@ -209,6 +202,7 @@ const StyledDialog = styled(Dialog)`
     /* min-width: 800px;
 		min-height: 600px; */
     max-width: unset;
+    height: 100%;
 
     form {
       width: 100%;

@@ -52,7 +52,10 @@ export default class WarehouseRemove extends Component {
     });
 
     const procurementTableData = await api
-      .executeProcedure("[SalaryDB].procurement.[orders_for_warehouse]", { result: 0 })
+      .executeProcedure("[SalaryDB].procurement.[orders_for_warehouse]", {
+        result: 0,
+        structure_id: this.context.userData.structureid,
+      })
       .catch(() => {
         return [];
       });

@@ -18,24 +18,34 @@ export default class Treeview extends Component {
   };
 
   handleSearchChange(e) {
-    let data = null;
+    // let data = null;
     const val = e.target.value;
     if (val !== "") {
-      console.log("search " + val);
+      // console.log("search " + val);
       api
         .executeProcedure("anbar.warehouse_tree_search", {
           title: val,
         })
-        .then((data) => {
-          this.setState({
-            dataForTree: data,
-          });
+        .then((data1) => {
+          api
+            .executeProcedure("[anbar].[warehouse_tree_select_sub_cat]")
+            .then((data2) => {
+              const dataForTree = [
+                ...data1.splice(0, 2),
+                ...data2,
+                ...data1.splice(2, data1.length),
+              ];
+              console.log(data1);
+
+              this.setState({
+                dataForTree,
+              });
+            });
         });
     }
 
     this.setState({
       searchInput: val,
-      dataForTree: data,
     });
   }
   addToData(product, data) {
