@@ -53,14 +53,8 @@ export default class ProductAuthForm extends Component {
   async handleSubmit(e) {
     e.preventDefault();
     const mats = this.state.tableData.map(
-      ({ id, comment, neededAmount, approx_price, sub_category_id }) => {
-        return [
-          id,
-          neededAmount,
-          approx_price * neededAmount,
-          comment,
-          sub_category_id,
-        ];
+      ({ id, comment, neededAmount, total, sub_gl_category_id }) => {
+        return [id, neededAmount, total, comment, sub_gl_category_id];
       }
     );
     const data = {
@@ -76,7 +70,7 @@ export default class ProductAuthForm extends Component {
       .createNewOrder(data)
       .then((res) => {
         this.props.handleSubmit(e, true);
-        console.log(res);
+        console.log(res, data);
         this.props.close();
       })
       .catch((err) => this.context.error(err.errText));
@@ -98,6 +92,7 @@ export default class ProductAuthForm extends Component {
         arr.push({
           neededAmount:
             this.props.neededData[i].amount - this.props.selectedAmounts[i],
+          total: this.props.neededData[i].total,
           comment: "",
           ...data,
         });
@@ -134,7 +129,7 @@ export default class ProductAuthForm extends Component {
                   {this.state.tableData.map((row, i) => (
                     <TableRow key={row.product_id}>
                       <TableCell align="center">{row.title}</TableCell>
-                      <TableCell align="center">{`${row.setting_price} ${row.currency_title}`}</TableCell>
+                      <TableCell align="center">{`${row.total} ${row.currency_title}`}</TableCell>
                       <TableCell align="center">{row.neededAmount}</TableCell>
                       <TableCell align="center">
                         <CustomTextInput
