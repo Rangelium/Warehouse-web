@@ -31,10 +31,16 @@ import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 
 class Row extends Component {
   static contextType = GlobalDataContext;
-  state = {
-    showInventory: false,
-    inventoryNumArr: [],
-  };
+  constructor() {
+    super();
+
+    this.state = {
+      showInventory: false,
+      inventoryNumArr: [],
+    };
+
+    this.InvNumInputRef = React.createRef();
+  }
 
   addInventoryNum(num, name, needed) {
     // Clear input
@@ -60,10 +66,22 @@ class Row extends Component {
       id: uuid(),
       num,
     });
-    this.setState({
-      inventoryNumArr,
-      showInventory: true,
-    });
+    this.setState(
+      {
+        inventoryNumArr,
+        showInventory: true,
+      },
+      () => {
+        if (this.state.inventoryNumArr.length === needed) {
+          this.setState({
+            showInventory: false,
+          });
+        } else {
+          console.log(this.InvNumInputRef.current);
+          this.InvNumInputRef.current.focus();
+        }
+      }
+    );
   }
   removeInventoryNum(index) {
     let inventoryNumArr = [...this.state.inventoryNumArr];
@@ -159,6 +177,8 @@ class Row extends Component {
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             <CustomTextInput
+              _ref={this.InvNumInputRef}
+              disabled={this.state.inventoryNumArr.length >= el.amount}
               style={{ width: 150 }}
               name={`inventoryNum${i}`}
               value={this.props.tableInputs[`inventoryNum${i}`]}
@@ -213,10 +233,16 @@ class Row extends Component {
 
 export default class WarehouseAddFormFillBulk extends Component {
   static contextType = GlobalDataContext;
-  state = {
-    tableInputs: this.createTableInputs(),
-    currencyData: [],
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      tableInputs: this.createTableInputs(),
+      currencyData: [],
+    };
+
+    this.refsArr = this.props.tableData.map(() => React.createRef());
+  }
 
   async componentDidMount() {
     const currencyData = await api
@@ -271,6 +297,7 @@ export default class WarehouseAddFormFillBulk extends Component {
             <TableBody>
               {this.props.tableData.map((el, i) => (
                 <Row
+                  ref={this.refsArr[i]}
                   key={`${el.title}${i}`}
                   handleChange={this.handleChange.bind(this)}
                   tableInputs={this.state.tableInputs}
@@ -295,6 +322,7 @@ const StyledSection = styled.div`
   flex-grow: 1;
   display: ${(props) => (props.active ? "flex" : "none")};
   flex-direction: column;
+  width: 100%;
 
   .table {
     height: 1px;
@@ -343,6 +371,7 @@ const InvTableRow = styled(TableRow)`
 `;
 const StyledTableContainer = styled(TableContainer)`
   overflow-y: auto;
+  height: 100%;
   max-height: 400px;
   /* padding: 0 10px; */
 

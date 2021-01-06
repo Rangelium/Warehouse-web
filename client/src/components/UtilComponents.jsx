@@ -98,7 +98,9 @@ const StyledTextField = styled(TextField)`
 
 export class CustomTextInput extends Component {
   render() {
-    return <StyledTextField variant="outlined" {...this.props} />;
+    return (
+      <StyledTextField inputRef={this.props._ref} variant="outlined" {...this.props} />
+    );
   }
 }
 

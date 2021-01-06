@@ -24,7 +24,7 @@ export default class WarehouseAddForm extends Component {
     super();
     this.state = {
       steps: ["Sessiya yarat", "Təstiqlə"],
-      activeStep: 1,
+      activeStep: 0,
 
       sessionId: null,
     };
@@ -42,6 +42,7 @@ export default class WarehouseAddForm extends Component {
     e.preventDefault();
 
     const inputsData = this.fillBulkFormRef.current.state.tableInputs;
+    const IvnNumContRef = this.fillBulkFormRef.current.refsArr;
     let isValid = true;
     this.props.dataForFill.forEach((el, i) => {
       if (!Boolean(inputsData[`price${i}`]) || parseInt(inputsData[`price${i}`]) <= 0) {
@@ -52,17 +53,26 @@ export default class WarehouseAddForm extends Component {
         isValid = false;
         return;
       }
+      if (IvnNumContRef[i].current.state.inventoryNumArr.length !== parseInt(el.amount)) {
+        isValid = false;
+        return this.context.error(
+          `You must create ${
+            el.amount - IvnNumContRef[i].current.state.inventoryNumArr.length
+          } inventory numbers for ${el.title}`
+        );
+      }
     });
-
     if (!isValid) {
       this.context.error("Fill all fields correctly");
       return;
     }
 
+    let InvNumsArrMats = [];
     let isRight = true;
     for (let i = 0; i < this.props.dataForFill.length; i++) {
       if (!isRight) return;
-      isRight = await api
+
+      const prodDocId = await api
         .executeProcedure("[SalaryDB].anbar.[order_acception_handle]", {
           cluster_id: this.props.dataForFill[i].cluster_id,
           product_cell: inputsData[`productCell${i}`],
@@ -77,21 +87,44 @@ export default class WarehouseAddForm extends Component {
           quantity: this.props.dataForFill[i].amount,
           price: inputsData[`price${i}`],
         })
-        .then(() => true)
+        .then((res) => res[0].document_id)
         .catch((err) => {
-          this.context.error("accept product" + err.errText);
+          this.context.error("Error: Handle accept product" + err.errText);
           return false;
         });
+
+      if (!prodDocId) {
+        isRight = false;
+        return;
+      }
+
+      InvNumsArrMats.push([
+        null,
+        IvnNumContRef[i].current.state.inventoryNumArr.map((el) => el.num).join(","),
+        prodDocId,
+        this.props.dataForFill[i].product_id,
+        0,
+      ]);
     }
 
     if (!isRight) return;
-    console.log("End func");
-    api
+    await api
       .executeProcedure("[SalaryDB].anbar.[order_acception_complete]", {
         session_id: this.state.sessionId,
         order_id: this.props.orderId,
         status: 25,
       })
+      .catch((err) =>
+        this.context.error(
+          `${err.errText} at [SalaryDB].anbar.[order_acception_complete]`
+        )
+      );
+
+    api
+      .executeProcedure(
+        "[SalaryDB].anbar.[batch_inventory_numbers_insert]",
+        InvNumsArrMats
+      )
       .then(() => {
         this.props.refresh();
         this.context.success("Sifariş təstiq edildi!");
@@ -137,6 +170,7 @@ export default class WarehouseAddForm extends Component {
   render() {
     return (
       <StyledDialog
+        _step={this.state.activeStep}
         style={{ zIndex: 21 }}
         open={this.props.open}
         onClose={this.handleFormClose.bind(this)}
@@ -199,10 +233,10 @@ export default class WarehouseAddForm extends Component {
 
 const StyledDialog = styled(Dialog)`
   .MuiDialog-container > .MuiPaper-root {
-    /* min-width: 800px;
-		min-height: 600px; */
     max-width: unset;
-    height: 100%;
+    width: ${(props) => (props._step ? "100%" : "440px")};
+    height: ${(props) => (props._step ? "100%" : "430px")};
+    transition: width 0.4s, height 0.4s;
 
     form {
       width: 100%;

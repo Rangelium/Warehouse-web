@@ -98,8 +98,6 @@ class API {
   }
 
   createNewOrder(data) {
-    console.log(data);
-    console.log(axios.defaults.headers);
     return new Promise((resolve, reject) => {
       axios({
         method: "post",
@@ -109,7 +107,6 @@ class API {
       })
         .then((res) => {
           resolve(res);
-          console.log("yes");
         })
         .catch((err) => {
           reject(err);
