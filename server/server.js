@@ -78,8 +78,8 @@ app.post(
   }
 );
 
-app.post("/api/downloadFile", FBAuth, (req, res) => {
-  const fileName = req.body.fileName;
+app.get("/api/downloadFile", (req, res) => {
+  const fileName = req.query.fileName;
   if (!fileName) return res.status(400).json({ error: "Specify fileName" });
 
   const fileExt = path.parse(fileName).ext;

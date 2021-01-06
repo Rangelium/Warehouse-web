@@ -62,9 +62,11 @@ class API {
   downloadFile(fileName) {
     return new Promise((resolve, reject) => {
       axios({
-        method: "POST",
+        method: "GET",
+        params: {
+          fileName,
+        },
         url: "/downloadFile",
-        data: { fileName },
         timeout: timeoutDelay,
         responseType: "blob",
       })

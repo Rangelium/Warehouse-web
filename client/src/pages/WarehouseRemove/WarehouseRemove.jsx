@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import dayjs from "dayjs";
+import XLXS from "xlsx";
 import { GlobalDataContext } from "../../components/GlobalDataProvider";
 import api from "../../tools/connect";
 
 import WarehouseRemoveArchive from "./WarehouseRemoveArchive";
 import WarehouseRemoveTable from "./WarehouseRemoveTable";
+import { CustomButton } from "../../components/UtilComponents";
 import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
 
 export default class WarehouseRemove extends Component {
@@ -74,6 +77,56 @@ export default class WarehouseRemove extends Component {
       archiveTableData,
     });
   }
+  downloadArchiveExcel() {
+    const wb = XLXS.utils.book_new();
+
+    wb.Props = {
+      Title: "Transfer arxiv",
+      Subject: "Transfer arxiv",
+      Author: "Warehouse",
+      CreatedDate: dayjs().format("YYYY-MM-DD"),
+    };
+
+    wb.SheetNames.push("Archive");
+
+    const cols = [
+      "Məhsul",
+      "Barkod",
+      "Miqdar",
+      "Ümumi Qiymət",
+      "Anbar",
+      "Transfer olunan anbara",
+      "Transfer tarixi",
+      "File",
+    ];
+    const data = [
+      cols,
+      ...this.state.archiveTableData.map((el) => {
+        let arr = [
+          el.product_title,
+          el.barcode || "No info",
+          `${el.quantity} ${el.unit_title}`,
+          `${el.total_sum} ${el.currency}`,
+          el.storage_from,
+          el.storage_to,
+          dayjs(el.transfered_date).format("YYYY-MM-DD"),
+        ];
+
+        if (el.document_num_path) {
+          arr.push(
+            `${this.context.baseURL}/downloadFile/?fileName=${el.document_num_path}`
+          );
+        } else {
+          arr.push("No file");
+        }
+
+        return arr;
+      }),
+    ];
+
+    wb.Sheets[wb.SheetNames[0]] = XLXS.utils.aoa_to_sheet(data);
+    XLXS.writeFile(wb, "transfer.xls");
+  }
 
   render() {
     return (
@@ -83,10 +136,19 @@ export default class WarehouseRemove extends Component {
         </Header>
 
         <MainData>
-          <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
-            <Tab label="Təstiq gözləyənlər" />
-            <Tab label="Arxiv" />
-          </Tabs>
+          <div className="mainHead">
+            <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
+              <Tab label="Təstiq gözləyənlər" />
+              <Tab label="Arxiv" />
+            </Tabs>
+
+            {this.state._tabValue === 1 &&
+              Boolean(this.state.archiveTableData.length) && (
+                <CustomButton onClick={this.downloadArchiveExcel.bind(this)}>
+                  Download
+                </CustomButton>
+              )}
+          </div>
 
           <Divider />
 
@@ -158,6 +220,12 @@ const MainData = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+
+  .mainHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;
 const TabItem = styled.div`
   height: 1px;

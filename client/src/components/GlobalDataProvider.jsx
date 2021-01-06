@@ -22,6 +22,8 @@ export class GlobalDataProvider extends React.Component {
     userData: null,
     token: null,
 
+    baseURL: axios.defaults.baseURL,
+
     success: this.showSuccess,
     error: this.showError,
     setStorage: (a, b) => this.setStorage(a, b),
