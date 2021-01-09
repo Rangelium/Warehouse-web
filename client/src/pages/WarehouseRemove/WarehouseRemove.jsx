@@ -7,6 +7,7 @@ import api from "../../tools/connect";
 
 import WarehouseRemoveArchive from "./WarehouseRemoveArchive";
 import WarehouseRemoveTable from "./WarehouseRemoveTable";
+import OrderForm from "./OrderProducts/Form";
 import { CustomButton } from "../../components/UtilComponents";
 import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
 
@@ -18,6 +19,8 @@ export default class WarehouseRemove extends Component {
 
     _tabValue: 0,
     loading: true,
+
+    showOrderForm: false,
   };
 
   async componentDidMount() {
@@ -127,6 +130,11 @@ export default class WarehouseRemove extends Component {
     wb.Sheets[wb.SheetNames[0]] = XLXS.utils.aoa_to_sheet(data);
     XLXS.writeFile(wb, "transfer.xls");
   }
+  showOrderProductsForm() {
+    this.setState({
+      showOrderForm: true,
+    });
+  }
 
   render() {
     return (
@@ -142,6 +150,11 @@ export default class WarehouseRemove extends Component {
               <Tab label="Arxiv" />
             </Tabs>
 
+            {this.state._tabValue === 0 && (
+              <CustomButton onClick={this.showOrderProductsForm.bind(this)}>
+                Order Products
+              </CustomButton>
+            )}
             {this.state._tabValue === 1 &&
               Boolean(this.state.archiveTableData.length) && (
                 <CustomButton onClick={this.downloadArchiveExcel.bind(this)}>
@@ -157,6 +170,11 @@ export default class WarehouseRemove extends Component {
               // showNewTransferForm={(data) => this.setState({ selectedSessionInfo: data })}
               refresh={this.getProcurementsData.bind(this)}
               tableData={this.state.procurementTableData}
+            />
+
+            <OrderForm
+              open={this.state.showOrderForm}
+              close={() => this.setState({ showOrderForm: false })}
             />
           </TabItem>
 

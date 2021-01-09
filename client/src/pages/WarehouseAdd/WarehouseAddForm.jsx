@@ -98,13 +98,19 @@ export default class WarehouseAddForm extends Component {
         return;
       }
 
-      InvNumsArrMats.push([
-        null,
-        IvnNumContRef[i].current.state.inventoryNumArr.map((el) => el.num).join(","),
-        prodDocId,
-        this.props.dataForFill[i].product_id,
-        0,
-      ]);
+      const tmpInvArr = IvnNumContRef[i].current.state.inventoryNumArr.map(
+        (el) => el.num
+      );
+
+      tmpInvArr.forEach((invNum) => {
+        InvNumsArrMats.push([
+          null,
+          invNum,
+          prodDocId,
+          this.props.dataForFill[i].product_id,
+          0,
+        ]);
+      });
     }
 
     if (!isRight) return;
@@ -121,10 +127,7 @@ export default class WarehouseAddForm extends Component {
       );
 
     api
-      .executeProcedure(
-        "[SalaryDB].anbar.[batch_inventory_numbers_insert]",
-        InvNumsArrMats
-      )
+      .addInvNumsTable(InvNumsArrMats)
       .then(() => {
         this.props.refresh();
         this.context.success("Sifariş təstiq edildi!");

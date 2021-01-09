@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import uuid from "react-uuid";
 import styled from "styled-components";
 import dayjs from "dayjs";
+import { GlobalDataContext } from "../../components/GlobalDataProvider";
+import api from "../../tools/connect";
 
+import InvNumbers from "../../components/InvNumbers";
+import { CustomButton } from "../../components/UtilComponents";
 import {
   Paper,
   Table,
@@ -11,16 +15,42 @@ import {
   TableRow,
   TableCell,
   TableContainer,
+  IconButton,
 } from "@material-ui/core";
 
 // Icons
 import ArrowBackIosOutlinedIcon from "@material-ui/icons/ArrowBackIosOutlined";
 import RemoveIcon from "@material-ui/icons/Remove";
+import AssignmentIcon from "@material-ui/icons/Assignment";
 
 export default class SingleProductInfo extends Component {
+  static contextType = GlobalDataContext;
+  state = {
+    tableExpanded: false,
+
+    invNums: [],
+  };
+
+  showInvNums(docId, isOut) {
+    api
+      .executeProcedure(
+        "[SalaryDB].anbar.[batch_inventory_numbers_select_for_one_party]",
+        { document_id: docId, is_out: isOut }
+      )
+      .then((res) => {
+        if (!res.length) this.context.error("No inventory numbers");
+
+        this.setState({
+          invNums: res.map((el) => {
+            return { ...el, key: uuid() };
+          }),
+        });
+      })
+      .catch((err) => console.log(err.errText));
+  }
+
   render() {
-    if (!this.props.product)
-      return <SingleProduct active={this.props.active ? 1 : 0} />;
+    if (!this.props.product) return <SingleProduct active={this.props.active ? 1 : 0} />;
 
     if (this.props.product.length <= 1 && !this.props.tableData.length)
       return (
@@ -39,9 +69,7 @@ export default class SingleProductInfo extends Component {
               width: "100%",
             }}
           >
-            <h1
-              style={{ color: "#000", fontSize: "3rem", marginBottom: "15px" }}
-            >
+            <h1 style={{ color: "#000", fontSize: "3rem", marginBottom: "15px" }}>
               No information
             </h1>
             <p style={{ fontSize: "1.2rem" }}>Məhsul haqqında məlumat yoxdur</p>
@@ -55,7 +83,18 @@ export default class SingleProductInfo extends Component {
         <div className="row">
           <ArrowBackIosOutlinedIcon onClick={() => this.props.goBack()} />
           <h1 className="productName">{this.props.productInfo.title}</h1>
+
+          <CustomButton
+            onClick={() =>
+              this.setState((prevState) => {
+                return { tableExpanded: !prevState.tableExpanded };
+              })
+            }
+          >
+            {this.state.tableExpanded ? "Collapse table" : "Expand table"}
+          </CustomButton>
         </div>
+
         <div className="info-blocks">
           <StyledPaper variant="outlined">
             <p className="title">Barkod</p>
@@ -122,7 +161,11 @@ export default class SingleProductInfo extends Component {
             </p>
           </StyledPaper>
         </div>
-        <StyledTableContainer component={Paper}>
+
+        <StyledTableContainer
+          expanded={this.state.tableExpanded ? 1 : 0}
+          component={Paper}
+        >
           <StyledTable stickyHeader>
             <TableHead>
               <TableRow>
@@ -163,21 +206,13 @@ export default class SingleProductInfo extends Component {
                     )}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {product.product_cell ? (
-                      product.product_cell
-                    ) : (
-                      <RemoveIcon />
-                    )}
+                    {product.product_cell ? product.product_cell : <RemoveIcon />}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
                     {product.reason ? product.reason : <RemoveIcon />}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {product.contract_num ? (
-                      product.contract_num
-                    ) : (
-                      <RemoveIcon />
-                    )}
+                    {product.contract_num ? product.contract_num : <RemoveIcon />}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
                     {product.akt_num ? product.akt_num : <RemoveIcon />}
@@ -186,11 +221,13 @@ export default class SingleProductInfo extends Component {
                     {product.invoice_num ? product.invoice_num : <RemoveIcon />}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {product.inventory_num ? (
-                      product.inventory_num
-                    ) : (
-                      <RemoveIcon />
-                    )}
+                    <IconButton
+                      onClick={() =>
+                        this.showInvNums(product.document_id, product.is_out)
+                      }
+                    >
+                      <AssignmentIcon />
+                    </IconButton>
                   </TableCell>
                   <TableCell align="center" className="dataEl">
                     {product.vendor_name ? product.vendor_name : <RemoveIcon />}
@@ -201,6 +238,12 @@ export default class SingleProductInfo extends Component {
             </TableBody>
           </StyledTable>
         </StyledTableContainer>
+
+        <InvNumbers
+          invNums={this.state.invNums}
+          open={Boolean(this.state.invNums.length)}
+          close={() => this.setState({ invNums: [] })}
+        />
       </SingleProduct>
     );
   }
@@ -293,9 +336,10 @@ const StyledPaper = styled(Paper)`
   }
 `;
 const StyledTableContainer = styled(TableContainer)`
-  margin-top: 10px;
+  margin-top: ${(props) => (props.expanded ? "-210px" : "10px")};
   overflow-y: scroll;
   flex-grow: 1;
+  transition: margin-top 0.3s;
 
   &::-webkit-scrollbar {
     width: 5px;

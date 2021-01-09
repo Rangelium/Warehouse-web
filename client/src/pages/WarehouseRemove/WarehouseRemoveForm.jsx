@@ -5,7 +5,6 @@ import { GlobalDataContext } from "../../components/GlobalDataProvider";
 import api from "../../tools/connect";
 
 import TransferProductForm from "./WarehouseRemoveTransferProductForm";
-import ProductAuthForm from "./ProductAuthForm";
 import {
   CustomButton,
   CustomSelect,
@@ -79,13 +78,10 @@ export default class WarehouseRemoveForm extends Component {
       });
 
     const forOrderProducts = await api
-      .executeProcedure(
-        "[SalaryDB].anbar.[order_request_handle_session_info]",
-        {
-          retail_sale_session_id: this.props.retailSaleId,
-          product_num: this.state.activeStep,
-        }
-      )
+      .executeProcedure("[SalaryDB].anbar.[order_request_handle_session_info]", {
+        retail_sale_session_id: this.props.retailSaleId,
+        product_num: this.state.activeStep,
+      })
       .catch((err) => {
         console.error(err.errText);
         return [];
@@ -93,9 +89,7 @@ export default class WarehouseRemoveForm extends Component {
 
     let selectedAmount = 0;
     forOrderProducts.forEach((product) => {
-      if (
-        product.product_title === this.props.data[this.state.activeStep].title
-      ) {
+      if (product.product_title === this.props.data[this.state.activeStep].title) {
         selectedAmount += product.quantity;
       }
     });
@@ -135,9 +129,7 @@ export default class WarehouseRemoveForm extends Component {
 
     if (!authComplete) {
       for (let i = 0; i < this.state.selectedAmounts.length; i++) {
-        if (
-          this.state.selectedAmounts[i] !== parseInt(this.props.data[i].amount)
-        ) {
+        if (this.state.selectedAmounts[i] !== parseInt(this.props.data[i].amount)) {
           this.setState({
             showProductAuthForm: true,
           });
@@ -164,9 +156,7 @@ export default class WarehouseRemoveForm extends Component {
         this.uploadFiles();
 
         // Remove session from localstorage
-        const data = localStorage.getItem(
-          "WarehouseRemoveUnfinishedRetailSessions"
-        );
+        const data = localStorage.getItem("WarehouseRemoveUnfinishedRetailSessions");
         let arr = JSON.parse(data);
         arr = arr.filter((el) => el !== this.props.retailSaleId);
         if (arr.length) {
@@ -203,18 +193,13 @@ export default class WarehouseRemoveForm extends Component {
   }
   handleFormClose() {
     api
-      .executeProcedure(
-        "[SalaryDB].anbar.[order_request_session_delete_onPopupClose]",
-        {
-          retail_sale_session_id: this.props.retailSaleId,
-        }
-      )
+      .executeProcedure("[SalaryDB].anbar.[order_request_session_delete_onPopupClose]", {
+        retail_sale_session_id: this.props.retailSaleId,
+      })
       .then(() => {
         this.props.close();
 
-        const data = localStorage.getItem(
-          "WarehouseRemoveUnfinishedRetailSessions"
-        );
+        const data = localStorage.getItem("WarehouseRemoveUnfinishedRetailSessions");
         let arr = JSON.parse(data);
         arr = arr.filter((el) => el !== this.props.retailSaleId);
         if (arr.length) {
@@ -230,12 +215,9 @@ export default class WarehouseRemoveForm extends Component {
   }
   removeSelectedItem(id) {
     api
-      .executeProcedure(
-        "[SalaryDB].anbar.[order_request_handle_session_info_delete]",
-        {
-          id,
-        }
-      )
+      .executeProcedure("[SalaryDB].anbar.[order_request_handle_session_info_delete]", {
+        id,
+      })
       .then(() => {
         this.getProductData(this.props.data[this.state.activeStep].title);
       })
@@ -348,9 +330,7 @@ export default class WarehouseRemoveForm extends Component {
                           onClick={() => this.showTransferForm(row)}
                           key={uuid()}
                         >
-                          <TableCell align="center">
-                            {row.product_title}
-                          </TableCell>
+                          <TableCell align="center">{row.product_title}</TableCell>
                           <TableCell align="center">
                             {row.left !== null ? (
                               `${row.left} ${row.unit_title}`
@@ -404,9 +384,7 @@ export default class WarehouseRemoveForm extends Component {
                     <TableBody>
                       {this.state.forOrderProducts.map((row) => (
                         <TableRow key={uuid()}>
-                          <TableCell align="center">
-                            {row.product_title}
-                          </TableCell>
+                          <TableCell align="center">{row.product_title}</TableCell>
                           <TableCell align="center">{row.quantity}</TableCell>
                           <TableCell align="center">
                             {row.product_cell !== null ? (
@@ -416,9 +394,7 @@ export default class WarehouseRemoveForm extends Component {
                             )}
                           </TableCell>
                           <TableCell align="center">
-                            <IconButton
-                              onClick={() => this.removeSelectedItem(row.id)}
-                            >
+                            <IconButton onClick={() => this.removeSelectedItem(row.id)}>
                               <HighlightOffIcon />
                             </IconButton>
                           </TableCell>
@@ -434,9 +410,7 @@ export default class WarehouseRemoveForm extends Component {
           <DialogActions>
             <Divider />
 
-            <CustomButton onClick={this.handleFormClose.bind(this)}>
-              İmtına
-            </CustomButton>
+            <CustomButton onClick={this.handleFormClose.bind(this)}>İmtına</CustomButton>
             <CustomButton
               disabled={this.state.activeStep === 0}
               onClick={this.handlePrevStep.bind(this)}
@@ -477,15 +451,6 @@ export default class WarehouseRemoveForm extends Component {
             refresh={() =>
               this.getProductData(this.props.data[this.state.activeStep].title)
             }
-          />
-        )}
-        {this.state.showProductAuthForm && (
-          <ProductAuthForm
-            open={true}
-            close={() => this.setState({ showProductAuthForm: false })}
-            handleSubmit={this.handleSubmit.bind(this)}
-            selectedAmounts={this.state.selectedAmounts}
-            neededData={this.props.data}
           />
         )}
       </StyledDialog>

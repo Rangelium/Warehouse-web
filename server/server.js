@@ -99,3 +99,37 @@ app.get("/api/downloadFile", (req, res) => {
 
   return;
 });
+
+app.post("/api/addInvNumTable", FBAuth, (req, res) => {
+  sql.connect(connConfig, () => {
+    const table = new sql.Table();
+
+    table.columns.add("id", sql.TYPES.Int);
+    table.columns.add("inventory_num", sql.TYPES.VarChar(255));
+    table.columns.add("document_id", sql.TYPES.VarChar(255));
+    table.columns.add("product_id", sql.TYPES.BigInt);
+    table.columns.add("is_out", sql.TYPES.Int);
+
+    req.body.forEach((row) => {
+      table.rows.add(...row);
+    });
+
+    // console.log(table);
+    const request = new sql.Request();
+    request.input("inventories", table);
+    request.execute(
+      "[SalaryDB].anbar.[batch_inventory_numbers_insert]",
+      (err, result) => {
+        try {
+          if (err !== null) {
+            console.log(err.message);
+            return res.status(400).json({ error: err, errText: err.message });
+          }
+          return res.status(200).json(result.recordset);
+        } catch (error) {
+          res.status(500).json({ error, errText: "Internal server error" });
+        }
+      }
+    );
+  });
+});

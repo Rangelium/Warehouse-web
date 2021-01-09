@@ -77,7 +77,6 @@ class Row extends Component {
             showInventory: false,
           });
         } else {
-          console.log(this.InvNumInputRef.current);
           this.InvNumInputRef.current.focus();
         }
       }
