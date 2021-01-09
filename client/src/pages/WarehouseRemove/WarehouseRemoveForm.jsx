@@ -278,8 +278,9 @@ export default class WarehouseRemoveForm extends Component {
               <h1>
                 Qalıb:
                 <span>
-                  {parseInt(this.props.data[this.state.activeStep].amount) -
-                    this.state.selectedAmounts[this.state.activeStep]}
+                  {parseInt(
+                    this.props.data[this.state.activeStep].amount_left
+                  ) - this.state.selectedAmounts[this.state.activeStep]}
                 </span>
               </h1>
             </div>
