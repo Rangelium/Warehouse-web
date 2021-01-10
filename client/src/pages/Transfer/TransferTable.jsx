@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import uuid from "react-uuid";
 import dayjs from "dayjs";
 import { GlobalDataContext } from "../../components/GlobalDataProvider";
 import api from "../../tools/connect";
@@ -25,6 +24,7 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import RemoveIcon from "@material-ui/icons/Remove";
 import DoneIcon from "@material-ui/icons/Done";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 
 class Row extends Component {
   static contextType = GlobalDataContext;
@@ -55,25 +55,24 @@ class Row extends Component {
       },
       () => {
         if (this.state.infoTable) {
-          api
-            .executeProcedure(
-              "[SalaryDB].anbar.[transfer_products_session_info_selection]",
-              {
-                session_id: this.props.row.id,
-              }
-            )
-            .then((res) => {
-              // console.log(res);
-              this.setState({
-                productsTableData: res,
-                infoTable: true,
-                loading: false,
-              });
-            })
-            .catch((err) => console.error(err.errText));
+          this.getRowInfo();
         }
       }
     );
+  }
+  getRowInfo() {
+    api
+      .executeProcedure("[SalaryDB].anbar.[transfer_products_session_info_selection]", {
+        session_id: this.props.row.id,
+      })
+      .then((res) => {
+        this.setState({
+          productsTableData: res,
+          infoTable: Boolean(res.length > 0),
+          loading: false,
+        });
+      })
+      .catch((err) => console.error(err.errText));
   }
 
   render() {
@@ -88,25 +87,18 @@ class Row extends Component {
               size="small"
               onClick={this.handleExpandRowClick.bind(this)}
             >
-              {this.state.infoTable ? (
-                <KeyboardArrowUpIcon />
-              ) : (
-                <KeyboardArrowDownIcon />
-              )}
+              {this.state.infoTable ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
-            {dayjs(data.begin_date)
-              .subtract(4, "hour")
-              .format("YYYY-MM-DD, HH:mm")}
+            {dayjs(data.begin_date).subtract(4, "hour").format("YYYY-MM-DD, HH:mm")}
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.number_of_products}
           </TableCell>
-          <TableCell
-            style={{ borderBottom: "unset" }}
-            align="center"
-          >{`${data.total_sum} ${data.default_currency}`}</TableCell>
+          <TableCell style={{ borderBottom: "unset" }} align="center">{`${parseFloat(
+            data.total_sum
+          ).toFixed(3)} ${data.default_currency}`}</TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.done === "+" ? <DoneIcon /> : <RemoveIcon />}
           </TableCell>
@@ -137,10 +129,7 @@ class Row extends Component {
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
             <Collapse in={this.state.infoTable} timeout="auto" unmountOnExit>
-              <Paper
-                style={{ padding: "10px 0", position: "relative" }}
-                elevation={0}
-              >
+              <Paper style={{ padding: "10px 0", position: "relative" }} elevation={0}>
                 <Table size="small">
                   <TableHead>
                     <TableRow>
@@ -150,25 +139,54 @@ class Row extends Component {
                       <TableCell align="center">Qiymət</TableCell>
                       <TableCell align="center">Ümumi Qiymət</TableCell>
                       <TableCell align="center">Hücrə №</TableCell>
-                      <TableCell align="center">
-                        Transfer olunan anbarın adı
-                      </TableCell>
+                      <TableCell align="center">Transfer olunan anbarın adı</TableCell>
+                      {this.props.row.done === "-" && (
+                        <TableCell align="center">Remove</TableCell>
+                      )}
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {this.state.productsTableData.map((product) => (
-                      <TableRow key={uuid()}>
+                      <TableRow key={product.id}>
                         <TableCell align="center">{product.title[0]}</TableCell>
-                        <TableCell align="center">{product.barcode}</TableCell>
+                        <TableCell align="center">
+                          {product.barcode || <RemoveIcon />}
+                        </TableCell>
                         <TableCell align="center">{`${product.quantity} ${product.unit_title}`}</TableCell>
                         <TableCell align="center">{`${product["price for 1"]} ${product.title[1]}`}</TableCell>
                         <TableCell align="center">{`${product.sum_price} ${product.title[1]}`}</TableCell>
                         <TableCell align="center">
-                          {product.product_cell}
+                          {product.product_cell || <RemoveIcon />}
                         </TableCell>
-                        <TableCell align="center">
-                          {product.storage_name}
-                        </TableCell>
+                        <TableCell align="center">{product.storage_name}</TableCell>
+                        {this.props.row.done === "-" && (
+                          <TableCell align="center">
+                            <IconButton
+                              onClick={() => {
+                                this.context
+                                  .alert({
+                                    title: "Delete",
+                                    description: `Are you sure you want to delete ${product.title[0]}?`,
+                                  })
+                                  .then(() => {
+                                    api
+                                      .executeProcedure(
+                                        "[SalaryDB].anbar.[transfer_products_session_info_delete]",
+                                        { id: product.id }
+                                      )
+                                      .then(() => {
+                                        this.getRowInfo();
+                                        this.props.refresh();
+                                      })
+                                      .catch((err) => this.context.error(err.errText));
+                                  })
+                                  .catch(() => {});
+                              }}
+                            >
+                              <HighlightOffIcon />
+                            </IconButton>
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                   </TableBody>
@@ -211,10 +229,10 @@ export default class TransferTable extends Component {
           <TableBody>
             {this.props.tableData.map((el) => (
               <Row
+                key={el.id}
+                row={el}
                 refresh={this.props.refresh}
                 showNewTransferForm={(id) => this.props.showNewTransferForm(id)}
-                key={uuid()}
-                row={el}
               />
             ))}
           </TableBody>

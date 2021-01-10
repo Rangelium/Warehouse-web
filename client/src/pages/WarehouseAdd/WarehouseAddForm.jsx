@@ -178,53 +178,53 @@ export default class WarehouseAddForm extends Component {
         open={this.props.open}
         onClose={this.handleFormClose.bind(this)}
       >
-        <form autoComplete="off" onSubmit={this.handleSubmit.bind(this)}>
-          <DialogTitle>{this.state.steps[this.state.activeStep]}</DialogTitle>
+        {/* <form autoComplete="off" onSubmit={this.handleSubmit.bind(this)}> */}
+        <DialogTitle>{this.state.steps[this.state.activeStep]}</DialogTitle>
 
-          <StyledContent>
-            <Stepper activeStep={this.state.activeStep}>
-              {this.state.steps.map((step) => (
-                <Step key={uuid()}>
-                  <StepLabel>{step}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-            <Divider />
+        <StyledContent>
+          <Stepper activeStep={this.state.activeStep}>
+            {this.state.steps.map((step) => (
+              <Step key={uuid()}>
+                <StepLabel>{step}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+          <Divider />
 
-            <WarehouseAddFromCreateBulk
-              ref={this.createBulkFormRef}
-              active={this.state.activeStep === 0}
-              finishCreation={this.completeBulkCreation.bind(this)}
-            />
+          <WarehouseAddFromCreateBulk
+            ref={this.createBulkFormRef}
+            active={this.state.activeStep === 0}
+            finishCreation={this.completeBulkCreation.bind(this)}
+          />
 
-            <WarehouseAddFormFillBulk
-              ref={this.fillBulkFormRef}
-              active={this.state.activeStep === 1}
-              tableData={this.props.dataForFill}
-            />
-          </StyledContent>
+          <WarehouseAddFormFillBulk
+            ref={this.fillBulkFormRef}
+            active={this.state.activeStep === 1}
+            tableData={this.props.dataForFill}
+          />
+        </StyledContent>
 
-          <DialogActions>
-            <Divider />
-            <CustomButton onClick={this.handleFormClose.bind(this)}>İmtına</CustomButton>
-            {this.state.activeStep === 1 && (
-              <CustomButton onClick={this.handlePreviousBtn.bind(this)}>
-                Geriyə
-              </CustomButton>
-            )}
+        <DialogActions>
+          <Divider />
+          <CustomButton onClick={this.handleFormClose.bind(this)}>İmtına</CustomButton>
+          {this.state.activeStep === 1 && (
+            <CustomButton onClick={this.handlePreviousBtn.bind(this)}>
+              Geriyə
+            </CustomButton>
+          )}
 
-            <div className="gap" style={{ flexGrow: 1 }}></div>
+          <div className="gap" style={{ flexGrow: 1 }}></div>
 
-            {this.state.activeStep === 0 && (
-              <CustomButton onClick={() => this.createBulkFormRef.current.createBulk()}>
-                İrəli
-              </CustomButton>
-            )}
-            {this.state.activeStep === 1 && (
-              <CustomButton type="submit">Əlavə et</CustomButton>
-            )}
-          </DialogActions>
-        </form>
+          {this.state.activeStep === 0 && (
+            <CustomButton onClick={() => this.createBulkFormRef.current.createBulk()}>
+              İrəli
+            </CustomButton>
+          )}
+          {this.state.activeStep === 1 && (
+            <CustomButton onClick={this.handleSubmit.bind(this)}>Əlavə et</CustomButton>
+          )}
+        </DialogActions>
+        {/* </form> */}
       </StyledDialog>
     );
   }
@@ -240,13 +240,15 @@ const StyledDialog = styled(Dialog)`
     width: ${(props) => (props._step ? "100%" : "440px")};
     height: ${(props) => (props._step ? "100%" : "430px")};
     transition: width 0.4s, height 0.4s;
+    display: flex;
+    flex-direction: column;
 
-    form {
+    /* form {
       width: 100%;
       height: 100%;
       display: flex;
       flex-direction: column;
-    }
+    } */
   }
 
   .MuiDialogTitle-root {

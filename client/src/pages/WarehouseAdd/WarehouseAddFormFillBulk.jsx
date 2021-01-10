@@ -177,6 +177,17 @@ class Row extends Component {
           <TableCell style={{ borderBottom: "unset" }} align="center">
             <CustomTextInput
               _ref={this.InvNumInputRef}
+              onKeyUp={(e) => {
+                if (e.keyCode === 13) {
+                  e.preventDefault();
+
+                  this.addInventoryNum(
+                    this.props.tableInputs[`inventoryNum${i}`],
+                    `inventoryNum${i}`,
+                    el.amount
+                  );
+                }
+              }}
               disabled={this.state.inventoryNumArr.length >= el.amount}
               style={{ width: 150 }}
               name={`inventoryNum${i}`}

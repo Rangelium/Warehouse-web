@@ -57,8 +57,17 @@ export default class TransferForm extends Component {
     }
 
     if (this.state.activeStep) {
-      this.FormProductRef.current.clearInputs();
-      this.handleTransfer(this.state.activeStep - 1);
+      if (
+        parseInt(this.state.transferInfoData.quantity) ===
+        this.FormProductRef.current.state.inventoryNumArr.length
+      ) {
+        this.FormProductRef.current.clearInputs();
+        this.handleTransfer(this.state.activeStep - 1);
+      } else {
+        return this.context.error(
+          "You need to create Inventory numbers for all products"
+        );
+      }
     }
     if (this.state.activeStep === this.state.selectedProducts.length) {
       this.props.refresh();
@@ -126,10 +135,34 @@ export default class TransferForm extends Component {
         left: this.state.selectedProducts[i].left,
         document_id_as_parent_id: this.state.selectedProducts[i].document_id,
       })
-      .then(() => {
-        this.context.success(
-          `Əlavə edildi ${this.state.selectedProducts[i].product_title}`
-        );
+      .then((res) => {
+        let InvNumsArrMats = [];
+        this.FormProductRef.current.state.inventoryNumArr.forEach(({ num }) => {
+          InvNumsArrMats.push([
+            null,
+            num,
+            res[0].link_child_document_id,
+            this.state.selectedProducts[i].product_id,
+            3,
+          ]);
+          InvNumsArrMats.push([
+            null,
+            num,
+            res[0].document_id,
+            this.state.selectedProducts[i].product_id,
+            -3,
+          ]);
+        });
+
+        api
+          .addInvNumsTable(InvNumsArrMats)
+          .then(() => {
+            this.FormProductRef.current.clearInvNums();
+            this.context.success(
+              `Əlavə edildi ${this.state.selectedProducts[i].product_title}`
+            );
+          })
+          .catch((err) => this.context.error(err.errText));
       })
       .catch((err) => this.context.error(err.errText));
   }
@@ -191,7 +224,15 @@ export default class TransferForm extends Component {
         open={this.props.open}
         onClose={this.handleClose.bind(this)}
       >
-        <form autoComplete="off" onSubmit={this.handleSubmit.bind(this)}>
+        <form
+          autoComplete="off"
+          onSubmit={this.handleSubmit.bind(this)}
+          onKeyDown={(e) => {
+            if (e.keyCode === 13) {
+              e.preventDefault();
+            }
+          }}
+        >
           <DialogTitle>Məhsulların Transferi</DialogTitle>
 
           <StyledContent>
@@ -271,8 +312,9 @@ export default class TransferForm extends Component {
 const StyledDialog = styled(Dialog)`
   .MuiDialog-container > .MuiPaper-root {
     min-width: 620px;
-    max-width: unset;
+    max-width: 620px;
     height: 1000px;
+    max-height: calc(100% - 24px);
 
     form {
       width: 100%;
@@ -308,7 +350,7 @@ const StyledDialog = styled(Dialog)`
   }
 `;
 const StyledContent = styled(DialogContent)`
-  padding: 15px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
 
@@ -338,6 +380,6 @@ const StyledContent = styled(DialogContent)`
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    padding-top: 20px;
+    padding-top: 10px;
   }
 `;

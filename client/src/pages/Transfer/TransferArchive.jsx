@@ -66,7 +66,7 @@ export default class TransferArchive extends Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              {this.props.tableData.map((el) => (
+              {this.props.tableData.reverse().map((el) => (
                 <TableRow key={uuid()}>
                   <TableCell align="center">{el.product_title}</TableCell>
                   <TableCell align="center">

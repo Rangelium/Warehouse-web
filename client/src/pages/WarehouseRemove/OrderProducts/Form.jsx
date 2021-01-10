@@ -187,9 +187,11 @@ export default class OrderForm extends Component {
     api
       .createNewOrder(data)
       .then((res) => {
-        this.props.handleSubmit(e, true);
-        console.log(res, data);
-        this.props.close();
+        if (res.data[0].error) {
+          this.context.error(res.data[0].error);
+        } else {
+          this.props.close();
+        }
       })
       .catch((err) => this.context.error(err.errText));
   }

@@ -68,7 +68,7 @@ export default class WarehouseRemoveArchive extends Component {
             </TableHead>
             <TableBody>
               {this.props.tableData.map((el) => (
-                <TableRow key={el.product_id}>
+                <TableRow key={el.document_id}>
                   <TableCell align="center">{el.product_title}</TableCell>
                   <TableCell align="center">
                     {el.barcode ? el.barcode : <RemoveIcon />}

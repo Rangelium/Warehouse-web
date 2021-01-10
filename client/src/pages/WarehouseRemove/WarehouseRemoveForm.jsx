@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import uuid from "react-uuid";
+import dayjs from "dayjs";
 import { GlobalDataContext } from "../../components/GlobalDataProvider";
 import api from "../../tools/connect";
 
@@ -31,7 +32,6 @@ import {
 import DoubleArrowOutlinedIcon from "@material-ui/icons/DoubleArrowOutlined";
 import RemoveIcon from "@material-ui/icons/Remove";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import dayjs from "dayjs";
 
 export default class WarehouseRemoveForm extends Component {
   static contextType = GlobalDataContext;
@@ -43,6 +43,7 @@ export default class WarehouseRemoveForm extends Component {
     warehouseData: [],
     existingProducts: [],
     forOrderProducts: [],
+    orderProdInvNums: [],
     createdFiles: [],
 
     selectedAmounts: Array(this.props.data.length).fill(0),
@@ -149,11 +150,22 @@ export default class WarehouseRemoveForm extends Component {
         status: !authComplete ? 20 : 0, // if selectedAmount === required will be 20, after productAuth will be 21
       })
       .then(() => {
-        this.context.success("Order complete");
-        this.props.refresh();
-        this.props.close();
+        let InvNumsArrMats = [];
+        this.state.orderProdInvNums.forEach(({ invNums, docId, prodId }) => {
+          invNums.forEach(({ num }) => {
+            InvNumsArrMats.push([null, num, docId, prodId, 1]);
+          });
+        });
+        api
+          .addInvNumsTable(InvNumsArrMats)
+          .then(() => {
+            this.context.success("Order complete");
+            this.props.refresh();
+            this.props.close();
 
-        this.uploadFiles();
+            this.uploadFiles();
+          })
+          .catch((err) => this.context.error(err.errText));
 
         // Remove session from localstorage
         const data = localStorage.getItem("WarehouseRemoveUnfinishedRetailSessions");
@@ -213,13 +225,14 @@ export default class WarehouseRemoveForm extends Component {
       })
       .catch((err) => console.log(err.errText));
   }
-  removeSelectedItem(id) {
+  removeSelectedItem(id, i) {
     api
       .executeProcedure("[SalaryDB].anbar.[order_request_handle_session_info_delete]", {
         id,
       })
       .then(() => {
         this.getProductData(this.props.data[this.state.activeStep].title);
+        this.removeInvNum(i);
       })
       .catch((err) => console.log(err.errText));
   }
@@ -240,6 +253,22 @@ export default class WarehouseRemoveForm extends Component {
         console.log(err);
         this.context.error("ERROR!");
       });
+    });
+  }
+  addInvNum(data) {
+    this.setState((prevState) => {
+      return {
+        orderProdInvNums: [...prevState.orderProdInvNums, data],
+      };
+    });
+  }
+  removeInvNum(index) {
+    let orderProdInvNums = [...this.state.orderProdInvNums];
+
+    orderProdInvNums.splice(index, 1);
+
+    this.setState({
+      orderProdInvNums,
     });
   }
 
@@ -278,9 +307,8 @@ export default class WarehouseRemoveForm extends Component {
               <h1>
                 Qalıb:
                 <span>
-                  {parseInt(
-                    this.props.data[this.state.activeStep].amount_left
-                  ) - this.state.selectedAmounts[this.state.activeStep]}
+                  {parseInt(this.props.data[this.state.activeStep].amount_left) -
+                    this.state.selectedAmounts[this.state.activeStep]}
                 </span>
               </h1>
             </div>
@@ -383,8 +411,8 @@ export default class WarehouseRemoveForm extends Component {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {this.state.forOrderProducts.map((row) => (
-                        <TableRow key={uuid()}>
+                      {this.state.forOrderProducts.map((row, i) => (
+                        <TableRow key={row.document_id}>
                           <TableCell align="center">{row.product_title}</TableCell>
                           <TableCell align="center">{row.quantity}</TableCell>
                           <TableCell align="center">
@@ -395,7 +423,9 @@ export default class WarehouseRemoveForm extends Component {
                             )}
                           </TableCell>
                           <TableCell align="center">
-                            <IconButton onClick={() => this.removeSelectedItem(row.id)}>
+                            <IconButton
+                              onClick={() => this.removeSelectedItem(row.id, i)}
+                            >
                               <HighlightOffIcon />
                             </IconButton>
                           </TableCell>
@@ -452,6 +482,7 @@ export default class WarehouseRemoveForm extends Component {
             refresh={() =>
               this.getProductData(this.props.data[this.state.activeStep].title)
             }
+            addInvNum={this.addInvNum.bind(this)}
           />
         )}
       </StyledDialog>

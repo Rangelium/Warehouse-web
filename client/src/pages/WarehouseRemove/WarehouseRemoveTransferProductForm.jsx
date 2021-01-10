@@ -12,30 +12,93 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  InputAdornment,
+  IconButton,
 } from "@material-ui/core";
+
+// Icons
+import ControlPointIcon from "@material-ui/icons/ControlPoint";
+import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 
 export default class WarehouseRemoveTransferProductForm extends Component {
   static contextType = GlobalDataContext;
-  state = {
-    quantity:
-      parseInt(this.props.product.left) > this.props.neededAmount
-        ? this.props.neededAmount
-        : parseInt(this.props.product.left),
-    reason: "",
-    documentNum: "",
-    loading: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      quantity:
+        parseInt(this.props.product.left) > this.props.neededAmount
+          ? this.props.neededAmount
+          : parseInt(this.props.product.left),
+      reason: "",
+      documentNum: "",
+      loading: false,
+
+      inventoryNum: "",
+      inventoryNumArr: [],
+    };
+
+    this.InvNumInputRef = React.createRef();
+  }
 
   handleInputsChange(e) {
     this.setState({
       [e.target.name]: e.target.value,
     });
   }
+  addInventoryNum() {
+    // Clear input
+    this.setState({
+      inventoryNum: "",
+    });
+    // Check if empty
+    if (!this.state.inventoryNum.trim().length) {
+      return this.context.error("Inventory num cannot be empty");
+    }
+
+    // Check if needed amount selected
+    if (this.state.inventoryNumArr.length === parseInt(this.state.quantity)) {
+      return this.context.error("Needed amount added");
+    }
+
+    // Add to arr
+    let inventoryNumArr = [...this.state.inventoryNumArr];
+    inventoryNumArr.push({
+      id: uuid(),
+      num: this.state.inventoryNum,
+    });
+    this.setState(
+      {
+        inventoryNumArr,
+      },
+      () => {
+        if (this.state.inventoryNumArr.length === parseInt(this.state.quantity)) {
+          // this.setState({
+          //   showInventory: false,
+          // });
+        } else {
+          this.InvNumInputRef.current.focus();
+        }
+      }
+    );
+  }
+  removeInventoryNum(index) {
+    let inventoryNumArr = [...this.state.inventoryNumArr];
+
+    inventoryNumArr.splice(index, 1);
+
+    this.setState({
+      inventoryNumArr,
+    });
+  }
   async handleSubmit(e) {
     e.preventDefault();
+
     if (this.state.quantity + "" === "0") {
       this.context.error("Quantity value must be greater than 0");
       return;
+    }
+    if (this.state.inventoryNumArr.length !== parseInt(this.state.quantity)) {
+      return this.context.error("Create inventory numbers for every product");
     }
 
     this.setState({
@@ -75,7 +138,12 @@ export default class WarehouseRemoveTransferProductForm extends Component {
         is_out: 1,
         reference_id: this.props.referenceId,
       })
-      .then(() => {
+      .then((res) => {
+        this.props.addInvNum({
+          prodId: this.props.product.product_id,
+          docId: res[0].document_id,
+          invNums: this.state.inventoryNumArr,
+        });
         this.props.close();
         this.props.refresh();
         this.context.success(`Əlavə edildi`);
@@ -95,7 +163,15 @@ export default class WarehouseRemoveTransferProductForm extends Component {
         open={this.props.open}
         onClose={this.props.close}
       >
-        <form autoComplete="off" onSubmit={this.handleSubmit.bind(this)}>
+        <form
+          autoComplete="off"
+          onSubmit={this.handleSubmit.bind(this)}
+          onKeyDown={(e) => {
+            if (e.keyCode === 13) {
+              e.preventDefault();
+            }
+          }}
+        >
           <DialogTitle>{this.props.product.product_title}</DialogTitle>
 
           <StyledContent>
@@ -103,7 +179,6 @@ export default class WarehouseRemoveTransferProductForm extends Component {
             <div className="inputs">
               <div className="amountBlock">
                 <CustomTextInput
-                  className="input-item"
                   required
                   InputProps={{
                     inputProps: {
@@ -123,19 +198,59 @@ export default class WarehouseRemoveTransferProductForm extends Component {
                 <p className="product-left"> / {this.props.product.left}</p>
               </div>
               <CustomTextInput
-                className="input-item"
                 label="Müqavilə nömrəsi"
                 name="documentNum"
                 value={this.state.documentNum}
                 onChange={this.handleInputsChange.bind(this)}
               />
               <CustomTextInput
-                className="input-item"
                 label="Səbəb"
                 name="reason"
                 value={this.state.reason}
                 onChange={this.handleInputsChange.bind(this)}
               />
+              <div className="invNums">
+                <CustomTextInput
+                  _ref={this.InvNumInputRef}
+                  onKeyUp={(e) => {
+                    if (e.keyCode === 13) {
+                      e.preventDefault();
+
+                      this.addInventoryNum();
+                    }
+                  }}
+                  disabled={
+                    this.state.inventoryNumArr.length >= parseInt(this.state.quantity)
+                  }
+                  label="Inventory number"
+                  name="inventoryNum"
+                  value={this.state.inventoryNum}
+                  onChange={this.handleInputsChange.bind(this)}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => this.addInventoryNum()}
+                        >
+                          <ControlPointIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+
+                <div className="invNumsContainer">
+                  {this.state.inventoryNumArr.map(({ id, num }, i) => (
+                    <div key={id} className="invNumItem">
+                      <p>{num}</p>
+                      <IconButton onClick={() => this.removeInventoryNum(i)}>
+                        <RemoveCircleOutlineIcon />
+                      </IconButton>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="fileImportContainer">
@@ -167,7 +282,9 @@ export default class WarehouseRemoveTransferProductForm extends Component {
 const StyledDialog = styled(Dialog)`
   .MuiDialog-container > .MuiPaper-root {
     width: 500px;
-    height: 550px;
+    height: 100%;
+
+    max-height: calc(100% - 32px);
   }
 
   form {
@@ -225,6 +342,55 @@ const StyledContent = styled(DialogContent)`
       .product-left {
         margin-left: 10px;
         font-size: 1.4rem;
+      }
+    }
+
+    .invNums {
+      display: flex;
+      flex-direction: column;
+
+      .MuiInputAdornment-positionEnd {
+        margin-left: 0;
+      }
+      .MuiOutlinedInput-adornedEnd {
+        padding-right: 0;
+      }
+
+      .invNumsContainer {
+        padding-top: 5px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        max-height: 180px;
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        &::-webkit-scrollbar {
+          width: 5px;
+          height: 5px;
+        }
+        /* Track */
+        &::-webkit-scrollbar-track {
+          box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+          border-radius: 10px;
+          border-radius: 10px;
+        }
+        /* Handle */
+        &::-webkit-scrollbar-thumb {
+          border-radius: 10px;
+          border-radius: 10px;
+          background: #d7d8d6;
+          box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .invNumItem {
+          display: flex;
+          align-items: center;
+
+          p {
+            font-size: 1.2rem;
+          }
+        }
       }
     }
   }

@@ -7,6 +7,7 @@ import api from "../../tools/connect";
 
 import ExpDateOverTable from "./ExpDateTable";
 import ArchiveTable from "./ExpireDateArchive";
+import WriteOffPage from "./WriteOff/WriteOffPage";
 import { CustomButton } from "../../components/UtilComponents";
 import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
 
@@ -109,6 +110,7 @@ export default class ExpireDate extends Component {
           <div className="mainHead">
             <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
               <Tab label="Təstiq gözləyənlər" />
+              <Tab label="Write-Off" />
               <Tab label="Arxiv" />
             </Tabs>
 
@@ -129,6 +131,10 @@ export default class ExpireDate extends Component {
           </TabItem>
 
           <TabItem hidden={this.state._tabValue !== 1}>
+            <WriteOffPage />
+          </TabItem>
+
+          <TabItem hidden={this.state._tabValue !== 2}>
             <ArchiveTable tableData={this.state.archiveTableData} />
           </TabItem>
         </MainData>
