@@ -67,9 +67,12 @@ class Row extends Component {
   }
   getRowInfo() {
     api
-      .executeProcedure("[SalaryDB].anbar.[decommission_session_info_selection]", {
-        session_id: this.props.row.id,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[decommission_session_info_selection]",
+        {
+          session_id: this.props.row.id,
+        }
+      )
       .then((res) => {
         this.setState({
           productsTableData: res,
@@ -92,18 +95,27 @@ class Row extends Component {
               size="small"
               onClick={this.handleExpandRowClick.bind(this)}
             >
-              {this.state.infoTable ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              {this.state.infoTable ? (
+                <KeyboardArrowUpIcon />
+              ) : (
+                <KeyboardArrowDownIcon />
+              )}
             </IconButton>
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
-            {dayjs(data.begin_date).subtract(4, "hour").format("YYYY-MM-DD, HH:mm")}
+            {dayjs(data.begin_date)
+              .subtract(4, "hour")
+              .format("YYYY-MM-DD, HH:mm")}
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.number_of_products}
           </TableCell>
-          <TableCell style={{ borderBottom: "unset" }} align="center">{`${parseFloat(
-            data.total_sum
-          ).toFixed(3)} ${data.default_currency}`}</TableCell>
+          <TableCell
+            style={{ borderBottom: "unset" }}
+            align="center"
+          >{`${parseFloat(data.total_sum).toFixed(3)} ${
+            data.default_currency
+          }`}</TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.done === "+" ? <DoneIcon /> : <RemoveIcon />}
           </TableCell>
@@ -134,7 +146,10 @@ class Row extends Component {
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
             <Collapse in={this.state.infoTable} timeout="auto" unmountOnExit>
-              <Paper style={{ padding: "10px 0", position: "relative" }} elevation={0}>
+              <Paper
+                style={{ padding: "10px 0", position: "relative" }}
+                elevation={0}
+              >
                 <Table size="small">
                   <TableHead>
                     <TableRow>
@@ -144,16 +159,20 @@ class Row extends Component {
                       <TableCell align="center">Qiymət</TableCell>
                       <TableCell align="center">Ümumi Qiymət</TableCell>
                       <TableCell align="center">Hücrə №</TableCell>
-                      <TableCell align="center">Transfer olunan anbarın adı</TableCell>
+                      <TableCell align="center">
+                        Transfer olunan anbarın adı
+                      </TableCell>
                       {this.props.row.done === "-" && (
-                        <TableCell align="center">Remove</TableCell>
+                        <TableCell align="center">Sil</TableCell>
                       )}
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {this.state.productsTableData.map((product) => (
                       <TableRow key={product.id}>
-                        <TableCell align="center">{product.product_title}</TableCell>
+                        <TableCell align="center">
+                          {product.product_title}
+                        </TableCell>
                         <TableCell align="center">
                           {product.barcode || <RemoveIcon />}
                         </TableCell>
@@ -163,15 +182,17 @@ class Row extends Component {
                         <TableCell align="center">
                           {product.product_cell || <RemoveIcon />}
                         </TableCell>
-                        <TableCell align="center">{product.storage_name}</TableCell>
+                        <TableCell align="center">
+                          {product.storage_name}
+                        </TableCell>
                         {this.props.row.done === "-" && (
                           <TableCell align="center">
                             <IconButton
                               onClick={() => {
                                 this.context
                                   .alert({
-                                    title: "Delete",
-                                    description: `Are you sure you want to delete ${product.product_title}?`,
+                                    title: "sessiyadan sil",
+                                    description: `Əminsiniz ${product.product_title}?`,
                                   })
                                   .then(() => {
                                     api
@@ -183,7 +204,9 @@ class Row extends Component {
                                         this.getRowInfo();
                                         this.props.refresh();
                                       })
-                                      .catch((err) => this.context.error(err.errText));
+                                      .catch((err) =>
+                                        this.context.error(err.errText)
+                                      );
                                   })
                                   .catch(() => {});
                               }}
@@ -242,7 +265,9 @@ export default class WriteOffPage extends Component {
                   key={el.id}
                   row={el}
                   totalRefresh={this.props.totalRefresh}
-                  showNewDecommForm={(id) => this.setState({ selectedSessionId: id })}
+                  showNewDecommForm={(id) =>
+                    this.setState({ selectedSessionId: id })
+                  }
                 />
               ))}
             </TableBody>

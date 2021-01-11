@@ -9,7 +9,13 @@ import TransferArchive from "./TransferArchive";
 import TransferTable from "./TransferTable";
 import TransferForm from "./TransferForm/Form";
 import { CustomTextInput, CustomButton } from "../../components/UtilComponents";
-import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
+import {
+  Tabs,
+  Tab,
+  Divider,
+  Backdrop,
+  CircularProgress,
+} from "@material-ui/core";
 
 // Icons
 import RemoveIcon from "@material-ui/icons/Remove";
@@ -154,7 +160,8 @@ export default class Transfer extends Component {
               this.context
                 .alert({
                   title: "Yeni sessiya yarat",
-                  description: "Yeni bir sessiya yaratmaq istədiyinizə əminsiniz??",
+                  description:
+                    "Yeni bir sessiya yaratmaq istədiyinizə əminsiniz??",
                 })
                 .then(() => this.createNewSession())
                 .catch(() => {});
@@ -187,7 +194,10 @@ export default class Transfer extends Component {
 
         <MainData>
           <div className="mainHead">
-            <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
+            <Tabs
+              value={this.state._tabValue}
+              onChange={this.handleTabChange.bind(this)}
+            >
               <Tab label="Təstiq gözləyənlər" />
               <Tab label="Arxiv" />
             </Tabs>
@@ -195,7 +205,7 @@ export default class Transfer extends Component {
             {this.state._tabValue === 1 &&
               Boolean(this.state.archiveTableData.length) && (
                 <CustomButton onClick={this.downloadArchiveExcel.bind(this)}>
-                  Download
+                  EXCEL export
                 </CustomButton>
               )}
           </div>
@@ -204,7 +214,9 @@ export default class Transfer extends Component {
 
           <TabItem hidden={this.state._tabValue !== 0}>
             <TransferTable
-              showNewTransferForm={(id) => this.setState({ selectedSessionId: id })}
+              showNewTransferForm={(id) =>
+                this.setState({ selectedSessionId: id })
+              }
               refresh={this.getTransferData.bind(this)}
               tableData={this.state.transferTableData}
             />

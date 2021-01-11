@@ -9,7 +9,13 @@ import WarehouseRemoveArchive from "./WarehouseRemoveArchive";
 import WarehouseRemoveTable from "./WarehouseRemoveTable";
 import OrderForm from "./OrderProducts/Form";
 import { CustomButton } from "../../components/UtilComponents";
-import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
+import {
+  Tabs,
+  Tab,
+  Divider,
+  Backdrop,
+  CircularProgress,
+} from "@material-ui/core";
 
 export default class WarehouseRemove extends Component {
   static contextType = GlobalDataContext;
@@ -27,7 +33,9 @@ export default class WarehouseRemove extends Component {
     this.getProcurementsData();
 
     // Finish all unfinished retailSessions if existed
-    const data = localStorage.getItem("WarehouseRemoveUnfinishedRetailSessions");
+    const data = localStorage.getItem(
+      "WarehouseRemoveUnfinishedRetailSessions"
+    );
     const arr = JSON.parse(data);
 
     if (arr) {
@@ -145,20 +153,23 @@ export default class WarehouseRemove extends Component {
 
         <MainData>
           <div className="mainHead">
-            <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
+            <Tabs
+              value={this.state._tabValue}
+              onChange={this.handleTabChange.bind(this)}
+            >
               <Tab label="Təstiq gözləyənlər" />
               <Tab label="Arxiv" />
             </Tabs>
 
             {this.state._tabValue === 0 && (
               <CustomButton onClick={this.showOrderProductsForm.bind(this)}>
-                Order Products
+                Sifariş et
               </CustomButton>
             )}
             {this.state._tabValue === 1 &&
               Boolean(this.state.archiveTableData.length) && (
                 <CustomButton onClick={this.downloadArchiveExcel.bind(this)}>
-                  Download
+                  EXCEL export
                 </CustomButton>
               )}
           </div>
