@@ -28,7 +28,7 @@ export default class WarehouseInfo extends Component {
   async componentDidMount() {
     const data = await api.executeProcedure("anbar.warehouse_tree_select");
     const data2 = await api.executeProcedure("[anbar].[warehouse_tree_select_sub_cat]");
-    const dataForTree = [...data.splice(0, 2), ...data2, ...data.splice(2, data.length)];
+    const dataForTree = [...data.splice(1, 1), ...data2, ...data.splice(1, data.length)];
 
     let overallData = await api.executeProcedure("anbar.dashboard", {
       storage_id: this.context.storageId,

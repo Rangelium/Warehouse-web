@@ -31,11 +31,10 @@ export default class Treeview extends Component {
             .executeProcedure("[anbar].[warehouse_tree_select_sub_cat]")
             .then((data2) => {
               const dataForTree = [
-                ...data1.splice(0, 2),
+                ...data1.splice(1, 1),
                 ...data2,
-                ...data1.splice(2, data1.length),
+                ...data1.splice(1, data1.length),
               ];
-              console.log(data1);
 
               this.setState({
                 dataForTree,
@@ -48,32 +47,54 @@ export default class Treeview extends Component {
       searchInput: val,
     });
   }
-  addToData(product, data) {
-    if (product.parent_id === 0) {
-      data.push(product);
-      return;
-    }
-    data.forEach((product_2) => {
-      if (!product.product_id) {
-        if (product.parent_id === product_2.id) {
-          product_2.children.push(product);
-        }
+  addToData({ tree, el, key, push_to_root }) {
+    if (push_to_root) {
+      el.children = [];
+      tree.push(el);
+    } else {
+      if (!el.product_id) {
+        // If category
+        tree.forEach((rootEl) => {
+          if (rootEl.id === el[key]) {
+            el.children = [];
+            rootEl.children.push(el);
+          }
+        });
       } else {
-        if (product.sub_gl_category_id === product_2.id) {
-          product_2.children.push(product);
-        }
+        // If product
+        tree.forEach((rootEl) => {
+          rootEl.children.forEach((cat) => {
+            if (cat.id === el[key]) {
+              cat.children.push(el);
+            }
+          });
+        });
       }
-      this.addToData(product, product_2.children);
-    });
+    }
   }
-  prepareProducts(products) {
+  prepareProducts(initDataForTree, is_search) {
     let data = [];
+    const dataForTree = [...initDataForTree];
 
-    products.forEach((product) => {
-      product.children = [];
-      this.addToData(product, data);
+    this.addToData({ tree: data, el: dataForTree[0], push_to_root: true });
+    dataForTree.splice(1, dataForTree.length).forEach((el) => {
+      this.addToData({
+        tree: data,
+        el,
+        key: el.sub_gl_category_id ? "sub_gl_category_id" : "parent_id",
+      });
     });
 
+    if (is_search) {
+      data = data.map((rootEl) => {
+        // rootEl.children.filter((catArr) => catArr.children.length)
+        rootEl.children = rootEl.children.filter(
+          (catArr) => catArr.children.length !== 0
+        );
+        return rootEl;
+      });
+      console.log(data);
+    }
     return data;
   }
 
@@ -109,13 +130,14 @@ export default class Treeview extends Component {
               }
             />
           </SearchContainer>
+
           <TreeviewData
             select={(a) => this.props.selectProduct(a)}
             initData={this.props.data}
             data={
               this.props.data
                 ? this.state.dataForTree
-                  ? this.prepareProducts(this.state.dataForTree)
+                  ? this.prepareProducts(this.state.dataForTree, true)
                   : this.prepareProducts(this.props.data)
                 : []
             }

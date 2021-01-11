@@ -140,7 +140,9 @@ export default class SingleProductInfo extends Component {
             <p className="title">Məhsulun ümumi dəyəri</p>
             <p>
               {this.props.product.total_sum
-                ? `${this.props.product.total_sum} ${this.props.product.currency}`
+                ? `${parseFloat(this.props.product.total_sum).toFixed(2)} ${
+                    this.props.product.currency
+                  }`
                 : DefaultText}
             </p>
           </StyledPaper>

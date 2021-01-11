@@ -37,9 +37,9 @@ export default class InitialRemainders extends Component {
     const data = await api.executeProcedure("anbar.warehouse_tree_select");
     const data2 = await api.executeProcedure("[anbar].[warehouse_tree_select_sub_cat]");
     const dataForTreeview = [
-      ...data.splice(0, 2),
+      ...data.splice(1, 1),
       ...data2,
-      ...data.splice(2, data.length),
+      ...data.splice(1, data.length),
     ];
 
     const unfinSessionStr = localStorage.getItem("unfinishedSession");
