@@ -57,6 +57,7 @@ export default class DecommisionForm extends Component {
           this.state.activeStep - 1,
           this.FormProductRef.current.state.inventoryNumArr
         );
+        this.FormProductRef.current.clearInvNums();
       } else {
         return this.context.error(
           "You need to create Inventory numbers for all products"
