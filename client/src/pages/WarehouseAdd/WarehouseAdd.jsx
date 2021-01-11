@@ -8,7 +8,13 @@ import api from "../../tools/connect";
 import WarehouseAddArchive from "./WarehouseAddArchive";
 import WarehouseAddTable from "./WarehouseAddTable";
 import { CustomButton } from "../../components/UtilComponents";
-import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
+import {
+  Tabs,
+  Tab,
+  Divider,
+  Backdrop,
+  CircularProgress,
+} from "@material-ui/core";
 
 export default class WarehouseAdd extends Component {
   static contextType = GlobalDataContext;
@@ -116,7 +122,10 @@ export default class WarehouseAdd extends Component {
 
         <MainData>
           <div className="mainHead">
-            <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
+            <Tabs
+              value={this.state._tabValue}
+              onChange={this.handleTabChange.bind(this)}
+            >
               <Tab label="Təstiq gözləyənlər" />
               <Tab label="Arxiv" />
             </Tabs>
@@ -124,7 +133,7 @@ export default class WarehouseAdd extends Component {
             {this.state._tabValue === 1 &&
               Boolean(this.state.archiveTableData.length) && (
                 <CustomButton onClick={this.downloadArchiveExcel.bind(this)}>
-                  Download
+                  EXCEL export
                 </CustomButton>
               )}
           </div>

@@ -145,7 +145,7 @@ class Row extends Component {
                       <TableCell align="center">Ümumi Qiymət</TableCell>
                       <TableCell align="center">Hücrə №</TableCell>
                       {this.props.row.done === "-" && (
-                        <TableCell align="center">Remove</TableCell>
+                        <TableCell align="center">Sil</TableCell>
                       )}
                     </TableRow>
                   </TableHead>
@@ -168,8 +168,8 @@ class Row extends Component {
                               onClick={() => {
                                 this.context
                                   .alert({
-                                    title: "Delete",
-                                    description: `Are you sure you want to delete ${product.product_title}?`,
+                                    title: "sessiyadan sil",
+                                    description: `Əminsiniz ${product.product_title}?`,
                                   })
                                   .then(() => {
                                     api
