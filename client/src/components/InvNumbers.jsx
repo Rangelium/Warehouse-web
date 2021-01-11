@@ -18,7 +18,7 @@ export default class InvNums extends Component {
           <ol>
             {this.props.invNums.map(({ inventory_num, key }, i) => (
               <li key={key}>
-                {i}) <span>{inventory_num}</span>
+                {i + 1}) <span>{inventory_num}</span>
               </li>
             ))}
           </ol>

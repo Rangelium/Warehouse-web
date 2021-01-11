@@ -8,17 +8,24 @@ import api from "../../tools/connect";
 import ExpDateOverTable from "./ExpDateTable";
 import ArchiveTable from "./ExpireDateArchive";
 import WriteOffPage from "./WriteOff/WriteOffPage";
-import { CustomButton } from "../../components/UtilComponents";
+import { CustomButton, CustomTextInput } from "../../components/UtilComponents";
 import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
+
+// Icons
+import RemoveIcon from "@material-ui/icons/Remove";
 
 export default class ExpireDate extends Component {
   static contextType = GlobalDataContext;
   state = {
+    startDate: dayjs().subtract(1, "year").format("YYYY-MM-DD"),
+    endDate: dayjs().add(1, "year").format("YYYY-MM-DD"),
+    writeOffTableData: [],
+
     expDateTableData: [],
     archiveTableData: [],
     loading: true,
 
-    _tabValue: 0,
+    _tabValue: 1,
   };
 
   componentDidMount() {
@@ -38,15 +45,58 @@ export default class ExpireDate extends Component {
       storage_id: this.context.storageId,
     });
 
+    const writeOffTableData = await api
+      .executeProcedure("[SalaryDB].anbar.[decommission_session_selection]", {
+        date_from: dayjs(this.state.startDate).format("YYYY.MM.DD"),
+        date_to: dayjs(this.state.endDate).format("YYYY.MM.DD"),
+        storage_id: this.context.storageId,
+      })
+      .catch(() => {
+        return [];
+      });
+
     this.setState({
       expDateTableData: expDate,
       archiveTableData: archiv,
+      writeOffTableData,
       loading: false,
+    });
+  }
+  async getDecommisionData() {
+    const writeOffTableData = await api
+      .executeProcedure("[SalaryDB].anbar.[decommission_session_selection]", {
+        date_from: dayjs(this.state.startDate).format("YYYY.MM.DD"),
+        date_to: dayjs(this.state.endDate).format("YYYY.MM.DD"),
+        storage_id: this.context.storageId,
+      })
+      .catch(() => {
+        return [];
+      });
+
+    this.setState({
+      writeOffTableData,
     });
   }
   handleTabChange(e, newVal) {
     this.setState({
       _tabValue: newVal,
+    });
+  }
+  handleChange(e) {
+    if (e.target.name === "startDate" || e.target.name === "endDate") {
+      this.setState(
+        {
+          [e.target.name]: e.target.value,
+        },
+        () => {
+          this.getDecommisionData();
+        }
+      );
+
+      return;
+    }
+    this.setState({
+      [e.target.name]: e.target.value,
     });
   }
   downloadArchiveExcel() {
@@ -99,6 +149,17 @@ export default class ExpireDate extends Component {
     wb.Sheets[wb.SheetNames[0]] = XLXS.utils.aoa_to_sheet(data);
     XLXS.writeFile(wb, "transfer.xls");
   }
+  createNewSession() {
+    api
+      .executeProcedure("[SalaryDB].anbar.[decommission_products_create_session]", {
+        storage_id: this.context.storageId,
+      })
+      .then(() => {
+        this.context.success("Sessiya yaradıldı");
+        this.getDecommisionData();
+      })
+      .catch((err) => this.context.error(err.errText));
+  }
 
   render() {
     return (
@@ -106,6 +167,7 @@ export default class ExpireDate extends Component {
         <Header>
           <h1 className="title">Yararlıq müddəti keçmiş məhsullar</h1>
         </Header>
+
         <MainData>
           <div className="mainHead">
             <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
@@ -114,12 +176,50 @@ export default class ExpireDate extends Component {
               <Tab label="Arxiv" />
             </Tabs>
 
-            {this.state._tabValue === 1 &&
+            {this.state._tabValue === 2 &&
               Boolean(this.state.archiveTableData.length) && (
                 <CustomButton onClick={this.downloadArchiveExcel.bind(this)}>
                   Download
                 </CustomButton>
               )}
+
+            {this.state._tabValue === 1 && (
+              <div className="decommisionPart">
+                <CustomButton
+                  onClick={() => {
+                    this.context
+                      .alert({
+                        title: "Yeni sessiya yarat",
+                        description: "Yeni bir sessiya yaratmaq istədiyinizə əminsiniz??",
+                      })
+                      .then(() => this.createNewSession())
+                      .catch(() => {});
+                  }}
+                >
+                  Yeni sessiya
+                </CustomButton>
+                <div className="dateBlock">
+                  <p>Tarix:</p>
+                  <CustomTextInput
+                    required
+                    type="date"
+                    variant="outlined"
+                    name="startDate"
+                    value={this.state.startDate}
+                    onChange={this.handleChange.bind(this)}
+                  />
+                  <RemoveIcon />
+                  <CustomTextInput
+                    required
+                    type="date"
+                    variant="outlined"
+                    name="endDate"
+                    value={this.state.endDate}
+                    onChange={this.handleChange.bind(this)}
+                  />
+                </div>
+              </div>
+            )}
           </div>
           <Divider />
 
@@ -131,13 +231,18 @@ export default class ExpireDate extends Component {
           </TabItem>
 
           <TabItem hidden={this.state._tabValue !== 1}>
-            <WriteOffPage />
+            <WriteOffPage
+              totalRefresh={this.getData.bind(this)}
+              refresh={this.getDecommisionData.bind(this)}
+              tableData={this.state.writeOffTableData}
+            />
           </TabItem>
 
           <TabItem hidden={this.state._tabValue !== 2}>
             <ArchiveTable tableData={this.state.archiveTableData} />
           </TabItem>
         </MainData>
+
         <Backdrop
           style={{
             zIndex: 100000000,
@@ -191,6 +296,31 @@ const MainData = styled.div`
 
       .MuiTabs-indicator {
         background-color: #ffaa00;
+      }
+    }
+
+    .decommisionPart {
+      display: flex;
+
+      .MuiButton-root {
+        margin-right: 10px;
+      }
+
+      .dateBlock {
+        display: flex;
+        align-items: center;
+
+        p {
+          margin-right: 10px;
+        }
+
+        .MuiSvgIcon-root {
+          margin: 0 7px;
+        }
+
+        .MuiOutlinedInput-input {
+          padding: 12px 14px;
+        }
       }
     }
   }
