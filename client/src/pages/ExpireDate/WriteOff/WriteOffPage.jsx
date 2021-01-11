@@ -144,7 +144,6 @@ class Row extends Component {
                       <TableCell align="center">Qiymət</TableCell>
                       <TableCell align="center">Ümumi Qiymət</TableCell>
                       <TableCell align="center">Hücrə №</TableCell>
-                      <TableCell align="center">Transfer olunan anbarın adı</TableCell>
                       {this.props.row.done === "-" && (
                         <TableCell align="center">Remove</TableCell>
                       )}
@@ -163,7 +162,6 @@ class Row extends Component {
                         <TableCell align="center">
                           {product.product_cell || <RemoveIcon />}
                         </TableCell>
-                        <TableCell align="center">{product.storage_name}</TableCell>
                         {this.props.row.done === "-" && (
                           <TableCell align="center">
                             <IconButton

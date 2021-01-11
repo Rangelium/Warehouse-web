@@ -53,7 +53,10 @@ export default class DecommisionForm extends Component {
         this.FormProductRef.current.state.inventoryNumArr.length
       ) {
         this.FormProductRef.current.clearInputs();
-        this.handleTransfer(this.state.activeStep - 1);
+        this.handleTransfer(
+          this.state.activeStep - 1,
+          this.FormProductRef.current.state.inventoryNumArr
+        );
       } else {
         return this.context.error(
           "You need to create Inventory numbers for all products"
@@ -89,7 +92,7 @@ export default class DecommisionForm extends Component {
       };
     });
   }
-  async handleTransfer(i) {
+  handleTransfer = async (i, invNumArr) => {
     let fileName = null;
     if (this.state.file) {
       // Generate random name for file
@@ -106,7 +109,7 @@ export default class DecommisionForm extends Component {
       if (res === undefined) return;
     }
 
-    api
+    const docId = await api
       .executeProcedure("[SalaryDB].anbar.[decommission_product_session_info_insert]", {
         quantity: this.state.transferInfoData.quantity,
         reason: this.state.transferInfoData.reason,
@@ -124,37 +127,26 @@ export default class DecommisionForm extends Component {
         left: this.state.selectedProducts[i].left,
         document_id_as_parent_id: this.state.selectedProducts[i].document_id,
       })
-      .then((res) => {
-        let InvNumsArrMats = [];
-        this.FormProductRef.current.state.inventoryNumArr.forEach(({ num }) => {
-          InvNumsArrMats.push([
-            null,
-            num,
-            res[0].link_child_document_id,
-            this.state.selectedProducts[i].product_id,
-            3,
-          ]);
-          InvNumsArrMats.push([
-            null,
-            num,
-            res[0].document_id,
-            this.state.selectedProducts[i].product_id,
-            -3,
-          ]);
-        });
-
-        api
-          .addInvNumsTable(InvNumsArrMats)
-          .then(() => {
-            this.FormProductRef.current.clearInvNums();
-            this.context.success(
-              `Əlavə edildi ${this.state.selectedProducts[i].product_title}`
-            );
-          })
-          .catch((err) => this.context.error(err.errText));
-      })
+      .then((res) => res[0].document_id)
       .catch((err) => this.context.error(err.errText));
-  }
+
+    let InvNumsArrMats = [];
+    invNumArr.forEach(({ num }) => {
+      InvNumsArrMats.push([
+        null,
+        num,
+        docId,
+        this.state.selectedProducts[i].product_id,
+        -1,
+      ]);
+    });
+
+    await api
+      .addInvNumsTable(InvNumsArrMats)
+      .catch((err) => this.context.error(err.errText));
+
+    this.context.success(`Əlavə edildi`);
+  };
   handleChange(e) {
     this.setState({
       [e.target.name]: e.target.value,
