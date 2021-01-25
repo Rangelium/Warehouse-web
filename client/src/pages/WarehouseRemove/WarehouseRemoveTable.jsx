@@ -19,11 +19,13 @@ import {
   TableCell,
   Backdrop,
   CircularProgress,
+  Checkbox,
 } from "@material-ui/core";
 
 // Icons
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+import RemoveIcon from "@material-ui/icons/Remove";
 
 class Row extends Component {
   static contextType = GlobalDataContext;
@@ -80,7 +82,7 @@ class Row extends Component {
 
     if (!dataForForm.length)
       return this.context.error(
-        "Enternal error in [SalaryDB].anbar.procurement_get_order_req_data_for_removeForm"
+        "Empty array returned from 'procurement_get_order_req_data_for_removeForm'"
       );
 
     const retailSaleId = await api
@@ -120,6 +122,7 @@ class Row extends Component {
 
   render() {
     const data = this.props.row;
+    const isItemSelected = this.props.vendorData.indexOf(data.id) !== -1;
 
     return (
       <>
@@ -129,20 +132,26 @@ class Row extends Component {
               {this.state.infoTable ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
           </TableCell>
-
-          {/* <TableCell style={{ borderBottom: "unset" }} align="center">
-            {"PLACEHOLDER"}
-          </TableCell> */}
+          <TableCell style={{ borderBottom: "unset" }} align="center">
+            {data.techizatci_name ?? <RemoveIcon />}
+          </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.products_quantity}
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.create_date_time}
           </TableCell>
-          <TableCell style={{ borderBottom: "unset" }} align="center">
+          <TableCell style={{ borderBottom: "unset" }} padding="none" align="center">
             <CustomButton onClick={this.showRemoveForm.bind(this)}>
               Təstiq et
             </CustomButton>
+          </TableCell>
+
+          <TableCell style={{ borderBottom: "unset" }} padding="checkbox" align="center">
+            <Checkbox
+              checked={isItemSelected}
+              onChange={() => this.props.toggleVendor(data.id, data.techizatci_id)}
+            />
           </TableCell>
         </TableRow>
         <TableRow>
@@ -206,15 +215,22 @@ export default class WarehouseRemoveTable extends Component {
           <TableHead>
             <TableRow>
               <TableCell />
-              {/* <TableCell align="center">Kontraqent</TableCell> */}
+              <TableCell align="center">Təchizatçi</TableCell>
               <TableCell align="center">Məhsulların Kəmiyyəti</TableCell>
               <TableCell align="center">Tarix</TableCell>
               <TableCell align="center">Təstiq</TableCell>
+              <TableCell align="center">Sifariş</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {this.props.tableData.map((el) => (
-              <Row refresh={this.props.refresh} key={el.id} row={el} />
+              <Row
+                vendorData={this.props.vendorData}
+                toggleVendor={this.props.toggleVendor}
+                refresh={this.props.refresh}
+                key={el.id}
+                row={el}
+              />
             ))}
           </TableBody>
         </Table>

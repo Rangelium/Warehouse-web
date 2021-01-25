@@ -47,6 +47,16 @@ export default class FormProduct extends Component {
     );
   }
   addInventoryNum() {
+    // Check if invNum is uinque
+    for (let i = 0; i < this.state.inventoryNumArr.length; i++) {
+      if (
+        Object.values(this.state.inventoryNumArr[i]).includes(this.state.inventoryNum)
+      ) {
+        return this.context.error(
+          `Inventoy number "${this.state.inventoryNum}" is already exist`
+        );
+      }
+    }
     // Clear input
     this.setState({
       inventoryNum: "",

@@ -30,12 +30,11 @@ import DeleteIcon from "@material-ui/icons/Delete";
 
 export default class OrderForm extends Component {
   static contextType = GlobalDataContext;
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       vendorsData: [],
-      vendorId: null,
-      vendorData: null,
+      // vendorId: null,
 
       productInput: "",
       productsData: [],
@@ -43,7 +42,7 @@ export default class OrderForm extends Component {
 
       orderTableData: [],
 
-      activeStep: 0,
+      activeStep: 1, //Initially 0
       loading: true,
     };
   }
@@ -59,7 +58,6 @@ export default class OrderForm extends Component {
     this.setState({
       vendorsData,
       vendorId: null,
-      vendorData: null,
 
       productInput: "",
       productsData: [],
@@ -67,7 +65,7 @@ export default class OrderForm extends Component {
 
       orderTableData: [],
 
-      activeStep: 0,
+      activeStep: 1,
       loading: false,
     });
   }
@@ -75,7 +73,6 @@ export default class OrderForm extends Component {
     this.props.close();
     this.setState({
       vendorId: null,
-      vendorData: null,
 
       productInput: "",
       productsData: [],
@@ -83,7 +80,7 @@ export default class OrderForm extends Component {
 
       orderTableData: [],
 
-      activeStep: 0,
+      activeStep: 1,
     });
   }
   handleProductChange(e) {
@@ -92,7 +89,7 @@ export default class OrderForm extends Component {
       api
         .executeProcedure("[SalaryDB].anbar.[order_list_search_product]", {
           title: value,
-          techizatci_id: this.state.vendorId,
+          techizatci_id: this.props.vendorId,
         })
         .then((productsData) => {
           this.setState({
@@ -104,7 +101,7 @@ export default class OrderForm extends Component {
       api
         .executeProcedure("[SalaryDB].anbar.[order_list_search_product]", {
           barcode: parseInt(value),
-          techizatci_id: this.state.vendorId,
+          techizatci_id: this.props.vendorId,
         })
         .then((productsData) => {
           this.setState({
@@ -120,24 +117,16 @@ export default class OrderForm extends Component {
   }
   handleVendorChange(e) {
     const vendorId = e.target.value;
-    api
-      .executeProcedure("[SalaryDB].anbar.[order_list_select_orders_info]", {
-        tezhizatci_id: vendorId,
-      })
-      .then((vendorData) => {
-        this.setState({
-          vendorId,
-          vendorData,
-          activeStep: 1,
+    this.setState({
+      vendorId,
+      activeStep: 1,
 
-          orderTableData: [],
+      orderTableData: [],
 
-          productInput: "",
-          productsData: [],
-          selectedProductData: null,
-        });
-      })
-      .catch((err) => console.log(err.errText));
+      productInput: "",
+      productsData: [],
+      selectedProductData: null,
+    });
   }
   addNewOrder(orderData) {
     this.setState((prevState) => {
@@ -156,9 +145,6 @@ export default class OrderForm extends Component {
   async handleSubmit(e) {
     e.preventDefault();
 
-    if (!this.state.vendorData.length) {
-      return this.context.error("No need to order products for this vendor");
-    }
     if (!this.state.orderTableData.length) {
       return this.context.error("No orders created");
     }
@@ -181,7 +167,7 @@ export default class OrderForm extends Component {
       orderType: 0,
       structureid: 0,
       direct: 1,
-      Basedon: this.state.vendorData.map(({ id }) => id).join(","),
+      basedon: this.props.vendorData.join(","),
     };
 
     api
@@ -222,9 +208,10 @@ export default class OrderForm extends Component {
                   getContentAnchorEl: null,
                 }}
                 required
+                disabled
                 label="Teçhizat"
                 name="vendorId"
-                value={this.state.vendorId}
+                value={this.props.vendorId ?? ""}
                 onChange={this.handleVendorChange.bind(this)}
               >
                 {this.state.vendorsData.map(({ id, name }) => (
@@ -236,7 +223,6 @@ export default class OrderForm extends Component {
 
               <div className="selectProduct">
                 <CustomTextInput
-                  disabled={!this.state.vendorId}
                   value={this.state.productInput}
                   placeholder={"Product name:"}
                   onChange={this.handleProductChange.bind(this)}

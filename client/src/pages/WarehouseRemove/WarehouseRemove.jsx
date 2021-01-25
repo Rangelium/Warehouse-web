@@ -9,13 +9,7 @@ import WarehouseRemoveArchive from "./WarehouseRemoveArchive";
 import WarehouseRemoveTable from "./WarehouseRemoveTable";
 import OrderForm from "./OrderProducts/Form";
 import { CustomButton } from "../../components/UtilComponents";
-import {
-  Tabs,
-  Tab,
-  Divider,
-  Backdrop,
-  CircularProgress,
-} from "@material-ui/core";
+import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
 
 export default class WarehouseRemove extends Component {
   static contextType = GlobalDataContext;
@@ -27,15 +21,15 @@ export default class WarehouseRemove extends Component {
     loading: true,
 
     showOrderForm: false,
+    vendorData: [],
+    selectedVendorId: null,
   };
 
   async componentDidMount() {
     this.getProcurementsData();
 
     // Finish all unfinished retailSessions if existed
-    const data = localStorage.getItem(
-      "WarehouseRemoveUnfinishedRetailSessions"
-    );
+    const data = localStorage.getItem("WarehouseRemoveUnfinishedRetailSessions");
     const arr = JSON.parse(data);
 
     if (arr) {
@@ -139,9 +133,47 @@ export default class WarehouseRemove extends Component {
     XLXS.writeFile(wb, "transfer.xls");
   }
   showOrderProductsForm() {
+    if (!this.state.vendorData.length) {
+      return this.context.error("No vendor selected");
+    }
+
     this.setState({
       showOrderForm: true,
     });
+  }
+  toggleVendor(id, vendorId) {
+    if (
+      this.state.selectedVendorId !== null &&
+      this.state.selectedVendorId !== vendorId
+    ) {
+      return this.context.error("Can not select orders from different vendors");
+    }
+
+    let vendorData = [...this.state.vendorData];
+
+    if (vendorData.indexOf(id) !== -1) {
+      vendorData = vendorData.filter((el) => el !== id);
+    } else {
+      vendorData.push(id);
+    }
+
+    if (this.state.vendorData.length) {
+      if (vendorData.length) {
+        this.setState({
+          vendorData,
+        });
+      } else {
+        this.setState({
+          vendorData,
+          selectedVendorId: vendorData.length ? vendorId : null,
+        });
+      }
+    } else {
+      this.setState({
+        vendorData,
+        selectedVendorId: vendorId,
+      });
+    }
   }
 
   render() {
@@ -153,10 +185,7 @@ export default class WarehouseRemove extends Component {
 
         <MainData>
           <div className="mainHead">
-            <Tabs
-              value={this.state._tabValue}
-              onChange={this.handleTabChange.bind(this)}
-            >
+            <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
               <Tab label="Təstiq gözləyənlər" />
               <Tab label="Arxiv" />
             </Tabs>
@@ -178,14 +207,23 @@ export default class WarehouseRemove extends Component {
 
           <TabItem hidden={this.state._tabValue !== 0}>
             <WarehouseRemoveTable
-              // showNewTransferForm={(data) => this.setState({ selectedSessionInfo: data })}
+              toggleVendor={this.toggleVendor.bind(this)}
+              vendorData={this.state.vendorData}
               refresh={this.getProcurementsData.bind(this)}
               tableData={this.state.procurementTableData}
             />
 
             <OrderForm
+              vendorData={this.state.vendorData}
+              vendorId={this.state.selectedVendorId}
               open={this.state.showOrderForm}
-              close={() => this.setState({ showOrderForm: false })}
+              close={() =>
+                this.setState({
+                  showOrderForm: false,
+                  vendorData: [],
+                  selectedVendorId: null,
+                })
+              }
             />
           </TabItem>
 

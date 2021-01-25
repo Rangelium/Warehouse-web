@@ -43,6 +43,17 @@ class Row extends Component {
   }
 
   addInventoryNum(num, name, needed) {
+    // Check if invNum is uinque
+    for (let i = 0; i < this.state.inventoryNumArr.length; i++) {
+      if (
+        Object.values(this.state.inventoryNumArr[i]).includes(this.state.inventoryNum)
+      ) {
+        return this.context.error(
+          `Inventoy number "${this.state.inventoryNum}" is already exist`
+        );
+      }
+    }
+
     // Clear input
     this.props.handleChange({
       target: {
@@ -188,7 +199,9 @@ class Row extends Component {
                   );
                 }
               }}
-              disabled={this.state.inventoryNumArr.length >= el.amount}
+              disabled={
+                this.state.inventoryNumArr.length >= el.amount || !el.is_inventory
+              }
               style={{ width: 150 }}
               name={`inventoryNum${i}`}
               value={this.props.tableInputs[`inventoryNum${i}`]}
@@ -197,6 +210,9 @@ class Row extends Component {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
+                      disabled={
+                        this.state.inventoryNumArr.length >= el.amount || !el.is_inventory
+                      }
                       aria-label="toggle password visibility"
                       onClick={() =>
                         this.addInventoryNum(

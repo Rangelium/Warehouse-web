@@ -48,6 +48,16 @@ export default class FormProduct extends Component {
     );
   }
   addInventoryNum() {
+    // Check if invNum is uinque
+    for (let i = 0; i < this.state.inventoryNumArr.length; i++) {
+      if (
+        Object.values(this.state.inventoryNumArr[i]).includes(this.state.inventoryNum)
+      ) {
+        return this.context.error(
+          `Inventoy number "${this.state.inventoryNum}" is already exist`
+        );
+      }
+    }
     // Clear input
     this.setState({
       inventoryNum: "",
@@ -149,48 +159,50 @@ export default class FormProduct extends Component {
             />
           </div>
 
-          <div className="invNums">
-            <CustomTextInput
-              _ref={this.InvNumInputRef}
-              onKeyUp={(e) => {
-                if (e.keyCode === 13) {
-                  e.preventDefault();
+          {this.props.selectedProduct.is_inventory && (
+            <div className="invNums">
+              <CustomTextInput
+                _ref={this.InvNumInputRef}
+                onKeyUp={(e) => {
+                  if (e.keyCode === 13) {
+                    e.preventDefault();
 
-                  this.addInventoryNum();
+                    this.addInventoryNum();
+                  }
+                }}
+                disabled={
+                  this.state.inventoryNumArr.length >= parseInt(this.state.quantity || 0)
                 }
-              }}
-              disabled={
-                this.state.inventoryNumArr.length >= parseInt(this.state.quantity || 0)
-              }
-              label="Inventory number"
-              name="inventoryNum"
-              value={this.state.inventoryNum}
-              onChange={this.handleInputsChange.bind(this)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => this.addInventoryNum()}
-                    >
-                      <ControlPointIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+                label="Inventory number"
+                name="inventoryNum"
+                value={this.state.inventoryNum}
+                onChange={this.handleInputsChange.bind(this)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => this.addInventoryNum()}
+                      >
+                        <ControlPointIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
 
-            <div className="invNumsContainer">
-              {this.state.inventoryNumArr.map(({ id, num }, i) => (
-                <div key={id} className="invNumItem">
-                  <p>{num}</p>
-                  <IconButton onClick={() => this.removeInventoryNum(i)}>
-                    <RemoveCircleOutlineIcon />
-                  </IconButton>
-                </div>
-              ))}
+              <div className="invNumsContainer">
+                {this.state.inventoryNumArr.map(({ id, num }, i) => (
+                  <div key={id} className="invNumItem">
+                    <p>{num}</p>
+                    <IconButton onClick={() => this.removeInventoryNum(i)}>
+                      <RemoveCircleOutlineIcon />
+                    </IconButton>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
         <div className="fileImportContainer">
           <FileImport file={this.props.file} setFile={this.props.setFile} />

@@ -53,6 +53,8 @@ export default class WarehouseAddForm extends Component {
         isValid = false;
         return;
       }
+
+      if (!el.is_inventory) return;
       if (IvnNumContRef[i].current.state.inventoryNumArr.length !== parseInt(el.amount)) {
         isValid = false;
         return this.context.error(
@@ -78,7 +80,6 @@ export default class WarehouseAddForm extends Component {
           product_cell: inputsData[`productCell${i}`],
           currency: inputsData[`currency${i}`],
           exp_date: inputsData[`expDate${i}`],
-          reason: "",
           inventory_num: inputsData[`inventoryNum${i}`],
           barcode: this.props.dataForFill[i].barcode,
           session_id: this.state.sessionId,

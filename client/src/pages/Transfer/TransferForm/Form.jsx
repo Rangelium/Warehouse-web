@@ -57,20 +57,23 @@ export default class TransferForm extends Component {
     }
 
     if (this.state.activeStep) {
-      if (
-        parseInt(this.state.transferInfoData.quantity) ===
-        this.FormProductRef.current.state.inventoryNumArr.length
-      ) {
-        this.FormProductRef.current.clearInputs();
-        this.handleTransfer(this.state.activeStep - 1);
-      } else {
-        return this.context.error(
-          "You need to create Inventory numbers for all products"
-        );
+      if (this.state.selectedProducts[this.state.activeStep - 1].is_inventory) {
+        if (
+          parseInt(this.state.transferInfoData.quantity) ===
+          this.FormProductRef.current.state.inventoryNumArr.length
+        ) {
+          this.FormProductRef.current.clearInputs();
+          this.handleTransfer(this.state.activeStep - 1);
+        } else {
+          return this.context.error(
+            "You need to create Inventory numbers for all products"
+          );
+        }
       }
     }
     if (this.state.activeStep === this.state.selectedProducts.length) {
       this.props.refresh();
+      console.log("refrehs called");
       return this.handleClose();
     }
 
@@ -136,35 +139,46 @@ export default class TransferForm extends Component {
         document_id_as_parent_id: this.state.selectedProducts[i].document_id,
       })
       .then((res) => {
-        let InvNumsArrMats = [];
-        this.FormProductRef.current.state.inventoryNumArr.forEach(({ num }) => {
-          InvNumsArrMats.push([
-            null,
-            num,
-            res[0].link_child_document_id,
-            this.state.selectedProducts[i].product_id,
-            3,
-          ]);
-          InvNumsArrMats.push([
-            null,
-            num,
-            res[0].document_id,
-            this.state.selectedProducts[i].product_id,
-            -3,
-          ]);
-        });
+        console.log(this.state.selectedProducts[this.state.activeStep - 1]);
+        if (this.state.selectedProducts[this.state.activeStep - 1].is_inventory) {
+          let InvNumsArrMats = [];
+          this.FormProductRef.current.state.inventoryNumArr.forEach(({ num }) => {
+            InvNumsArrMats.push([
+              null,
+              num,
+              res[0].link_child_document_id,
+              this.state.selectedProducts[i].product_id,
+              3,
+            ]);
+            InvNumsArrMats.push([
+              null,
+              num,
+              res[0].document_id,
+              this.state.selectedProducts[i].product_id,
+              -3,
+            ]);
+          });
 
-        api
-          .addInvNumsTable(InvNumsArrMats)
-          .then(() => {
-            this.FormProductRef.current.clearInvNums();
-            this.context.success(
-              `Əlavə edildi ${this.state.selectedProducts[i].product_title}`
-            );
-          })
-          .catch((err) => this.context.error(err.errText));
+          console.log(InvNumsArrMats);
+          api
+            .addInvNumsTable(InvNumsArrMats)
+            .then(() => {
+              this.context.success(
+                `Əlavə edildi ${this.state.selectedProducts[i].product_title}`
+              );
+              this.FormProductRef.current.clearInvNums();
+            })
+            .catch((err) => this.context.error(err));
+        } else {
+          this.context.success(
+            `Əlavə edildi ${this.state.selectedProducts[i].product_title}`
+          );
+        }
       })
-      .catch((err) => this.context.error(err.errText));
+      .catch((err) => {
+        this.context.error(err.errText);
+        console.log(err);
+      });
   }
   handleChange(e) {
     this.setState({

@@ -48,8 +48,6 @@ export default class WarehouseRemoveForm extends Component {
 
     selectedAmounts: Array(this.props.data.length).fill(0),
     selectedProduct: null,
-
-    showProductAuthForm: false,
   };
 
   async componentDidMount() {
@@ -125,19 +123,16 @@ export default class WarehouseRemoveForm extends Component {
       }
     );
   }
-  async handleSubmit(e, authComplete) {
+  async handleSubmit(e) {
     e.preventDefault();
 
-    if (!authComplete) {
-      for (let i = 0; i < this.state.selectedAmounts.length; i++) {
-        if (this.state.selectedAmounts[i] !== parseInt(this.props.data[i].amount)) {
-          this.setState({
-            showProductAuthForm: true,
-          });
-
-          this.context.error("Not enough products selected");
-          return;
-        }
+    let authComplete = true;
+    for (let i = 0; i < this.state.selectedAmounts.length; i++) {
+      if (!this.state.selectedAmounts[i]) {
+        return this.context.error("Nothing selected");
+      }
+      if (this.state.selectedAmounts[i] !== parseInt(this.props.data[i].amount)) {
+        authComplete = false;
       }
     }
 
@@ -147,7 +142,7 @@ export default class WarehouseRemoveForm extends Component {
         user_id: this.context.userId,
         retail_sale_session_id: this.props.retailSaleId,
         order_id: this.props.order_id,
-        status: !authComplete ? 20 : 0, // if selectedAmount === required will be 20, after productAuth will be 21
+        status: authComplete ? 20 : 0,
       })
       .then(() => {
         let InvNumsArrMats = [];
