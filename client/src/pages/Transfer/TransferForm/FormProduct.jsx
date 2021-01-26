@@ -17,96 +17,62 @@ export default class FormProduct extends Component {
     super();
 
     this.state = {
-      quantity: "",
-      productCell: "",
-      contractNum: "",
-      reason: "",
-
       inventoryNum: "",
-      inventoryNumArr: [],
     };
 
     this.InvNumInputRef = React.createRef();
   }
 
-  clearInputs() {
+  handleChange(e) {
     this.setState({
-      quantity: "",
-      productCell: "",
-      contractNum: "",
-      reason: "",
+      [e.target.name]: e.target.value,
     });
-  }
-  handleInputsChange(e) {
-    this.setState(
-      {
-        [e.target.name]: e.target.value,
-      },
-      () => {
-        this.props.setTransefInfo(this.state);
-      }
-    );
   }
   addInventoryNum() {
     // Check if invNum is uinque
-    for (let i = 0; i < this.state.inventoryNumArr.length; i++) {
-      if (
-        Object.values(this.state.inventoryNumArr[i]).includes(this.state.inventoryNum)
-      ) {
+    for (let i = 0; i < this.props.invNumArr.length; i++) {
+      if (Object.values(this.props.invNumArr[i]).includes(this.state.inventoryNum)) {
         return this.context.error(
           `Inventoy number "${this.state.inventoryNum}" is already exist`
         );
       }
     }
-    // Clear input
-    this.setState({
-      inventoryNum: "",
-    });
+
     // Check if empty
     if (!this.state.inventoryNum.trim().length) {
       return this.context.error("Inventory num cannot be empty");
     }
 
     // Check if needed amount selected
-    if (this.state.inventoryNumArr.length === parseInt(this.state.quantity)) {
+    if (this.props.invNumArr.length === parseInt(this.props.quantity)) {
       return this.context.error("Needed amount added");
     }
 
     // Add to arr
-    let inventoryNumArr = [...this.state.inventoryNumArr];
+    let inventoryNumArr = [...this.props.invNumArr];
     inventoryNumArr.push({
       id: uuid(),
       num: this.state.inventoryNum,
     });
+
+    this.props.setInvNumArr(inventoryNumArr);
     this.setState(
       {
-        inventoryNumArr,
+        inventoryNum: "",
       },
       () => {
-        if (this.state.inventoryNumArr.length === parseInt(this.state.quantity)) {
-          // this.setState({
-          //   showInventory: false,
-          // });
-        } else {
+        if (this.props.invNumArr.length !== parseInt(this.props.quantity)) {
           this.InvNumInputRef.current.focus();
         }
       }
     );
   }
   removeInventoryNum(index) {
-    let inventoryNumArr = [...this.state.inventoryNumArr];
+    let inventoryNumArr = [...this.props.invNumArr];
 
     inventoryNumArr.splice(index, 1);
 
-    this.setState({
-      inventoryNumArr,
-    });
-  }
-  clearInvNums() {
-    this.setState({
-      inventoryNum: "",
-      inventoryNumArr: [],
-    });
+    this.props.setInvNumArr(inventoryNumArr);
   }
 
   render() {
@@ -136,26 +102,26 @@ export default class FormProduct extends Component {
               label="Miqdar"
               type="number"
               name="quantity"
-              value={this.state.quantity}
-              onChange={this.handleInputsChange.bind(this)}
+              value={this.props.quantity}
+              onChange={this.props.handleChange}
             />
             <CustomTextInput
               label="Hücrə №"
               name="productCell"
-              value={this.state.productCell}
-              onChange={this.handleInputsChange.bind(this)}
+              value={this.props.productCell}
+              onChange={this.props.handleChange}
             />
             <CustomTextInput
               label="Müqavilə №"
               name="contractNum"
-              value={this.state.contractNum}
-              onChange={this.handleInputsChange.bind(this)}
+              value={this.props.contractNum}
+              onChange={this.props.handleChange}
             />
             <CustomTextInput
               label="Səbəb"
               name="reason"
-              value={this.state.reason}
-              onChange={this.handleInputsChange.bind(this)}
+              value={this.props.reason}
+              onChange={this.props.handleChange}
             />
           </div>
 
@@ -171,12 +137,12 @@ export default class FormProduct extends Component {
                   }
                 }}
                 disabled={
-                  this.state.inventoryNumArr.length >= parseInt(this.state.quantity || 0)
+                  this.props.invNumArr.length >= parseInt(this.props.quantity || 0)
                 }
                 label="Inventory number"
                 name="inventoryNum"
                 value={this.state.inventoryNum}
-                onChange={this.handleInputsChange.bind(this)}
+                onChange={this.handleChange.bind(this)}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -192,7 +158,7 @@ export default class FormProduct extends Component {
               />
 
               <div className="invNumsContainer">
-                {this.state.inventoryNumArr.map(({ id, num }, i) => (
+                {this.props.invNumArr.map(({ id, num }, i) => (
                   <div key={id} className="invNumItem">
                     <p>{num}</p>
                     <IconButton onClick={() => this.removeInventoryNum(i)}>

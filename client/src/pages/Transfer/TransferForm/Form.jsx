@@ -40,10 +40,14 @@ export default class TransferForm extends Component {
         category: "",
         subCategory: "",
       },
-      transferInfoData: null,
-    };
 
-    this.FormProductRef = React.createRef();
+      quantity: "",
+      productCell: "",
+      contractNum: "",
+      reason: "",
+
+      invNumArr: [],
+    };
   }
 
   componentDidMount() {
@@ -57,25 +61,20 @@ export default class TransferForm extends Component {
     }
 
     if (this.state.activeStep) {
-      if (this.state.selectedProducts[this.state.activeStep - 1].is_inventory) {
-        if (
-          parseInt(this.state.transferInfoData.quantity) ===
-          this.FormProductRef.current.state.inventoryNumArr.length
-        ) {
-          this.FormProductRef.current.clearInputs();
-          this.handleTransfer(this.state.activeStep - 1);
-        } else {
-          return this.context.error(
-            "You need to create Inventory numbers for all products"
-          );
-        }
+      if (
+        this.state.selectedProducts[this.state.activeStep - 1].is_inventory &&
+        parseInt(this.state.quantity) !== this.state.invNumArr.length
+      ) {
+        return this.context.error(
+          "You need to create Inventory numbers for all products"
+        );
+      } else {
+        this.handleTransfer(this.state.activeStep - 1);
       }
     }
-    if (this.state.activeStep === this.state.selectedProducts.length) {
-      this.props.refresh();
-      console.log("refrehs called");
-      return this.handleClose();
-    }
+
+    // Close form if transfered product is last
+    if (this.state.activeStep === this.state.selectedProducts.length) return;
 
     const subCategory = await api
       .executeProcedure("[SalaryDB].anbar.[warehouse_select_products_subcategory]", {
@@ -120,18 +119,18 @@ export default class TransferForm extends Component {
 
     api
       .executeProcedure("[SalaryDB].anbar.[transfer_products_session_info_insert]", {
-        quantity: this.state.transferInfoData.quantity,
-        reason: this.state.transferInfoData.reason,
+        quantity: this.state.quantity,
+        reason: this.state.reason,
         currency: this.state.selectedProducts[i].currency_id,
         storage_from: this.context.storageId,
         storage_to: this.state.toWarehouseId,
         transfer_session_id: this.props.sessionId,
-        document_num: this.state.transferInfoData.contractNum,
+        document_num: this.state.contractNum,
         document_num_path: fileName,
         cluster_order_default: this.state.selectedProducts[i].cluster_default,
         price: this.state.selectedProducts[i].unit_price,
         exp_date: this.state.selectedProducts[i].exp_date,
-        product_cell: this.state.transferInfoData.productCell,
+        product_cell: this.state.productCell,
         barcode: this.state.selectedProducts[i].barcode,
         product_id: this.state.selectedProducts[i].product_id,
         product_manufacturer: this.state.selectedProducts[i].product_manufacturer,
@@ -139,10 +138,11 @@ export default class TransferForm extends Component {
         document_id_as_parent_id: this.state.selectedProducts[i].document_id,
       })
       .then((res) => {
-        console.log(this.state.selectedProducts[this.state.activeStep - 1]);
+        console.log(this.state.selectedProducts);
+        console.log(this.state.activeStep - 1);
         if (this.state.selectedProducts[this.state.activeStep - 1].is_inventory) {
           let InvNumsArrMats = [];
-          this.FormProductRef.current.state.inventoryNumArr.forEach(({ num }) => {
+          this.state.invNumArr.forEach(({ num }) => {
             InvNumsArrMats.push([
               null,
               num,
@@ -166,13 +166,19 @@ export default class TransferForm extends Component {
               this.context.success(
                 `Əlavə edildi ${this.state.selectedProducts[i].product_title}`
               );
-              this.FormProductRef.current.clearInvNums();
             })
             .catch((err) => this.context.error(err));
         } else {
           this.context.success(
             `Əlavə edildi ${this.state.selectedProducts[i].product_title}`
           );
+        }
+
+        this.clearInputs();
+        // Close form if transfered product is last
+        if (this.state.activeStep === this.state.selectedProducts.length) {
+          this.props.refresh();
+          return this.handleClose();
         }
       })
       .catch((err) => {
@@ -185,8 +191,19 @@ export default class TransferForm extends Component {
       [e.target.name]: e.target.value,
     });
   }
+  clearInputs() {
+    this.setState({
+      quantity: "",
+      productCell: "",
+      contractNum: "",
+      reason: "",
+
+      invNumArr: [],
+    });
+  }
   handleClose() {
     this.prepareForm();
+    this.props.refresh();
     this.props.close();
   }
   async prepareForm() {
@@ -205,7 +222,13 @@ export default class TransferForm extends Component {
         category: "",
         subCategory: "",
       },
-      transferInfoData: null,
+
+      quantity: "",
+      productCell: "",
+      contractNum: "",
+      reason: "",
+
+      invNumArr: [],
     });
   }
   selectProduct(data) {
@@ -294,14 +317,17 @@ export default class TransferForm extends Component {
 
               {Boolean(this.state.activeStep) && (
                 <FormProduct
-                  ref={this.FormProductRef}
+                  quantity={this.state.quantity}
+                  productCell={this.state.productCell}
+                  contractNum={this.state.contractNum}
+                  reason={this.state.reason}
+                  handleChange={this.handleChange.bind(this)}
+                  invNumArr={this.state.invNumArr}
+                  setInvNumArr={(invNumArr) => this.setState({ invNumArr })}
                   active={this.state.activeStep}
                   file={this.state.file}
                   setFile={(file) => this.setState({ file })}
                   path={this.state.selectedProductPath}
-                  setTransefInfo={(data) => {
-                    this.setState({ transferInfoData: data });
-                  }}
                   selectedProduct={this.state.selectedProducts[this.state.activeStep - 1]}
                 />
               )}
