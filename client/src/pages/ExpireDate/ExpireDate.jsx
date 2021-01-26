@@ -9,13 +9,7 @@ import ExpDateOverTable from "./ExpDateTable";
 import ArchiveTable from "./ExpireDateArchive";
 import WriteOffPage from "./WriteOff/WriteOffPage";
 import { CustomButton, CustomTextInput } from "../../components/UtilComponents";
-import {
-  Tabs,
-  Tab,
-  Divider,
-  Backdrop,
-  CircularProgress,
-} from "@material-ui/core";
+import { Tabs, Tab, Divider, Backdrop, CircularProgress } from "@material-ui/core";
 
 // Icons
 import RemoveIcon from "@material-ui/icons/Remove";
@@ -31,7 +25,7 @@ export default class ExpireDate extends Component {
     archiveTableData: [],
     loading: true,
 
-    _tabValue: 1,
+    _tabValue: 0,
   };
 
   componentDidMount() {
@@ -157,12 +151,9 @@ export default class ExpireDate extends Component {
   }
   createNewSession() {
     api
-      .executeProcedure(
-        "[SalaryDB].anbar.[decommission_products_create_session]",
-        {
-          storage_id: this.context.storageId,
-        }
-      )
+      .executeProcedure("[SalaryDB].anbar.[decommission_products_create_session]", {
+        storage_id: this.context.storageId,
+      })
       .then(() => {
         this.context.success("Sessiya yaradıldı");
         this.getDecommisionData();
@@ -179,10 +170,7 @@ export default class ExpireDate extends Component {
 
         <MainData>
           <div className="mainHead">
-            <Tabs
-              value={this.state._tabValue}
-              onChange={this.handleTabChange.bind(this)}
-            >
+            <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
               <Tab label="Təstiq gözləyənlər" />
               <Tab label="Silinmə" />
               <Tab label="Arxiv" />
@@ -202,8 +190,7 @@ export default class ExpireDate extends Component {
                     this.context
                       .alert({
                         title: "Yeni sessiya yarat",
-                        description:
-                          "Yeni bir sessiya yaratmaq istədiyinizə əminsiniz??",
+                        description: "Yeni bir sessiya yaratmaq istədiyinizə əminsiniz??",
                       })
                       .then(() => this.createNewSession())
                       .catch(() => {});

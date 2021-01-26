@@ -6,16 +6,25 @@ import api from "../../../../tools/connect";
 
 import Table from "./FormTable";
 import FormProduct from "./FormProduct";
-import { CustomButton } from "../../../../components/UtilComponents";
+import {
+  CustomButton,
+  CustomSelect,
+  CustomSelectItem,
+  CustomTextInput,
+} from "../../../../components/UtilComponents";
 import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Typography,
   Divider,
 } from "@material-ui/core";
 
-export default class DecommisionForm extends Component {
+// Icons
+import DoubleArrowOutlinedIcon from "@material-ui/icons/DoubleArrowOutlined";
+
+export default class TransferForm extends Component {
   static contextType = GlobalDataContext;
   constructor() {
     super();
@@ -31,10 +40,13 @@ export default class DecommisionForm extends Component {
         category: "",
         subCategory: "",
       },
-      transferInfoData: null,
-    };
 
-    this.FormProductRef = React.createRef();
+      quantity: "",
+      contractNum: "",
+      reason: "",
+
+      invNumArr: [],
+    };
   }
 
   componentDidMount() {
@@ -49,25 +61,19 @@ export default class DecommisionForm extends Component {
 
     if (this.state.activeStep) {
       if (
-        parseInt(this.state.transferInfoData.quantity) ===
-        this.FormProductRef.current.state.inventoryNumArr.length
+        this.state.selectedProducts[this.state.activeStep - 1].is_inventory &&
+        parseInt(this.state.quantity) !== this.state.invNumArr.length
       ) {
-        this.FormProductRef.current.clearInputs();
-        this.handleTransfer(
-          this.state.activeStep - 1,
-          this.FormProductRef.current.state.inventoryNumArr
-        );
-        this.FormProductRef.current.clearInvNums();
-      } else {
         return this.context.error(
           "You need to create Inventory numbers for all products"
         );
+      } else {
+        this.handleTransfer(this.state.activeStep - 1);
       }
     }
-    if (this.state.activeStep === this.state.selectedProducts.length) {
-      this.props.refresh();
-      return this.handleClose();
-    }
+
+    // Close form if transfered product is last
+    if (this.state.activeStep === this.state.selectedProducts.length) return;
 
     const subCategory = await api
       .executeProcedure("[SalaryDB].anbar.[warehouse_select_products_subcategory]", {
@@ -93,7 +99,7 @@ export default class DecommisionForm extends Component {
       };
     });
   }
-  handleTransfer = async (i, invNumArr) => {
+  async handleTransfer(i) {
     let fileName = null;
     if (this.state.file) {
       // Generate random name for file
@@ -110,14 +116,14 @@ export default class DecommisionForm extends Component {
       if (res === undefined) return;
     }
 
-    const docId = await api
+    api
       .executeProcedure("[SalaryDB].anbar.[decommission_product_session_info_insert]", {
-        quantity: this.state.transferInfoData.quantity,
-        reason: this.state.transferInfoData.reason,
+        quantity: this.state.quantity,
+        reason: this.state.reason,
         currency: this.state.selectedProducts[i].currency_id,
         storage_id: this.context.storageId,
         decommission_session_id: this.props.sessionId,
-        document_num: this.state.transferInfoData.contractNum,
+        document_num: this.state.contractNum,
         document_num_path: fileName,
         cluster_order_default: this.state.selectedProducts[i].cluster_default,
         price: this.state.selectedProducts[i].unit_price,
@@ -125,36 +131,69 @@ export default class DecommisionForm extends Component {
         product_cell: this.state.selectedProducts[i].product_cell,
         barcode: this.state.selectedProducts[i].barcode,
         product_id: this.state.selectedProducts[i].product_id,
+        product_manufacturer: this.state.selectedProducts[i].product_manufacturer,
         left: this.state.selectedProducts[i].left,
         document_id_as_parent_id: this.state.selectedProducts[i].document_id,
       })
-      .then((res) => res[0].document_id)
-      .catch((err) => this.context.error(err.errText));
+      .then((res) => {
+        console.log(this.state.selectedProducts);
+        console.log(this.state.activeStep - 1);
+        if (this.state.selectedProducts[this.state.activeStep - 1].is_inventory) {
+          let InvNumsArrMats = [];
+          this.state.invNumArr.forEach(({ num }) => {
+            InvNumsArrMats.push([
+              null,
+              num,
+              res[0].document_id,
+              this.state.selectedProducts[i].product_id,
+              -1,
+            ]);
+          });
 
-    let InvNumsArrMats = [];
-    invNumArr.forEach(({ num }) => {
-      InvNumsArrMats.push([
-        null,
-        num,
-        docId,
-        this.state.selectedProducts[i].product_id,
-        -1,
-      ]);
-    });
+          console.log(InvNumsArrMats);
+          api
+            .addInvNumsTable(InvNumsArrMats)
+            .then(() => {
+              this.context.success(
+                `Əlavə edildi ${this.state.selectedProducts[i].product_title}`
+              );
+            })
+            .catch((err) => this.context.error(err));
+        } else {
+          this.context.success(
+            `Əlavə edildi ${this.state.selectedProducts[i].product_title}`
+          );
+        }
 
-    await api
-      .addInvNumsTable(InvNumsArrMats)
-      .catch((err) => this.context.error(err.errText));
-
-    this.context.success(`Əlavə edildi`);
-  };
+        this.clearInputs();
+        // Close form if transfered product is last
+        if (this.state.activeStep === this.state.selectedProducts.length) {
+          this.props.refresh();
+          return this.handleClose();
+        }
+      })
+      .catch((err) => {
+        this.context.error(err.errText);
+        console.log(err);
+      });
+  }
   handleChange(e) {
     this.setState({
       [e.target.name]: e.target.value,
     });
   }
+  clearInputs() {
+    this.setState({
+      quantity: "",
+      contractNum: "",
+      reason: "",
+
+      invNumArr: [],
+    });
+  }
   handleClose() {
     this.prepareForm();
+    this.props.refresh();
     this.props.close();
   }
   async prepareForm() {
@@ -173,7 +212,13 @@ export default class DecommisionForm extends Component {
         category: "",
         subCategory: "",
       },
-      transferInfoData: null,
+
+      quantity: "",
+      productCell: "",
+      contractNum: "",
+      reason: "",
+
+      invNumArr: [],
     });
   }
   selectProduct(data) {
@@ -215,9 +260,43 @@ export default class DecommisionForm extends Component {
             }
           }}
         >
-          <DialogTitle>Products decommision</DialogTitle>
+          <DialogTitle>Məhsulların Transferi</DialogTitle>
 
           <StyledContent>
+            <div className="heading">
+              <CustomTextInput
+                style={{ minWidth: "200px" }}
+                disabled={true}
+                label="Anbardan"
+                value={this.context.storageTitle}
+              />
+
+              <div className="block">
+                <Typography noWrap variant="h3">
+                  TRANSFER
+                </Typography>
+                <DoubleArrowOutlinedIcon className="icon" />
+              </div>
+
+              <CustomSelect
+                required
+                style={{ minWidth: "200px" }}
+                disabled={Boolean(this.state.activeStep)}
+                label="Anbara"
+                name="toWarehouseId"
+                value={this.state.toWarehouseId}
+                onChange={this.handleChange.bind(this)}
+              >
+                {this.state.warehouseData.map((warehouse) =>
+                  warehouse.id !== this.context.storageId ? (
+                    <CustomSelectItem key={uuid()} value={warehouse.id}>
+                      {warehouse.storage_name}
+                    </CustomSelectItem>
+                  ) : null
+                )}
+              </CustomSelect>
+            </div>
+
             <div className="mainData">
               {!this.state.activeStep && (
                 <Table
@@ -228,14 +307,17 @@ export default class DecommisionForm extends Component {
 
               {Boolean(this.state.activeStep) && (
                 <FormProduct
-                  ref={this.FormProductRef}
+                  quantity={this.state.quantity}
+                  productCell={this.state.productCell}
+                  contractNum={this.state.contractNum}
+                  reason={this.state.reason}
+                  handleChange={this.handleChange.bind(this)}
+                  invNumArr={this.state.invNumArr}
+                  setInvNumArr={(invNumArr) => this.setState({ invNumArr })}
                   active={this.state.activeStep}
                   file={this.state.file}
                   setFile={(file) => this.setState({ file })}
                   path={this.state.selectedProductPath}
-                  setTransefInfo={(data) => {
-                    this.setState({ transferInfoData: data });
-                  }}
                   selectedProduct={this.state.selectedProducts[this.state.activeStep - 1]}
                 />
               )}
@@ -260,7 +342,7 @@ export default class DecommisionForm extends Component {
 const StyledDialog = styled(Dialog)`
   .MuiDialog-container > .MuiPaper-root {
     min-width: 620px;
-    max-width: 720px;
+    max-width: 620px;
     height: 1000px;
     max-height: calc(100% - 24px);
 
@@ -302,10 +384,32 @@ const StyledContent = styled(DialogContent)`
   display: flex;
   flex-direction: column;
 
+  .heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .block {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .MuiTypography-root {
+        font-size: 1.6rem;
+        margin-right: 5px;
+      }
+
+      .icon {
+        transform: scale(1.4);
+        color: #ffaa00;
+      }
+    }
+  }
+
   .mainData {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    /* padding-top: 10px; */
+    padding-top: 10px;
   }
 `;
