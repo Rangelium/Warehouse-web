@@ -128,9 +128,9 @@ export default class WarehouseRemoveForm extends Component {
 
     let authComplete = true;
     for (let i = 0; i < this.state.selectedAmounts.length; i++) {
-      if (!this.state.selectedAmounts[i]) {
-        return this.context.error("Nothing selected");
-      }
+      // if (!this.state.selectedAmounts[i]) {
+      //   return this.context.error("Nothing selected");
+      // }
       if (this.state.selectedAmounts[i] !== parseInt(this.props.data[i].amount)) {
         authComplete = false;
       }
