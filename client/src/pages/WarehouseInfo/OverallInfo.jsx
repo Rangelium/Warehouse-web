@@ -28,9 +28,7 @@ export default class OverallInfo extends Component {
             <StyledPaper elevation={3}>
               <p className="title">Məhsulların ümumi miqdarı</p>
               <p>
-                {this.props.overallInfo.quantity
-                  ? this.props.overallInfo.quantity
-                  : 0}
+                {this.props.overallInfo.quantity ? this.props.overallInfo.quantity : 0}
               </p>
             </StyledPaper>
             <StyledPaper elevation={3}>
@@ -45,7 +43,9 @@ export default class OverallInfo extends Component {
               <p className="title">Anbarın ümumi dəyəri</p>
               <p>
                 {this.props.overallInfo.cost
-                  ? `${this.props.overallInfo.cost} ${this.props.overallInfo.last_in_currency}`
+                  ? `${parseFloat(this.props.overallInfo.cost).toFixed(3)} ${
+                      this.props.overallInfo.last_in_currency
+                    }`
                   : 0}
               </p>
             </StyledPaper>
@@ -59,12 +59,20 @@ export default class OverallInfo extends Component {
             <StyledPaper elevation={3}>
               <div className="specialBlock">
                 <p className="specialUtil specialRow">
-                  <InfoOutlinedIcon className="specialIcon" /> Son sifariş
-                  (mədaxil)
+                  <InfoOutlinedIcon className="specialIcon" /> Son sifariş (mədaxil)
                 </p>
-                <h2 className="specialTitle specialRow">
+                <h2
+                  className="specialTitle specialRow"
+                  title={
+                    this.props.overallInfo.last_in_name.length > 24
+                      ? this.props.overallInfo.last_in_name
+                      : false
+                  }
+                >
                   {this.props.overallInfo.last_in_name
-                    ? this.props.overallInfo.last_in_name
+                    ? this.props.overallInfo.last_in_name.length > 24
+                      ? this.props.overallInfo.last_in_name.slice(0, 24) + "..."
+                      : this.props.overallInfo.last_in_name
                     : "None"}
                 </h2>
                 <div className="data specialRow">
@@ -133,8 +141,7 @@ export default class OverallInfo extends Component {
             <StyledPaper elevation={3}>
               <div className="specialBlock">
                 <p className="specialUtil specialRow">
-                  <InfoOutlinedIcon className="specialIcon" /> Son sifariş
-                  (məxaric)
+                  <InfoOutlinedIcon className="specialIcon" /> Son sifariş (məxaric)
                 </p>
                 <h2 className="specialTitle specialRow">
                   {this.props.overallInfo.last_out_name
