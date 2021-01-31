@@ -150,13 +150,14 @@ export default class OrderForm extends Component {
     }
 
     const mats = this.state.orderTableData.map(
-      ({ id, orderAmount, sub_gl_category_id, setting_price, reason }) => {
+      ({ id, orderAmount, sub_gl_category_id, setting_price, reason, invNums }) => {
         return [
           id,
           orderAmount,
           parseFloat((orderAmount * parseFloat(setting_price)).toFixed(3)),
           reason,
           sub_gl_category_id,
+          invNums,
         ];
       }
     );
