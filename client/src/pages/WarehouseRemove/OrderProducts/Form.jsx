@@ -151,14 +151,24 @@ export default class OrderForm extends Component {
 
     const mats = this.state.orderTableData.map(
       ({ id, orderAmount, sub_gl_category_id, setting_price, reason, invNums }) => {
-        return [
-          id,
-          orderAmount,
-          parseFloat((orderAmount * parseFloat(setting_price)).toFixed(3)),
-          reason,
-          sub_gl_category_id,
-          invNums,
-        ];
+        if (invNums.length) {
+          return [
+            id,
+            orderAmount,
+            parseFloat((orderAmount * parseFloat(setting_price)).toFixed(3)),
+            reason,
+            sub_gl_category_id,
+            invNums,
+          ];
+        } else {
+          return [
+            id,
+            orderAmount,
+            parseFloat((orderAmount * parseFloat(setting_price)).toFixed(3)),
+            reason,
+            sub_gl_category_id,
+          ];
+        }
       }
     );
     const data = {
@@ -170,6 +180,7 @@ export default class OrderForm extends Component {
       direct: 1,
       basedon: this.props.vendorData.join(","),
     };
+    console.log(data);
 
     api
       .createNewOrder(data)
