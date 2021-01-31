@@ -188,7 +188,8 @@ export default class OrderForm extends Component {
         if (res.data[0].error) {
           this.context.error(res.data[0].error);
         } else {
-          this.props.close();
+          this.context.success("Order complete");
+          this.handleClose();
         }
       })
       .catch((err) => this.context.error(err.errText));
