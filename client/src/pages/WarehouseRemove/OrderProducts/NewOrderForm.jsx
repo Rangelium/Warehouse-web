@@ -28,6 +28,8 @@ export default class NewOrderForm extends Component {
 
       inventoryNum: "",
       inventoryNumArr: [],
+
+      _CRUTCH_checkedForEdit: false,
     };
 
     this.InvNumInputRef = React.createRef();
@@ -53,14 +55,22 @@ export default class NewOrderForm extends Component {
     }
 
     this.handleClose();
-    const key = uuid();
-    this.props.addOrder({
-      ...this.props.data,
-      key,
-      orderAmount: parseInt(this.state.quantity),
-      reason: this.state.reason,
-      invNums: this.state.inventoryNumArr,
-    });
+    if (this.props.data.editMode) {
+      this.props.editOrder({
+        ...this.props.data,
+        orderAmount: parseInt(this.state.quantity),
+        reason: this.state.reason,
+      });
+    } else {
+      const key = uuid();
+      this.props.addOrder({
+        ...this.props.data,
+        key,
+        orderAmount: parseInt(this.state.quantity),
+        reason: this.state.reason,
+        invNums: this.state.inventoryNumArr,
+      });
+    }
   }
   handleClose() {
     this.props.close();
@@ -68,6 +78,8 @@ export default class NewOrderForm extends Component {
       quantity: "",
       reason: "",
       inventoryNumArr: [],
+
+      _CRUTCH_checkedForEdit: false,
     });
   }
   addInventoryNum() {
@@ -127,6 +139,15 @@ export default class NewOrderForm extends Component {
   render() {
     if (!this.props.data) return null;
 
+    if (this.props.data.editMode && !this.state._CRUTCH_checkedForEdit) {
+      this.setState({
+        quantity: this.props.data.orderAmount,
+        reason: this.props.data.reason || "",
+
+        _CRUTCH_checkedForEdit: true,
+      });
+    }
+
     return (
       <StyledDialog
         style={{ zIndex: 21 }}
@@ -160,7 +181,7 @@ export default class NewOrderForm extends Component {
               {(
                 parseInt(this.state.quantity || 0) *
                 parseFloat(this.props.data.setting_price)
-              ).toFixed(3)}{" "}
+              ).toFixed(2)}{" "}
               {this.props.data.currency_title}
             </p>
             <CustomTextInput
@@ -168,7 +189,7 @@ export default class NewOrderForm extends Component {
               type="number"
               InputProps={{
                 inputProps: {
-                  min: 0,
+                  min: 1,
                 },
               }}
               name="quantity"
@@ -238,7 +259,9 @@ export default class NewOrderForm extends Component {
             <Divider />
             <CustomButton onClick={this.handleClose.bind(this)}>Bağla</CustomButton>
             <div className="gap" style={{ flexGrow: 1 }}></div>
-            <CustomButton type="submit">Əlavə et</CustomButton>
+            <CustomButton type="submit">
+              {this.props.data.editMode ? "Edit" : "Əlavə et"}
+            </CustomButton>
           </DialogActions>
         </form>
       </StyledDialog>

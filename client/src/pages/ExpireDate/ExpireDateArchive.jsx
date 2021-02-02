@@ -71,7 +71,7 @@ export default class ArchiveTable extends Component {
                   <TableCell align="center">{el.barcode || <RemoveIcon />}</TableCell>
                   <TableCell align="center">{`${el.quantity} ${el.unit_title}`}</TableCell>
                   <TableCell align="center">{`${el.price} ${el.currency_title}`}</TableCell>
-                  <TableCell align="center">{`${parseFloat(el.sum_price).toFixed(3)} ${
+                  <TableCell align="center">{`${parseFloat(el.sum_price).toFixed(2)} ${
                     el.currency_title
                   }`}</TableCell>
                   {/* <TableCell align="center">{el.title[2]}</TableCell> */}

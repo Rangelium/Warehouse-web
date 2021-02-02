@@ -21,6 +21,7 @@ export default class WarehouseRemove extends Component {
     loading: true,
 
     showOrderForm: false,
+    orderData: [],
     vendorData: [],
     selectedVendorId: null,
   };
@@ -132,13 +133,20 @@ export default class WarehouseRemove extends Component {
     wb.Sheets[wb.SheetNames[0]] = XLXS.utils.aoa_to_sheet(data);
     XLXS.writeFile(wb, "transfer.xls");
   }
-  showOrderProductsForm() {
+  async showOrderProductsForm() {
     if (!this.state.vendorData.length) {
       return this.context.error("No vendor selected");
     }
 
+    const orderData = await api
+      .executeProcedure("[SalaryDB].anbar.[order_list_select_orders_info]", {
+        order_details_id: this.state.vendorData.join(","),
+      })
+      .catch((err) => console.log(err));
+
     this.setState({
       showOrderForm: true,
+      orderData,
     });
   }
   toggleVendor(id, vendorId) {
@@ -213,18 +221,21 @@ export default class WarehouseRemove extends Component {
               tableData={this.state.procurementTableData}
             />
 
-            <OrderForm
-              vendorData={this.state.vendorData}
-              vendorId={this.state.selectedVendorId}
-              open={this.state.showOrderForm}
-              close={() =>
-                this.setState({
-                  showOrderForm: false,
-                  vendorData: [],
-                  selectedVendorId: null,
-                })
-              }
-            />
+            {this.state.showOrderForm && (
+              <OrderForm
+                open={true}
+                close={() =>
+                  this.setState({
+                    showOrderForm: false,
+                    vendorData: [],
+                    selectedVendorId: null,
+                  })
+                }
+                orderData={this.state.orderData}
+                vendorData={this.state.vendorData}
+                vendorId={this.state.selectedVendorId}
+              />
+            )}
           </TabItem>
 
           <TabItem hidden={this.state._tabValue !== 1}>

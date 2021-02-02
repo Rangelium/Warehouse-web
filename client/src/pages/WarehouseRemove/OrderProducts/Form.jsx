@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import uuid from "react-uuid";
 import { GlobalDataContext } from "../../../components/GlobalDataProvider";
 import api from "../../../tools/connect";
 
@@ -27,6 +28,8 @@ import {
 
 // Icons
 import DeleteIcon from "@material-ui/icons/Delete";
+import RemoveIcon from "@material-ui/icons/Remove";
+import EditIcon from "@material-ui/icons/Edit";
 
 export default class OrderForm extends Component {
   static contextType = GlobalDataContext;
@@ -63,7 +66,18 @@ export default class OrderForm extends Component {
       productsData: [],
       selectedProductData: null,
 
-      orderTableData: [],
+      orderTableData: this.props.orderData.map(
+        ({ product_name, approx_price, currency_title, amount_left, amount, reason }) => {
+          return {
+            key: uuid(),
+            title: product_name,
+            setting_price: approx_price,
+            currency_title: currency_title,
+            orderAmount: amount || amount_left,
+            reason: reason,
+          };
+        }
+      ),
 
       activeStep: 1,
       loading: false,
@@ -142,6 +156,27 @@ export default class OrderForm extends Component {
       };
     });
   }
+  editOrder(key) {
+    this.setState({
+      selectedProductData: {
+        ...this.state.orderTableData.find((order) => order.key === key),
+        editMode: true,
+      },
+    });
+  }
+  handleEditOrder(data) {
+    this.setState((prevState) => {
+      return {
+        orderTableData: prevState.orderTableData.map((order) => {
+          if (order.key === data.key) {
+            return data;
+          }
+
+          return order;
+        }),
+      };
+    });
+  }
   async handleSubmit(e) {
     e.preventDefault();
 
@@ -155,7 +190,7 @@ export default class OrderForm extends Component {
           return [
             id,
             orderAmount,
-            parseFloat((orderAmount * parseFloat(setting_price)).toFixed(3)),
+            parseFloat((orderAmount * parseFloat(setting_price)).toFixed(2)),
             reason,
             sub_gl_category_id,
             invNums,
@@ -164,7 +199,7 @@ export default class OrderForm extends Component {
           return [
             id,
             orderAmount,
-            parseFloat((orderAmount * parseFloat(setting_price)).toFixed(3)),
+            parseFloat((orderAmount * parseFloat(setting_price)).toFixed(2)),
             reason,
             sub_gl_category_id,
           ];
@@ -283,9 +318,12 @@ export default class OrderForm extends Component {
                           <TableCell align="center">{orderAmount}</TableCell>
                           <TableCell align="center">{`${(
                             parseFloat(setting_price) * orderAmount
-                          ).toFixed(3)} ${currency_title}`}</TableCell>
-                          <TableCell align="center">{reason}</TableCell>
-                          <TableCell align="center">
+                          ).toFixed(2)} ${currency_title}`}</TableCell>
+                          <TableCell align="center">{reason || <RemoveIcon />}</TableCell>
+                          <TableCell align="center" style={{ display: "flex" }}>
+                            <IconButton onClick={() => this.editOrder(key)}>
+                              <EditIcon />
+                            </IconButton>
                             <IconButton onClick={() => this.removeOrder(key)}>
                               <DeleteIcon />
                             </IconButton>
@@ -313,6 +351,7 @@ export default class OrderForm extends Component {
           }}
           data={this.state.selectedProductData}
           addOrder={this.addNewOrder.bind(this)}
+          editOrder={this.handleEditOrder.bind(this)}
         />
       </StyledDialog>
     );
@@ -327,7 +366,7 @@ const StyledDialog = styled(Dialog)`
   .MuiDialog-container > .MuiPaper-root {
     height: ${(props) => (props.active === 0 ? "200px" : "800px")};
     max-width: unset;
-    width: 650px;
+    width: 750px;
     transition: height 0.4s;
 
     form {

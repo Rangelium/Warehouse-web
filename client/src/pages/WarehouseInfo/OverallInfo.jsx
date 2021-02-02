@@ -43,7 +43,7 @@ export default class OverallInfo extends Component {
               <p className="title">Anbarın ümumi dəyəri</p>
               <p>
                 {this.props.overallInfo.cost
-                  ? `${parseFloat(this.props.overallInfo.cost).toFixed(3)} ${
+                  ? `${parseFloat(this.props.overallInfo.cost).toFixed(2)} ${
                       this.props.overallInfo.last_in_currency
                     }`
                   : 0}

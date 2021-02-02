@@ -73,7 +73,7 @@ export default class TransferArchive extends Component {
                     {el.barcode ? el.barcode : <RemoveIcon />}
                   </TableCell>
                   <TableCell align="center">{`${el.quantity} ${el.unit_title}`}</TableCell>
-                  <TableCell align="center">{`${parseFloat(el.total_sum).toFixed(3)} ${
+                  <TableCell align="center">{`${parseFloat(el.total_sum).toFixed(2)} ${
                     el.currency
                   }`}</TableCell>
                   <TableCell align="center">{el.storage_from}</TableCell>

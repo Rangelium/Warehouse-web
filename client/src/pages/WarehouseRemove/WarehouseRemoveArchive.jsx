@@ -76,7 +76,9 @@ export default class WarehouseRemoveArchive extends Component {
                   <TableCell align="center">{`${el.quantity} ${el.unit_title}`}</TableCell>
                   <TableCell align="center">{`${el.price} ${el.currency_title}`}</TableCell>
                   <TableCell align="center">{`${el.sum_price} ${el.currency_title}`}</TableCell>
-                  <TableCell align="center">{el.product_cell}</TableCell>
+                  <TableCell align="center">
+                    {el.product_cell || <RemoveIcon />}
+                  </TableCell>
                   <TableCell align="center">
                     <IconButton
                       onClick={() => this.showInvNums(el.document_id, el.is_out)}

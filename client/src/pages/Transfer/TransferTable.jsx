@@ -98,7 +98,7 @@ class Row extends Component {
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">{`${parseFloat(
             data.total_sum
-          ).toFixed(3)} ${data.default_currency}`}</TableCell>
+          ).toFixed(2)} ${data.default_currency}`}</TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.done === "+" ? <DoneIcon /> : <RemoveIcon />}
           </TableCell>

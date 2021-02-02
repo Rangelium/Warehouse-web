@@ -198,7 +198,7 @@ export default class SingleProductInfo extends Component {
                     {`${product.unit_price} ${product.currency}`}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
-                    {`${parseFloat(product.total_price).toFixed(3)} ${product.currency}`}
+                    {`${parseFloat(product.total_price).toFixed(2)} ${product.currency}`}
                   </TableCell>
                   <TableCell align="center" className="dataEl">
                     {product.exp_date ? (
