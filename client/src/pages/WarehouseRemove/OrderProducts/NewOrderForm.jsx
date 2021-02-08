@@ -60,6 +60,7 @@ export default class NewOrderForm extends Component {
         ...this.props.data,
         orderAmount: parseInt(this.state.quantity),
         reason: this.state.reason,
+        invNums: this.state.inventoryNumArr,
       });
     } else {
       const key = uuid();
@@ -85,9 +86,7 @@ export default class NewOrderForm extends Component {
   addInventoryNum() {
     // Check if invNum is uinque
     for (let i = 0; i < this.state.inventoryNumArr.length; i++) {
-      if (
-        Object.values(this.state.inventoryNumArr[i]).includes(this.state.inventoryNum)
-      ) {
+      if (this.state.inventoryNumArr[i] === this.state.inventoryNum) {
         return this.context.error(
           `Inventoy number "${this.state.inventoryNum}" is already exist`
         );
@@ -143,6 +142,7 @@ export default class NewOrderForm extends Component {
       this.setState({
         quantity: this.props.data.orderAmount,
         reason: this.props.data.reason || "",
+        inventoryNumArr: this.props.data.invNums || [],
 
         _CRUTCH_checkedForEdit: true,
       });

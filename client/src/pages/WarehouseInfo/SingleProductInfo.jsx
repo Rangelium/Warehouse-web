@@ -171,7 +171,7 @@ export default class SingleProductInfo extends Component {
           <StyledTable stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell className="head">Məhsul</TableCell>
+                {/* <TableCell className="head">Məhsul</TableCell> */}
                 <TableCell className="head">Miqdar</TableCell>
                 <TableCell className="head">Vahid qiyməti</TableCell>
                 <TableCell className="head">Ümumi qiymət</TableCell>
@@ -188,9 +188,9 @@ export default class SingleProductInfo extends Component {
             <TableBody>
               {this.props.tableData.map((product) => (
                 <TableRow key={product.id}>
-                  <TableCell className="dataEl" align="center">
+                  {/* <TableCell className="dataEl" align="center">
                     {product.title}
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell align="center" className="dataEl">
                     {`${product.quantity} ${product.unit_title}`}
                   </TableCell>

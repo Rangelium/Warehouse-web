@@ -64,8 +64,10 @@ export default class OverallInfo extends Component {
                 <h2
                   className="specialTitle specialRow"
                   title={
-                    this.props.overallInfo.last_in_name.length > 24
-                      ? this.props.overallInfo.last_in_name
+                    this.props.overallInfo.last_in_name
+                      ? this.props.overallInfo.last_in_name.length > 24
+                        ? this.props.overallInfo.last_in_name
+                        : false
                       : false
                   }
                 >

@@ -67,14 +67,27 @@ export default class OrderForm extends Component {
       selectedProductData: null,
 
       orderTableData: this.props.orderData.map(
-        ({ product_name, approx_price, currency_title, amount_left, amount, reason }) => {
+        ({
+          material_id,
+          product_name,
+          approx_price,
+          currency_title,
+          amount_left,
+          amount,
+          reason,
+          sub_gl_category_id,
+          is_service,
+        }) => {
           return {
             key: uuid(),
+            id: material_id,
             title: product_name,
             setting_price: approx_price,
             currency_title: currency_title,
             orderAmount: amount || amount_left,
-            reason: reason,
+            reason: reason || "",
+            sub_gl_category_id,
+            is_service,
           };
         }
       ),
@@ -184,28 +197,40 @@ export default class OrderForm extends Component {
       return this.context.error("No orders created");
     }
 
+    // Check if inv nums created rigth if needed
+    for (let i = 0; i < this.state.orderTableData.length; i++) {
+      let _ref = this.state.orderTableData[i];
+      if (
+        _ref.is_service &&
+        (!_ref.invNums || _ref.orderAmount !== _ref.invNums.length)
+      ) {
+        return this.context.error(
+          `You need to create "${
+            _ref.invNums
+              ? parseInt(_ref.orderAmount) - _ref.invNums.length
+              : _ref.orderAmount
+          }" invNums for "${_ref.title}"`
+        );
+      }
+    }
+
+    let inventoryNums = [];
     const mats = this.state.orderTableData.map(
       ({ id, orderAmount, sub_gl_category_id, setting_price, reason, invNums }) => {
-        if (invNums.length) {
-          return [
-            id,
-            orderAmount,
-            parseFloat((orderAmount * parseFloat(setting_price)).toFixed(2)),
-            reason,
-            sub_gl_category_id,
-            invNums,
-          ];
-        } else {
-          return [
-            id,
-            orderAmount,
-            parseFloat((orderAmount * parseFloat(setting_price)).toFixed(2)),
-            reason,
-            sub_gl_category_id,
-          ];
+        if (invNums && invNums.length) {
+          invNums.forEach((invNum) => inventoryNums.push([invNum]));
         }
+
+        return [
+          id,
+          orderAmount,
+          parseFloat((orderAmount * parseFloat(setting_price)).toFixed(2)),
+          reason,
+          sub_gl_category_id,
+        ];
       }
     );
+
     const data = {
       mats,
       empid: this.context.userId,
@@ -214,6 +239,7 @@ export default class OrderForm extends Component {
       structureid: 0,
       direct: 1,
       basedon: this.props.vendorData.join(","),
+      inventoryNums,
     };
     console.log(data);
 

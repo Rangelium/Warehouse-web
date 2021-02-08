@@ -12,12 +12,10 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  InputAdornment,
   IconButton,
 } from "@material-ui/core";
 
 // Icons
-import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 
 export default class WarehouseRemoveTransferProductForm extends Component {
@@ -35,25 +33,54 @@ export default class WarehouseRemoveTransferProductForm extends Component {
 
       inventoryNum: "",
       inventoryNumArr: [],
+
+      allPossibInvNums: [],
+      possibleInvNums: [],
     };
 
     this.InvNumInputRef = React.createRef();
   }
 
+  componentDidMount() {
+    api
+      .executeProcedure("[SalaryDB].anbar.[search_existing_inventories]", {
+        document_id: this.props.product.document_id,
+      })
+      .then((res) => {
+        this.setState({
+          allPossibInvNums: res.map(({ inventory_num }) => {
+            return { invNum: inventory_num, key: uuid() };
+          }),
+          possibleInvNums: res.map(({ inventory_num }) => {
+            return { invNum: inventory_num, key: uuid() };
+          }),
+        });
+      })
+      .catch((err) => console.log(err));
+  }
+  handleInvInputChange(e) {
+    const userText = e.target.value;
+    this.setState((prevState) => {
+      return {
+        inventoryNum: userText,
+        possibleInvNums: userText
+          ? prevState.possibleInvNums.filter(({ invNum }) =>
+              invNum.toLowerCase().includes(userText.toLowerCase())
+            )
+          : prevState.allPossibInvNums,
+      };
+    });
+  }
   handleInputsChange(e) {
     this.setState({
       [e.target.name]: e.target.value,
     });
   }
-  addInventoryNum() {
+  addInventoryNum(invNum) {
     // Check if invNum is uinque
     for (let i = 0; i < this.state.inventoryNumArr.length; i++) {
-      if (
-        Object.values(this.state.inventoryNumArr[i]).includes(this.state.inventoryNum)
-      ) {
-        return this.context.error(
-          `Inventoy number "${this.state.inventoryNum}" is already exist`
-        );
+      if (Object.values(this.state.inventoryNumArr[i]).includes(invNum)) {
+        return this.context.error(`Inventoy number "${invNum}" is already exist`);
       }
     }
 
@@ -62,7 +89,7 @@ export default class WarehouseRemoveTransferProductForm extends Component {
       inventoryNum: "",
     });
     // Check if empty
-    if (!this.state.inventoryNum.trim().length) {
+    if (!invNum.trim().length) {
       return this.context.error("Inventory num cannot be empty");
     }
 
@@ -75,22 +102,11 @@ export default class WarehouseRemoveTransferProductForm extends Component {
     let inventoryNumArr = [...this.state.inventoryNumArr];
     inventoryNumArr.push({
       id: uuid(),
-      num: this.state.inventoryNum,
+      num: invNum,
     });
-    this.setState(
-      {
-        inventoryNumArr,
-      },
-      () => {
-        if (this.state.inventoryNumArr.length === parseInt(this.state.quantity)) {
-          // this.setState({
-          //   showInventory: false,
-          // });
-        } else {
-          this.InvNumInputRef.current.focus();
-        }
-      }
-    );
+    this.setState({
+      inventoryNumArr,
+    });
   }
   removeInventoryNum(index) {
     let inventoryNumArr = [...this.state.inventoryNumArr];
@@ -179,18 +195,14 @@ export default class WarehouseRemoveTransferProductForm extends Component {
         open={this.props.open}
         onClose={this.props.close}
       >
-        <form
-          autoComplete="off"
-          onSubmit={this.handleSubmit.bind(this)}
-          onKeyDown={(e) => {
-            if (e.keyCode === 13) {
-              e.preventDefault();
-            }
-          }}
-        >
+        <form autoComplete="off" onSubmit={this.handleSubmit.bind(this)}>
           <DialogTitle>{this.props.product.product_title}</DialogTitle>
 
-          <StyledContent>
+          <StyledContent
+            invnumsactive={
+              this.state.inventoryNumArr.length < parseInt(this.state.quantity) ? 1 : 0
+            }
+          >
             <h1>Tələb olunan miqdar: {this.props.neededAmount}</h1>
             <div className="inputs">
               <div className="amountBlock">
@@ -213,6 +225,7 @@ export default class WarehouseRemoveTransferProductForm extends Component {
                 />
                 <p className="product-left"> / {this.props.product.left}</p>
               </div>
+
               <CustomTextInput
                 label="Müqavilə nömrəsi"
                 name="documentNum"
@@ -225,37 +238,42 @@ export default class WarehouseRemoveTransferProductForm extends Component {
                 value={this.state.reason}
                 onChange={this.handleInputsChange.bind(this)}
               />
+
               {this.props.product.is_inventory && (
                 <div className="invNums">
-                  <CustomTextInput
-                    _ref={this.InvNumInputRef}
-                    onKeyUp={(e) => {
-                      if (e.keyCode === 13) {
-                        e.preventDefault();
-
-                        this.addInventoryNum();
+                  <div className="invNumCont">
+                    <CustomTextInput
+                      disabled={
+                        this.state.inventoryNumArr.length >= parseInt(this.state.quantity)
                       }
-                    }}
-                    disabled={
-                      this.state.inventoryNumArr.length >= parseInt(this.state.quantity)
-                    }
-                    label="Inventory number"
-                    name="inventoryNum"
-                    value={this.state.inventoryNum}
-                    onChange={this.handleInputsChange.bind(this)}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={() => this.addInventoryNum()}
+                      label="Inventory number"
+                      name="inventoryNum"
+                      value={this.state.inventoryNum}
+                      onChange={this.handleInvInputChange.bind(this)}
+                    />
+                    <div className="foundProducts">
+                      {this.state.possibleInvNums.map(({ key, invNum }) => {
+                        for (let i = 0; i < this.state.inventoryNumArr.length; i++) {
+                          if (
+                            Object.values(this.state.inventoryNumArr[i]).includes(invNum)
+                          ) {
+                            return null;
+                          }
+                        }
+
+                        return (
+                          <p
+                            key={key}
+                            onClick={() => {
+                              this.addInventoryNum(invNum);
+                            }}
                           >
-                            <ControlPointIcon />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
+                            {invNum}
+                          </p>
+                        );
+                      })}
+                    </div>
+                  </div>
 
                   <div className="invNumsContainer">
                     {this.state.inventoryNumArr.map(({ id, num }, i) => (
@@ -372,6 +390,76 @@ const StyledContent = styled(DialogContent)`
       }
       .MuiOutlinedInput-adornedEnd {
         padding-right: 0;
+      }
+
+      .invNumCont {
+        display: inherit;
+        flex-direction: column;
+        position: relative;
+        pointer-events: ${(props) => (props.invnumsactive ? "all" : "none")};
+
+        &:hover .foundProducts {
+          opacity: 1;
+          pointer-events: all;
+        }
+
+        .foundProducts {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 100%;
+          max-height: 240px;
+          border: 1px solid rgba(0, 0, 0, 0.23);
+          border-bottom-left-radius: 4px;
+          border-bottom-right-radius: 4px;
+          z-index: 10;
+          backdrop-filter: blur(5px);
+
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s;
+
+          overflow-y: auto;
+          overflow-x: hidden;
+
+          &:hover {
+            opacity: ${(props) => (props.invnumsactive ? 1 : 0)};
+            pointer-events: ${(props) => (props.invnumsactive ? "all" : "none")};
+          }
+
+          &::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+          }
+          /* Track */
+          &::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border-radius: 10px;
+          }
+          /* Handle */
+          &::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            border-radius: 10px;
+            background: #d7d8d6;
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+          }
+
+          p {
+            width: 100%;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.7);
+            transition: transform 0.3s, color 0.3s, background-color 0.3s;
+
+            &:hover {
+              background-color: rgba(0, 0, 0, 0.2);
+              /* transform: scale(1.03); */
+              color: #000;
+            }
+          }
+        }
       }
 
       .invNumsContainer {

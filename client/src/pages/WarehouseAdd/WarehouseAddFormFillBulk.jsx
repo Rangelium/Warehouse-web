@@ -45,12 +45,8 @@ class Row extends Component {
   addInventoryNum(num, name, needed) {
     // Check if invNum is uinque
     for (let i = 0; i < this.state.inventoryNumArr.length; i++) {
-      if (
-        Object.values(this.state.inventoryNumArr[i]).includes(this.state.inventoryNum)
-      ) {
-        return this.context.error(
-          `Inventoy number "${this.state.inventoryNum}" is already exist`
-        );
+      if (Object.values(this.state.inventoryNumArr[i]).includes(num)) {
+        return this.context.error(`Inventoy number "${num}" is already exist`);
       }
     }
 
