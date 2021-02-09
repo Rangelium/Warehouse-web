@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch,withRouter } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import uuid from "react-uuid";
 import dayjs from "dayjs";
@@ -10,8 +10,9 @@ import { ThemeProvider } from "styled-components";
 // Components
 import Navbar from "./components/Navbar";
 import { CircularProgress } from "@material-ui/core";
-
+import RedirectToProcurement from "./pages/Login/redirect.component";
 // Pages
+
 import WarehouseInfo from "./pages/WarehouseInfo/WarehouseInfo";
 import WarehouseAdd from "./pages/WarehouseAdd/WarehouseAdd";
 import WarehouseRemove from "./pages/WarehouseRemove/WarehouseRemove";
@@ -86,12 +87,17 @@ class App extends React.Component {
     const data = localStorage.getItem("warehouseAccessToken");
     if (data) {
       const tokenData = JSON.parse(data);
+      console.log(tokenData);
       if (parseInt(tokenData.timestamp) + 14400 < dayjs().unix()) {
         localStorage.removeItem("warehouseAccessToken");
       } else {
         this.context.setToken(tokenData.token);
       }
-    }
+    } else if(this.props.location.search.match(/token=(.*)/)){
+      const token = this.props.location.search.match(/token=(.*)/)[1];
+      console.log(token,'kek');
+      this.context.setToken(token);
+   }
 
     this.setState({
       checkUser: false,
@@ -115,7 +121,12 @@ class App extends React.Component {
         });
       } else {
         renderRoutes.push(
-          <ProtectedRoute exact key={uuid()} path={path} Component={Component} />
+          <ProtectedRoute
+            exact
+            key={uuid()}
+            path={path}
+            Component={Component}
+          />
         );
       }
     });
@@ -124,11 +135,10 @@ class App extends React.Component {
 
     return (
       <ThemeProvider theme={this.context.theme}>
-        <BrowserRouter>
           {!Boolean(this.context.userId) && (
             <Switch>
               <Route exact path="/login" component={Login} />
-              <Route path="*" render={() => <Redirect to="/login" />} />
+              <Route path="*" render={(props) => <RedirectToProcurement {...props}/>} />
             </Switch>
           )}
           {Boolean(this.context.userId) && (
@@ -151,21 +161,28 @@ class App extends React.Component {
                     flexDirection: "column",
                   }}
                 >
-                  <h1 style={{ color: "#000", fontSize: "3rem", marginBottom: "15px" }}>
+                  <h1
+                    style={{
+                      color: "#000",
+                      fontSize: "3rem",
+                      marginBottom: "15px",
+                    }}
+                  >
                     Loading...
                   </h1>
                   <p style={{ fontSize: "1.2rem" }}>
                     Check your internet connection or VPN setup
                   </p>
-                  <CircularProgress style={{ color: "#000", marginTop: "15px" }} />
+                  <CircularProgress
+                    style={{ color: "#000", marginTop: "15px" }}
+                  />
                 </div>
               )}
             </StyledMain>
           )}
-        </BrowserRouter>
       </ThemeProvider>
     );
   }
 }
 
-export default App;
+export default withRouter(App);

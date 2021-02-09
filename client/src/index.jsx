@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
+import { BrowserRouter } from "react-router-dom";
 import { StylesProvider } from "@material-ui/core";
 import { GlobalDataProvider } from "./components/GlobalDataProvider";
 import { AlertDialogProvider } from "./components/AlertDialog/AlertDialogContext";
@@ -27,7 +28,9 @@ ReactDOM.render(
       <GlobalDataProvider>
         <StylesProvider injectFirst>
           <GlobalStyles />
+          <BrowserRouter>
           <App />
+          </BrowserRouter>
         </StylesProvider>
       </GlobalDataProvider>
     </AlertDialogProvider>

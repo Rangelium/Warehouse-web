@@ -1,6 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:7000/api";
+axios.defaults.baseURL = "http://172.16.3.57:61543/api";
 
 const timeoutDelay = 3000;
 class API {

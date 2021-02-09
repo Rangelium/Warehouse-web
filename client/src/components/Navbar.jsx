@@ -134,6 +134,7 @@ export default class Navbar extends Component {
               .alert({ title: "Çıxış", description: "Əminsiniz?" })
               .then(() => {
                 this.context.setToken(null);
+                window.location.replace("http://172.16.3.101:3000/?from=warehouse&action=logout")
               })
               .catch(() => {});
           }}
