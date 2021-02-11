@@ -109,14 +109,17 @@ app.post("/api/addInvNumTable", FBAuth, (req, res) => {
     table.columns.add("document_id", sql.TYPES.VarChar(255));
     table.columns.add("product_id", sql.TYPES.BigInt);
     table.columns.add("is_out", sql.TYPES.Int);
+    table.columns.add("session_info_id", sql.TYPES.Int);
+    table.columns.add("storage_id", sql.TYPES.Int);
 
-    req.body.forEach((row) => {
+    req.body.table.forEach((row) => {
       table.rows.add(...row);
     });
 
     // console.log(table);
     const request = new sql.Request();
     request.input("inventories", table);
+    request.input("session_id", req.body.sessionId || null);
     request.execute(
       "[SalaryDB].anbar.[batch_inventory_numbers_insert]",
       (err, result) => {

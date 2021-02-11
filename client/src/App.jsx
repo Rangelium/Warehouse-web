@@ -1,5 +1,5 @@
 import React from "react";
-import { Redirect, Route, Switch,withRouter } from "react-router-dom";
+import { Redirect, Route, Switch, withRouter } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import uuid from "react-uuid";
 import dayjs from "dayjs";
@@ -84,6 +84,15 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    if (
+      this.props.location.search.match(/from=(.*)&/) &&
+      this.props.location.search.match(/from=(.*)&/)[1] === "procurement" &&
+      this.props.location.search.match(/action=(.*)/)[1] === "logout"
+    ) {
+      console.log(this.props.location, "kek");
+      this.context.setToken(null);
+      window.location.replace("http://172.16.3.101:3000/login");
+    }
     const data = localStorage.getItem("warehouseAccessToken");
     if (data) {
       const tokenData = JSON.parse(data);
@@ -93,11 +102,11 @@ class App extends React.Component {
       } else {
         this.context.setToken(tokenData.token);
       }
-    } else if(this.props.location.search.match(/token=(.*)/)){
+    } else if (this.props.location.search.match(/token=(.*)/)) {
       const token = this.props.location.search.match(/token=(.*)/)[1];
-      console.log(token,'kek');
+      console.log(token, "kek");
       this.context.setToken(token);
-   }
+    }
 
     this.setState({
       checkUser: false,
@@ -135,51 +144,54 @@ class App extends React.Component {
 
     return (
       <ThemeProvider theme={this.context.theme}>
-          {!Boolean(this.context.userId) && (
-            <Switch>
-              <Route exact path="/login" component={Login} />
-              <Route path="*" render={(props) => <RedirectToProcurement {...props}/>} />
-            </Switch>
-          )}
-          {Boolean(this.context.userId) && (
-            <StyledMain>
-              <Navbar ref={this.NavbarRef} routes={routes} />
-              {this.context.storageId && (
-                <Switch>
-                  {renderRoutes}
-                  <Route path="/login" render={() => <Redirect to="/" />} />
-                  <Route path="*" component={NotFound} />
-                </Switch>
-              )}
-              {!this.context.storageId && Boolean(this.context.userId) && (
-                <div
-                  className="pageData"
+        {!Boolean(this.context.userId) && (
+          <Switch>
+            <Route exact path="/login" component={Login} />
+            <Route
+              path="*"
+              render={(props) => <RedirectToProcurement {...props} />}
+            />
+          </Switch>
+        )}
+        {Boolean(this.context.userId) && (
+          <StyledMain>
+            <Navbar ref={this.NavbarRef} routes={routes} />
+            {this.context.storageId && (
+              <Switch>
+                {renderRoutes}
+                <Route path="/login" render={() => <Redirect to="/" />} />
+                <Route path="*" component={NotFound} />
+              </Switch>
+            )}
+            {!this.context.storageId && Boolean(this.context.userId) && (
+              <div
+                className="pageData"
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "column",
+                }}
+              >
+                <h1
                   style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "column",
+                    color: "#000",
+                    fontSize: "3rem",
+                    marginBottom: "15px",
                   }}
                 >
-                  <h1
-                    style={{
-                      color: "#000",
-                      fontSize: "3rem",
-                      marginBottom: "15px",
-                    }}
-                  >
-                    Loading...
-                  </h1>
-                  <p style={{ fontSize: "1.2rem" }}>
-                    Check your internet connection or VPN setup
-                  </p>
-                  <CircularProgress
-                    style={{ color: "#000", marginTop: "15px" }}
-                  />
-                </div>
-              )}
-            </StyledMain>
-          )}
+                  Loading...
+                </h1>
+                <p style={{ fontSize: "1.2rem" }}>
+                  Check your internet connection or VPN setup
+                </p>
+                <CircularProgress
+                  style={{ color: "#000", marginTop: "15px" }}
+                />
+              </div>
+            )}
+          </StyledMain>
+        )}
       </ThemeProvider>
     );
   }

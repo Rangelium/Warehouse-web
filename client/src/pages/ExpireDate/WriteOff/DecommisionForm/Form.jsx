@@ -76,16 +76,23 @@ export default class TransferForm extends Component {
     if (this.state.activeStep === this.state.selectedProducts.length) return;
 
     const subCategory = await api
-      .executeProcedure("[SalaryDB].anbar.[warehouse_select_products_subcategory]", {
-        product_id: this.state.selectedProducts[this.state.activeStep].product_id,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[warehouse_select_products_subcategory]",
+        {
+          product_id: this.state.selectedProducts[this.state.activeStep]
+            .product_id,
+        }
+      )
       .then((res) => res[0])
       .catch((err) => console.log(err));
 
     const category = await api
-      .executeProcedure("[SalaryDB].anbar.[warehouse_select_products_category]", {
-        parent_id: subCategory.parent_id,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[warehouse_select_products_category]",
+        {
+          parent_id: subCategory.parent_id,
+        }
+      )
       .then((res) => res[0])
       .catch((err) => console.log(err));
 
@@ -117,28 +124,34 @@ export default class TransferForm extends Component {
     }
 
     api
-      .executeProcedure("[SalaryDB].anbar.[decommission_product_session_info_insert]", {
-        quantity: this.state.quantity,
-        reason: this.state.reason,
-        currency: this.state.selectedProducts[i].currency_id,
-        storage_id: this.context.storageId,
-        decommission_session_id: this.props.sessionId,
-        document_num: this.state.contractNum,
-        document_num_path: fileName,
-        cluster_order_default: this.state.selectedProducts[i].cluster_default,
-        price: this.state.selectedProducts[i].unit_price,
-        exp_date: this.state.selectedProducts[i].exp_date,
-        product_cell: this.state.selectedProducts[i].product_cell,
-        barcode: this.state.selectedProducts[i].barcode,
-        product_id: this.state.selectedProducts[i].product_id,
-        product_manufacturer: this.state.selectedProducts[i].product_manufacturer,
-        left: this.state.selectedProducts[i].left,
-        document_id_as_parent_id: this.state.selectedProducts[i].document_id,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[decommission_product_session_info_insert]",
+        {
+          quantity: this.state.quantity,
+          reason: this.state.reason,
+          currency: this.state.selectedProducts[i].currency_id,
+          storage_id: this.context.storageId,
+          decommission_session_id: this.props.sessionId,
+          document_num: this.state.contractNum,
+          document_num_path: fileName,
+          cluster_order_default: this.state.selectedProducts[i].cluster_default,
+          price: this.state.selectedProducts[i].unit_price,
+          exp_date: this.state.selectedProducts[i].exp_date,
+          product_cell: this.state.selectedProducts[i].product_cell,
+          barcode: this.state.selectedProducts[i].barcode,
+          product_id: this.state.selectedProducts[i].product_id,
+          product_manufacturer: this.state.selectedProducts[i]
+            .product_manufacturer,
+          left: this.state.selectedProducts[i].left,
+          document_id_as_parent_id: this.state.selectedProducts[i].document_id,
+        }
+      )
       .then((res) => {
         console.log(this.state.selectedProducts);
         console.log(this.state.activeStep - 1);
-        if (this.state.selectedProducts[this.state.activeStep - 1].is_inventory) {
+        if (
+          this.state.selectedProducts[this.state.activeStep - 1].is_inventory
+        ) {
           let InvNumsArrMats = [];
           this.state.invNumArr.forEach(({ num }) => {
             InvNumsArrMats.push([
@@ -147,12 +160,17 @@ export default class TransferForm extends Component {
               res[0].document_id,
               this.state.selectedProducts[i].product_id,
               -1,
+              res[0].session_info_id,
+              this.context.storageId,
             ]);
           });
 
           console.log(InvNumsArrMats);
           api
-            .addInvNumsTable(InvNumsArrMats)
+            .addInvNumsTable({
+              table: InvNumsArrMats,
+              sessionId: this.props.sessionId,
+            })
             .then(() => {
               this.context.success(
                 `Əlavə edildi ${this.state.selectedProducts[i].product_title}`
@@ -318,7 +336,9 @@ export default class TransferForm extends Component {
                   file={this.state.file}
                   setFile={(file) => this.setState({ file })}
                   path={this.state.selectedProductPath}
-                  selectedProduct={this.state.selectedProducts[this.state.activeStep - 1]}
+                  selectedProduct={
+                    this.state.selectedProducts[this.state.activeStep - 1]
+                  }
                 />
               )}
             </div>
@@ -326,7 +346,9 @@ export default class TransferForm extends Component {
 
           <DialogActions>
             <Divider />
-            <CustomButton onClick={this.handleClose.bind(this)}>Close</CustomButton>
+            <CustomButton onClick={this.handleClose.bind(this)}>
+              Close
+            </CustomButton>
             <CustomButton type="submit">Əlavə et</CustomButton>
           </DialogActions>
         </form>

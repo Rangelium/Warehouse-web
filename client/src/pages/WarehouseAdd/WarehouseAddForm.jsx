@@ -45,7 +45,10 @@ export default class WarehouseAddForm extends Component {
     const IvnNumContRef = this.fillBulkFormRef.current.refsArr;
     let isValid = true;
     this.props.dataForFill.forEach((el, i) => {
-      if (!Boolean(inputsData[`price${i}`]) || parseInt(inputsData[`price${i}`]) <= 0) {
+      if (
+        !Boolean(inputsData[`price${i}`]) ||
+        parseInt(inputsData[`price${i}`]) <= 0
+      ) {
         isValid = false;
         return;
       }
@@ -55,7 +58,10 @@ export default class WarehouseAddForm extends Component {
       }
 
       if (!el.is_inventory) return;
-      if (IvnNumContRef[i].current.state.inventoryNumArr.length !== parseInt(el.amount)) {
+      if (
+        IvnNumContRef[i].current.state.inventoryNumArr.length !==
+        parseInt(el.amount)
+      ) {
         isValid = false;
         return this.context.error(
           `You must create ${
@@ -110,6 +116,8 @@ export default class WarehouseAddForm extends Component {
           prodDocId,
           this.props.dataForFill[i].product_id,
           0,
+          0,
+          this.context.storageId,
         ]);
       });
     }
@@ -128,7 +136,7 @@ export default class WarehouseAddForm extends Component {
       );
 
     api
-      .addInvNumsTable(InvNumsArrMats)
+      .addInvNumsTable({ table: InvNumsArrMats })
       .then(() => {
         this.props.refresh();
         this.context.success("Sifariş təstiq edildi!");
@@ -207,7 +215,9 @@ export default class WarehouseAddForm extends Component {
 
         <DialogActions>
           <Divider />
-          <CustomButton onClick={this.handleFormClose.bind(this)}>İmtına</CustomButton>
+          <CustomButton onClick={this.handleFormClose.bind(this)}>
+            İmtına
+          </CustomButton>
           {this.state.activeStep === 1 && (
             <CustomButton onClick={this.handlePreviousBtn.bind(this)}>
               Geriyə
@@ -217,12 +227,16 @@ export default class WarehouseAddForm extends Component {
           <div className="gap" style={{ flexGrow: 1 }}></div>
 
           {this.state.activeStep === 0 && (
-            <CustomButton onClick={() => this.createBulkFormRef.current.createBulk()}>
+            <CustomButton
+              onClick={() => this.createBulkFormRef.current.createBulk()}
+            >
               İrəli
             </CustomButton>
           )}
           {this.state.activeStep === 1 && (
-            <CustomButton onClick={this.handleSubmit.bind(this)}>Əlavə et</CustomButton>
+            <CustomButton onClick={this.handleSubmit.bind(this)}>
+              Əlavə et
+            </CustomButton>
           )}
         </DialogActions>
         {/* </form> */}
