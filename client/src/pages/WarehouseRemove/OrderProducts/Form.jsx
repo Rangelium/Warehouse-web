@@ -216,7 +216,14 @@ export default class OrderForm extends Component {
 
     let inventoryNums = [];
     const mats = this.state.orderTableData.map(
-      ({ id, orderAmount, sub_gl_category_id, setting_price, reason, invNums }) => {
+      ({
+        id,
+        orderAmount,
+        sub_gl_category_id,
+        setting_price,
+        reason,
+        invNums,
+      }) => {
         if (invNums && invNums.length) {
           invNums.forEach((invNum) => inventoryNums.push([invNum]));
         }
@@ -345,7 +352,9 @@ export default class OrderForm extends Component {
                           <TableCell align="center">{`${(
                             parseFloat(setting_price) * orderAmount
                           ).toFixed(2)} ${currency_title}`}</TableCell>
-                          <TableCell align="center">{reason || <RemoveIcon />}</TableCell>
+                          <TableCell align="center">
+                            {reason || <RemoveIcon />}
+                          </TableCell>
                           <TableCell align="center" style={{ display: "flex" }}>
                             <IconButton onClick={() => this.editOrder(key)}>
                               <EditIcon />
@@ -364,7 +373,9 @@ export default class OrderForm extends Component {
           )}
           <DialogActions>
             <Divider />
-            <CustomButton onClick={this.handleClose.bind(this)}>İmtına</CustomButton>
+            <CustomButton onClick={this.handleClose.bind(this)}>
+              İmtına
+            </CustomButton>
             <div className="gap" style={{ flexGrow: 1 }}></div>
             <CustomButton type="submit">Sifariş et</CustomButton>
           </DialogActions>

@@ -24,7 +24,7 @@ export default class ProtectedRoute extends React.Component {
             return (
               <Redirect
                 to={{
-                  pathname: "/login",
+                  pathname: "/",
                   state: {
                     from: this.props.location,
                   },
