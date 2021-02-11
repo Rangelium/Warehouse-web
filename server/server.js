@@ -28,15 +28,15 @@ const uploadFile = multer({
 });
 
 const app = require("express")();
-const port = 7000;
+const port = 61543;
 
 app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.listen(port, "0.0.0.0", () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+app.listen(port, "192.168.0.182", () => {
+  console.log(`Example app listening at http://192.168.0.182:${port}`);
 });
 
 app.post("/api/dbconnect", FBAuth, (req, res) => {

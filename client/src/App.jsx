@@ -91,7 +91,7 @@ class App extends React.Component {
     ) {
       console.log(this.props.location, "kek");
       this.context.setToken(null);
-      window.location.replace("http://172.16.3.101:3000/login");
+      window.location.replace("http://192.168.0.182:54321/login");
     }
     const data = localStorage.getItem("warehouseAccessToken");
     if (data) {

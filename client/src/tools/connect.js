@@ -1,6 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:7000/api";
+axios.defaults.baseURL = "http://192.168.0.182:61543/api";
 
 const timeoutDelay = 3000;
 class API {
@@ -84,7 +84,7 @@ class API {
     return new Promise((resolve, reject) => {
       axios({
         method: "post",
-        baseURL: "http://172.16.3.101:54321/api/login",
+        baseURL: "http://192.168.0.182:54321/api/login",
         data: { username, password },
         timeout: timeoutDelay,
       })
@@ -101,7 +101,7 @@ class API {
     return new Promise((resolve, reject) => {
       axios({
         method: "post",
-        baseURL: "http://172.16.3.101:54321/api/new-order",
+        baseURL: "http://192.168.0.182:54321/api/new-order",
         data,
         timeout: timeoutDelay,
       })

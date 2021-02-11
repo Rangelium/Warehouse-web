@@ -45,6 +45,7 @@ export default class WarehouseRemoveTransferProductForm extends Component {
     api
       .executeProcedure("[SalaryDB].anbar.[search_existing_inventories]", {
         document_id: this.props.product.document_id,
+        storage_id: this.context.storageId
       })
       .then((res) => {
         this.setState({
