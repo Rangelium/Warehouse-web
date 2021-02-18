@@ -57,7 +57,7 @@ export default class ExpireDate extends Component {
 
     this.setState({
       expDateTableData: expDate,
-      archiveTableData: archiv,
+      archiveTableData: archiv.reverse(),
       writeOffTableData,
       loading: false,
     });

@@ -5,10 +5,9 @@ import uuid from "react-uuid";
 
 import FileImport from "../../../components/FileImport";
 import { CustomTextInput } from "../../../components/UtilComponents";
-import { Typography, InputAdornment, IconButton } from "@material-ui/core";
+import { Typography, IconButton } from "@material-ui/core";
 
 // Icons
-import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 
 export default class FormProduct extends Component {
@@ -23,23 +22,31 @@ export default class FormProduct extends Component {
     this.InvNumInputRef = React.createRef();
   }
 
+  handleInvInputChange(e) {
+    const userText = e.target.value;
+    this.props.changePossibleInvNums(userText)
+    this.setState({
+      inventoryNum: userText,
+    }
+    );
+  }
   handleChange(e) {
     this.setState({
       [e.target.name]: e.target.value,
     });
   }
-  addInventoryNum() {
+  addInventoryNum(invNum) {
     // Check if invNum is uinque
     for (let i = 0; i < this.props.invNumArr.length; i++) {
-      if (Object.values(this.props.invNumArr[i]).includes(this.state.inventoryNum)) {
+      if (Object.values(this.props.invNumArr[i]).includes(invNum)) {
         return this.context.error(
-          `Inventoy number "${this.state.inventoryNum}" is already exist`
+          `Inventoy number "${invNum}" is already exist`
         );
       }
     }
 
     // Check if empty
-    if (!this.state.inventoryNum.trim().length) {
+    if (!invNum.trim().length) {
       return this.context.error("Inventory num cannot be empty");
     }
 
@@ -52,18 +59,13 @@ export default class FormProduct extends Component {
     let inventoryNumArr = [...this.props.invNumArr];
     inventoryNumArr.push({
       id: uuid(),
-      num: this.state.inventoryNum,
+      num: invNum,
     });
 
     this.props.setInvNumArr(inventoryNumArr);
     this.setState(
       {
         inventoryNum: "",
-      },
-      () => {
-        if (this.props.invNumArr.length !== parseInt(this.props.quantity)) {
-          this.InvNumInputRef.current.focus();
-        }
       }
     );
   }
@@ -77,7 +79,9 @@ export default class FormProduct extends Component {
 
   render() {
     return (
-      <StyledSection active={this.props.active}>
+      <StyledSection active={this.props.active} invnumsactive={
+        this.props.invNumArr.length < parseInt(this.props.quantity) ? 1 : 0
+      }>
         <div className="transferInfo">
           <Typography noWrap variant="h4" className="title">
             {this.props.selectedProduct.product_title}
@@ -125,37 +129,42 @@ export default class FormProduct extends Component {
             />
           </div>
 
+
           {this.props.selectedProduct.is_inventory && (
             <div className="invNums">
-              <CustomTextInput
-                _ref={this.InvNumInputRef}
-                onKeyUp={(e) => {
-                  if (e.keyCode === 13) {
-                    e.preventDefault();
-
-                    this.addInventoryNum();
+              <div className="invNumCont">
+                <CustomTextInput
+                  disabled={
+                    this.props.invNumArr.length >= parseInt(this.props.quantity || 0)
                   }
-                }}
-                disabled={
-                  this.props.invNumArr.length >= parseInt(this.props.quantity || 0)
-                }
-                label="Inventory number"
-                name="inventoryNum"
-                value={this.state.inventoryNum}
-                onChange={this.handleChange.bind(this)}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={() => this.addInventoryNum()}
+                  label="Inventory number"
+                  name="inventoryNum"
+                  value={this.state.inventoryNum}
+                  onChange={this.handleInvInputChange.bind(this)}
+                />
+                <div className="foundProducts">
+                  {this.props.possibleInvNums.map(({ key, invNum }) => {
+                    for (let i = 0; i < this.props.invNumArr.length; i++) {
+                      if (
+                        Object.values(this.props.invNumArr[i]).includes(invNum)
+                      ) {
+                        return null;
+                      }
+                    }
+
+                    return (
+                      <p
+                        key={key}
+                        onClick={() => {
+                          this.addInventoryNum(invNum);
+                        }}
                       >
-                        <ControlPointIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
+                        {invNum}
+                      </p>
+                    );
+                  })}
+                </div>
+              </div>
 
               <div className="invNumsContainer">
                 {this.props.invNumArr.map(({ id, num }, i) => (
@@ -170,6 +179,7 @@ export default class FormProduct extends Component {
             </div>
           )}
         </div>
+
         <div className="fileImportContainer">
           <FileImport file={this.props.file} setFile={this.props.setFile} />
         </div>
@@ -232,12 +242,82 @@ const StyledSection = styled.div`
         padding-right: 0;
       }
 
+      .invNumCont {
+        display: inherit;
+        flex-direction: column;
+        position: relative;
+        pointer-events: ${(props) => (props.invnumsactive ? "all" : "none")};
+
+        &:hover .foundProducts {
+          opacity: 1;
+          pointer-events: all;
+        }
+
+        .foundProducts {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 100%;
+          max-height: 240px;
+          border: 1px solid rgba(0, 0, 0, 0.23);
+          border-bottom-left-radius: 4px;
+          border-bottom-right-radius: 4px;
+          z-index: 10;
+          backdrop-filter: blur(5px);
+
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s;
+
+          overflow-y: auto;
+          overflow-x: hidden;
+
+          &:hover {
+            opacity: ${(props) => (props.invnumsactive ? 1 : 0)};
+            pointer-events: ${(props) => (props.invnumsactive ? "all" : "none")};
+          }
+
+          &::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+          }
+          /* Track */
+          &::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border-radius: 10px;
+          }
+          /* Handle */
+          &::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            border-radius: 10px;
+            background: #d7d8d6;
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+          }
+
+          p {
+            width: 100%;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.7);
+            transition: transform 0.3s, color 0.3s, background-color 0.3s;
+
+            &:hover {
+              background-color: rgba(0, 0, 0, 0.2);
+              /* transform: scale(1.03); */
+              color: #000;
+            }
+          }
+        }
+      }
+
       .invNumsContainer {
         padding-top: 5px;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        max-height: 160px;
+        max-height: 180px;
         overflow-x: hidden;
         overflow-y: auto;
 

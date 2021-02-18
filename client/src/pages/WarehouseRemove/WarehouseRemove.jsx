@@ -64,6 +64,7 @@ export default class WarehouseRemove extends Component {
       .executeProcedure("[SalaryDB].procurement.[orders_for_warehouse]", {
         result: 0,
         structure_id: this.context.userData.structureid,
+        type: -1
       })
       .catch(() => {
         return [];

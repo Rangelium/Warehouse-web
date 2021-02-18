@@ -21,10 +21,11 @@ import ExpireDate from "./pages/ExpireDate/ExpireDate";
 import Transfer from "./pages/Transfer/Transfer";
 import Reports from "./pages/Reports/Reports";
 import Invetory from "./pages/Inventory/Inventory";
-import InitialRemainders from "./pages/InitialRemainders/InitialRemainders";
+// import InitialRemainders from "./pages/InitialRemainders/InitialRemainders";
 import ManageWarehouses from "./pages/ManageWarehouses/ManageWarehouses";
 import NotFound from "./pages/NotFound/NotFound";
-import Login from "./pages/Login/Login";
+// import Login from "./pages/Login/Login";
+import jwtDecode from "jwt-decode";
 
 const routes = [
   { name: "Anbar haqqında", path: "/", Component: WarehouseInfo },
@@ -43,11 +44,11 @@ const routes = [
     children: [
       { name: "Reportlar", path: "/reports", Component: Reports },
       { name: "İnventarizasiya", path: "/inventory", Component: Invetory },
-      {
-        name: "İlkin qalıqlar",
-        path: "/initialRemainders",
-        Component: InitialRemainders,
-      },
+      // {
+      //   name: "İlkin qalıqlar",
+      //   path: "/initialRemainders",
+      //   Component: InitialRemainders,
+      // },
       {
         name: "Anbarın quraşdırılması",
         path: "/manageWarehouses",
@@ -89,14 +90,13 @@ class App extends React.Component {
       this.props.location.search.match(/from=(.*)&/)[1] === "procurement" &&
       this.props.location.search.match(/action=(.*)/)[1] === "logout"
     ) {
-      console.log(this.props.location, "kek");
       this.context.setToken(null);
       window.location.replace("http://192.168.0.182:54321/login");
     }
     const data = localStorage.getItem("warehouseAccessToken");
     if (data) {
       const tokenData = JSON.parse(data);
-      console.log(tokenData);
+      // console.log(tokenData);
       if (parseInt(tokenData.timestamp) + 14400 < dayjs().unix()) {
         localStorage.removeItem("warehouseAccessToken");
       } else {
@@ -104,8 +104,14 @@ class App extends React.Component {
       }
     } else if (this.props.location.search.match(/token=(.*)/)) {
       const token = this.props.location.search.match(/token=(.*)/)[1];
-      console.log(token, "kek");
-      this.context.setToken(token);
+      // console.log(token, "kek");
+      const data =  jwtDecode(token);
+      if(data.data.modules.includes('Warehouse')){
+        this.context.setToken(token);
+      } else {
+        this.props.history.push('/login')
+
+      }
     }
 
     this.setState({
@@ -146,7 +152,7 @@ class App extends React.Component {
       <ThemeProvider theme={this.context.theme}>
         {!Boolean(this.context.userId) && (
           <Switch>
-            <Route exact path="/login" component={Login} />
+            <Route exact path="/login" component={NotFound} />
             <Route
               path="*"
               render={(props) => <RedirectToProcurement {...props} />}

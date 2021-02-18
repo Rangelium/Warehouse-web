@@ -8,21 +8,15 @@ import Table from "./FormTable";
 import FormProduct from "./FormProduct";
 import {
   CustomButton,
-  CustomSelect,
-  CustomSelectItem,
-  CustomTextInput,
 } from "../../../../components/UtilComponents";
 import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Typography,
   Divider,
 } from "@material-ui/core";
 
-// Icons
-import DoubleArrowOutlinedIcon from "@material-ui/icons/DoubleArrowOutlined";
 
 export default class TransferForm extends Component {
   static contextType = GlobalDataContext;
@@ -31,8 +25,8 @@ export default class TransferForm extends Component {
 
     this.state = {
       activeStep: 0,
-      toWarehouseId: "",
-      warehouseData: [],
+      // toWarehouseId: "",
+      // warehouseData: [],
       selectedProducts: [],
 
       file: null,
@@ -46,6 +40,8 @@ export default class TransferForm extends Component {
       reason: "",
 
       invNumArr: [],
+      allPossibInvNums: [],
+      possibleInvNums: [],
     };
   }
 
@@ -96,6 +92,15 @@ export default class TransferForm extends Component {
       .then((res) => res[0])
       .catch((err) => console.log(err));
 
+      const allPossibInvNums =  await api
+      .executeProcedure("[SalaryDB].anbar.[search_existing_inventories]", {
+        document_id: this.state.selectedProducts[this.state.activeStep].document_id,
+        storage_id: this.context.storageId
+      })
+      .then((res) => res.map(({ inventory_num }) => ({ invNum: inventory_num, key: uuid() })))
+      .catch((err) => console.log(err));
+      const possibleInvNums = [...allPossibInvNums];
+
     this.setState((prevState) => {
       return {
         activeStep: prevState.activeStep + 1,
@@ -103,6 +108,8 @@ export default class TransferForm extends Component {
           category: category.title,
           subCategory: subCategory.title,
         },
+        allPossibInvNums,
+        possibleInvNums,
       };
     });
   }
@@ -147,8 +154,6 @@ export default class TransferForm extends Component {
         }
       )
       .then((res) => {
-        console.log(this.state.selectedProducts);
-        console.log(this.state.activeStep - 1);
         if (
           this.state.selectedProducts[this.state.activeStep - 1].is_inventory
         ) {
@@ -215,14 +220,14 @@ export default class TransferForm extends Component {
     this.props.close();
   }
   async prepareForm() {
-    const warehouseData = await api
-      .executeProcedure("anbar.storage_select_all")
-      .catch((err) => this.context.error(err.errText));
+    // const warehouseData = await api
+    //   .executeProcedure("anbar.storage_select_all")
+    //   .catch((err) => this.context.error(err.errText));
 
     this.setState({
       activeStep: 0,
-      toWarehouseId: "",
-      warehouseData,
+      // toWarehouseId: "",
+      // warehouseData: ,
       selectedProducts: [],
 
       file: null,
@@ -237,6 +242,8 @@ export default class TransferForm extends Component {
       reason: "",
 
       invNumArr: [],
+      allPossibInvNums: [],
+      possibleInvNums: [],
     });
   }
   selectProduct(data) {
@@ -261,6 +268,17 @@ export default class TransferForm extends Component {
       selectedProducts,
     });
   }
+  changePossibleInvNums(userText){
+    this.setState((prevState) => {
+      return {
+        possibleInvNums: userText
+          ? prevState.possibleInvNums.filter(({ invNum }) =>
+              invNum.toLowerCase().includes(userText.toLowerCase())
+            )
+          : prevState.allPossibInvNums,
+      };
+    });
+  }
 
   render() {
     return (
@@ -272,49 +290,10 @@ export default class TransferForm extends Component {
         <form
           autoComplete="off"
           onSubmit={this.handleSubmit.bind(this)}
-          onKeyDown={(e) => {
-            if (e.keyCode === 13) {
-              e.preventDefault();
-            }
-          }}
         >
-          <DialogTitle>Məhsulların Transferi</DialogTitle>
+          <DialogTitle>Məhsulların Silinməsi</DialogTitle>
 
           <StyledContent>
-            <div className="heading">
-              <CustomTextInput
-                style={{ minWidth: "200px" }}
-                disabled={true}
-                label="Anbardan"
-                value={this.context.storageTitle}
-              />
-
-              <div className="block">
-                <Typography noWrap variant="h3">
-                  TRANSFER
-                </Typography>
-                <DoubleArrowOutlinedIcon className="icon" />
-              </div>
-
-              <CustomSelect
-                required
-                style={{ minWidth: "200px" }}
-                disabled={Boolean(this.state.activeStep)}
-                label="Anbara"
-                name="toWarehouseId"
-                value={this.state.toWarehouseId}
-                onChange={this.handleChange.bind(this)}
-              >
-                {this.state.warehouseData.map((warehouse) =>
-                  warehouse.id !== this.context.storageId ? (
-                    <CustomSelectItem key={uuid()} value={warehouse.id}>
-                      {warehouse.storage_name}
-                    </CustomSelectItem>
-                  ) : null
-                )}
-              </CustomSelect>
-            </div>
-
             <div className="mainData">
               {!this.state.activeStep && (
                 <Table
@@ -325,6 +304,8 @@ export default class TransferForm extends Component {
 
               {Boolean(this.state.activeStep) && (
                 <FormProduct
+                  changePossibleInvNums={this.changePossibleInvNums.bind(this)}
+                  possibleInvNums={this.state.possibleInvNums}
                   quantity={this.state.quantity}
                   productCell={this.state.productCell}
                   contractNum={this.state.contractNum}

@@ -37,6 +37,7 @@ export default class InventoryWriteOffForm extends Component {
 
     existingProducts: [],
     forOrderProducts: [],
+    orderProdInvNums: [],
 
     selectedAmounts: Array(this.props.data.length).fill(0),
     selectedProduct: null,
@@ -126,9 +127,30 @@ export default class InventoryWriteOffForm extends Component {
         inventory_session_id: this.props.inventoryId,
       })
       .then(() => {
-        this.context.success("Order complete");
-        this.props.refresh();
-        this.props.close();
+        console.log("Order complete. Preparing inv nums...")
+        let InvNumsArrMats = [];
+        this.state.orderProdInvNums.forEach(({ invNums, docId, prodId }) => {
+          invNums.forEach(({ num }) => {
+            InvNumsArrMats.push([
+              null,
+              num,
+              docId,
+              prodId,
+              -2,
+              0,
+              this.context.storageId,
+            ]);
+          });
+        });
+        console.log(this.state.orderProdInvNums)
+        api
+          .addInvNumsTable({ table: InvNumsArrMats })
+          .then(() => {
+            this.context.success("Order complete");
+            this.props.refresh();
+            this.props.close();
+          })
+          .catch((err) => this.context.error(err.errText));
 
         // Remove session from localstorage
         const data = localStorage.getItem("InventoryUnfinished");
@@ -189,7 +211,7 @@ export default class InventoryWriteOffForm extends Component {
       })
       .catch((err) => console.log(err));
   }
-  removeSelectedItem(id) {
+  removeSelectedItem(id, i) {
     api
       .executeProcedure(
         "[SalaryDB].anbar.[inventory_session_fix_out_inner_info_selection_delete]",
@@ -199,8 +221,25 @@ export default class InventoryWriteOffForm extends Component {
       )
       .then(() => {
         this.getProductData(this.props.data[this.state.activeStep].product_title);
+        this.removeInvNum(i);
       })
       .catch((err) => console.log(err.errText));
+  }
+  addInvNum(data) {
+    this.setState((prevState) => {
+      return {
+        orderProdInvNums: [...prevState.orderProdInvNums, data],
+      };
+    });
+  }
+  removeInvNum(index) {
+    let orderProdInvNums = [...this.state.orderProdInvNums];
+
+    orderProdInvNums.splice(index, 1);
+
+    this.setState({
+      orderProdInvNums,
+    });
   }
 
   render() {
@@ -322,11 +361,11 @@ export default class InventoryWriteOffForm extends Component {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {this.state.forOrderProducts.map((row) => (
+                      {this.state.forOrderProducts.map((row, i) => (
                         <TableRow key={uuid()}>
                           <TableCell align="center">{row.product_title}</TableCell>
                           <TableCell align="center">{`${row.quantity} ${row.unit_title}`}</TableCell>
-                          <TableCell align="center">{`${row.sum_price} ${row.currency_title}`}</TableCell>
+                          <TableCell align="center">{`${parseFloat(row.sum_price).toFixed(2)} ${row.currency_title}`}</TableCell>
                           <TableCell align="center">
                             {row.product_cell !== null ? (
                               row.product_cell
@@ -335,7 +374,7 @@ export default class InventoryWriteOffForm extends Component {
                             )}
                           </TableCell>
                           <TableCell align="center">
-                            <IconButton onClick={() => this.removeSelectedItem(row.id)}>
+                            <IconButton onClick={() => this.removeSelectedItem(row.id, i)}>
                               <HighlightOffIcon />
                             </IconButton>
                           </TableCell>
@@ -390,6 +429,7 @@ export default class InventoryWriteOffForm extends Component {
             refresh={() =>
               this.getProductData(this.props.data[this.state.activeStep].product_title)
             }
+            addInvNum={this.addInvNum.bind(this)}
           />
         )}
       </StyledDialog>

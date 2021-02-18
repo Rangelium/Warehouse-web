@@ -30,6 +30,7 @@ export default class ExpDateOverTable extends Component {
           .executeProcedure("anbar.exp_date_over_decommission_product", {
             document_id: data.document_id,
             left: data.left,
+            storage_id: this.context.storageId
           })
           .then((res) => {
             this.props.refresh();

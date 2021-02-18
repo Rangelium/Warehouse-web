@@ -47,6 +47,8 @@ export default class TransferForm extends Component {
       reason: "",
 
       invNumArr: [],
+      allPossibInvNums: [],
+      possibleInvNums: [],
     };
   }
 
@@ -97,6 +99,15 @@ export default class TransferForm extends Component {
       .then((res) => res[0])
       .catch((err) => console.log(err));
 
+    const allPossibInvNums =  await api
+    .executeProcedure("[SalaryDB].anbar.[search_existing_inventories]", {
+      document_id: this.state.selectedProducts[this.state.activeStep].document_id,
+      storage_id: this.context.storageId
+    })
+    .then((res) => res.map(({ inventory_num }) => ({ invNum: inventory_num, key: uuid() })))
+    .catch((err) => console.log(err));
+    const possibleInvNums = [...allPossibInvNums];
+
     this.setState((prevState) => {
       return {
         activeStep: prevState.activeStep + 1,
@@ -104,6 +115,8 @@ export default class TransferForm extends Component {
           category: category.title,
           subCategory: subCategory.title,
         },
+        allPossibInvNums,
+        possibleInvNums,
       };
     });
   }
@@ -149,8 +162,6 @@ export default class TransferForm extends Component {
         }
       )
       .then((res) => {
-        console.log(this.state.selectedProducts);
-        console.log(this.state.activeStep - 1);
         if (
           this.state.selectedProducts[this.state.activeStep - 1].is_inventory
         ) {
@@ -219,6 +230,8 @@ export default class TransferForm extends Component {
       reason: "",
 
       invNumArr: [],
+      allPossibInvNums: [],
+      possibleInvNums: [],
     });
   }
   handleClose() {
@@ -249,6 +262,8 @@ export default class TransferForm extends Component {
       reason: "",
 
       invNumArr: [],
+      allPossibInvNums: [],
+      possibleInvNums: [],
     });
   }
   selectProduct(data) {
@@ -273,6 +288,17 @@ export default class TransferForm extends Component {
       selectedProducts,
     });
   }
+  changePossibleInvNums(userText){
+    this.setState((prevState) => {
+      return {
+        possibleInvNums: userText
+          ? prevState.possibleInvNums.filter(({ invNum }) =>
+              invNum.toLowerCase().includes(userText.toLowerCase())
+            )
+          : prevState.allPossibInvNums,
+      };
+    });
+  }
 
   render() {
     return (
@@ -284,11 +310,6 @@ export default class TransferForm extends Component {
         <form
           autoComplete="off"
           onSubmit={this.handleSubmit.bind(this)}
-          onKeyDown={(e) => {
-            if (e.keyCode === 13) {
-              e.preventDefault();
-            }
-          }}
         >
           <DialogTitle>Məhsulların Transferi</DialogTitle>
 
@@ -337,6 +358,8 @@ export default class TransferForm extends Component {
 
               {Boolean(this.state.activeStep) && (
                 <FormProduct
+                changePossibleInvNums={this.changePossibleInvNums.bind(this)}
+                  possibleInvNums={this.state.possibleInvNums}
                   quantity={this.state.quantity}
                   productCell={this.state.productCell}
                   contractNum={this.state.contractNum}

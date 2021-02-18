@@ -36,16 +36,20 @@ const REPORTS_TYPES = [
 
 const giveReportURL = ({ reportType, reportFormat, startDate, endDate, storageId }) => {
   if (reportType === "reportBuy") {
-    return `http://172.16.3.42:88/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
+    console.log(`http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`);
+    return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
   }
   if (reportType === "reportSale") {
-    return `http://172.16.3.42:88/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
+    console.log(`http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`);
+    return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
   }
   if (reportType === "Decomission") {
-    return `http://172.16.3.42:88/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
+    console.log(`http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`);
+    return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
   }
   if (reportType === "CommodityCirculationOfAllProducts")
-    return `http://172.16.3.42:88/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[storageid]=${storageId}`;
+    console.log(`http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[storageid]=${storageId}`);
+    return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[storageid]=${storageId}`;
 };
 // react-pdf setup for create-react-app src = "https://github.com/wojtekmaj/react-pdf/blob/v4.x/README.md#standard-browserify-and-others"
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import uuid from "react-uuid"
 import { GlobalDataContext } from "../../components/GlobalDataProvider";
 import api from "../../tools/connect";
 
@@ -10,7 +11,11 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  IconButton
 } from "@material-ui/core";
+
+// Icons
+import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 
 export default class InventoryWriteOffTransferForm extends Component {
   static contextType = GlobalDataContext;
@@ -21,11 +26,89 @@ export default class InventoryWriteOffTransferForm extends Component {
         : parseInt(this.props.product.left),
     reason: "",
     loading: false,
+
+    inventoryNum: "",
+    inventoryNumArr: [],
+
+    allPossibInvNums: [],
+    possibleInvNums: [],
   };
 
+  componentDidMount() {
+    api
+      .executeProcedure("[SalaryDB].anbar.[search_existing_inventories]", {
+        document_id: this.props.product.document_id,
+        storage_id: this.context.storageId
+      })
+      .then((res) => {
+        this.setState({
+          allPossibInvNums: res.map(({ inventory_num }) => {
+            return { invNum: inventory_num, key: uuid() };
+          }),
+          possibleInvNums: res.map(({ inventory_num }) => {
+            return { invNum: inventory_num, key: uuid() };
+          }),
+        });
+      })
+      .catch((err) => console.log(err));
+  }
+  handleInvInputChange(e) {
+    const userText = e.target.value;
+    this.setState((prevState) => {
+      return {
+        inventoryNum: userText,
+        possibleInvNums: userText
+          ? prevState.possibleInvNums.filter(({ invNum }) =>
+              invNum.toLowerCase().includes(userText.toLowerCase())
+            )
+          : prevState.allPossibInvNums,
+      };
+    });
+  }
   handleInputsChange(e) {
     this.setState({
       [e.target.name]: e.target.value,
+    });
+  }
+  addInventoryNum(invNum) {
+    // Check if invNum is uinque
+    for (let i = 0; i < this.state.inventoryNumArr.length; i++) {
+      if (Object.values(this.state.inventoryNumArr[i]).includes(invNum)) {
+        return this.context.error(`Inventory number "${invNum}" is already exist`);
+      }
+    }
+
+    // Clear input
+    this.setState({
+      inventoryNum: "",
+    });
+    // Check if empty
+    if (!invNum.trim().length) {
+      return this.context.error("Inventory num cannot be empty");
+    }
+
+    // Check if needed amount selected
+    if (this.state.inventoryNumArr.length === parseInt(this.state.quantity)) {
+      return this.context.error("Needed amount added");
+    }
+
+    // Add to arr
+    let inventoryNumArr = [...this.state.inventoryNumArr];
+    inventoryNumArr.push({
+      id: uuid(),
+      num: invNum,
+    });
+    this.setState({
+      inventoryNumArr,
+    });
+  }
+  removeInventoryNum(index) {
+    let inventoryNumArr = [...this.state.inventoryNumArr];
+
+    inventoryNumArr.splice(index, 1);
+
+    this.setState({
+      inventoryNumArr,
     });
   }
   async handleSubmit(e) {
@@ -33,6 +116,12 @@ export default class InventoryWriteOffTransferForm extends Component {
     if (this.state.quantity + "" === "0") {
       this.context.error("Quantity value must be greater than 0");
       return;
+    }
+    if (
+      this.props.product.is_inventory &&
+      this.state.inventoryNumArr.length !== parseInt(this.state.quantity)
+    ) {
+      return this.context.error("Create inventory numbers for every product");
     }
 
     this.setState({
@@ -57,7 +146,15 @@ export default class InventoryWriteOffTransferForm extends Component {
         product_num: this.props.activeStep,
         is_out: -2,
       })
-      .then(() => {
+      .then((res) => {
+        console.log(res,"KEK")
+        if (this.props.product.is_inventory) {
+          this.props.addInvNum({
+            prodId: this.props.product.product_id,
+            docId: res[0].document_id,
+            invNums: this.state.inventoryNumArr,
+          });
+        }
         this.props.close();
         this.props.refresh();
         this.context.success(`Əlavə edildi`);
@@ -80,7 +177,11 @@ export default class InventoryWriteOffTransferForm extends Component {
         <form autoComplete="off" onSubmit={this.handleSubmit.bind(this)}>
           <DialogTitle>{this.props.product.product_title}</DialogTitle>
 
-          <StyledContent>
+          <StyledContent 
+            invnumsactive={
+              this.state.inventoryNumArr.length < parseInt(this.state.quantity) ? 1 : 0
+            }
+            >
             <h1>Tələb olunan miqdar: {this.props.neededAmount}</h1>
             <div className="inputs">
               <div className="amountBlock">
@@ -112,6 +213,55 @@ export default class InventoryWriteOffTransferForm extends Component {
                 value={this.state.reason}
                 onChange={this.handleInputsChange.bind(this)}
               />
+
+              {this.props.product.is_inventory && (
+                <div className="invNums">
+                  <div className="invNumCont">
+                    <CustomTextInput
+                      disabled={
+                        this.state.inventoryNumArr.length >= parseInt(this.state.quantity)
+                      }
+                      label="Inventory number"
+                      name="inventoryNum"
+                      value={this.state.inventoryNum}
+                      onChange={this.handleInvInputChange.bind(this)}
+                    />
+                    <div className="foundProducts">
+                      {this.state.possibleInvNums.map(({ key, invNum }) => {
+                        for (let i = 0; i < this.state.inventoryNumArr.length; i++) {
+                          if (
+                            Object.values(this.state.inventoryNumArr[i]).includes(invNum)
+                          ) {
+                            return null;
+                          }
+                        }
+
+                        return (
+                          <p
+                            key={key}
+                            onClick={() => {
+                              this.addInventoryNum(invNum);
+                            }}
+                          >
+                            {invNum}
+                          </p>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="invNumsContainer">
+                    {this.state.inventoryNumArr.map(({ id, num }, i) => (
+                      <div key={id} className="invNumItem">
+                        <p>{num}</p>
+                        <IconButton onClick={() => this.removeInventoryNum(i)}>
+                          <RemoveCircleOutlineIcon />
+                        </IconButton>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </StyledContent>
 
@@ -136,6 +286,7 @@ export default class InventoryWriteOffTransferForm extends Component {
 const StyledDialog = styled(Dialog)`
   .MuiDialog-container > .MuiPaper-root {
     width: 500px;
+    height: 600px;
   }
 
   form {
@@ -193,6 +344,125 @@ const StyledContent = styled(DialogContent)`
       .product-left {
         margin-left: 10px;
         font-size: 1.4rem;
+      }
+    }
+
+    .invNums {
+      display: flex;
+      flex-direction: column;
+
+      .MuiInputAdornment-positionEnd {
+        margin-left: 0;
+      }
+      .MuiOutlinedInput-adornedEnd {
+        padding-right: 0;
+      }
+
+      .invNumCont {
+        display: inherit;
+        flex-direction: column;
+        position: relative;
+        pointer-events: ${(props) => (props.invnumsactive ? "all" : "none")};
+
+        &:hover .foundProducts {
+          opacity: 1;
+          pointer-events: all;
+        }
+
+        .foundProducts {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 100%;
+          max-height: 240px;
+          border: 1px solid rgba(0, 0, 0, 0.23);
+          border-bottom-left-radius: 4px;
+          border-bottom-right-radius: 4px;
+          z-index: 10;
+          backdrop-filter: blur(5px);
+
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s;
+
+          overflow-y: auto;
+          overflow-x: hidden;
+
+          &:hover {
+            opacity: ${(props) => (props.invnumsactive ? 1 : 0)};
+            pointer-events: ${(props) => (props.invnumsactive ? "all" : "none")};
+          }
+
+          &::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+          }
+          /* Track */
+          &::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border-radius: 10px;
+          }
+          /* Handle */
+          &::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            border-radius: 10px;
+            background: #d7d8d6;
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+          }
+
+          p {
+            width: 100%;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.7);
+            transition: transform 0.3s, color 0.3s, background-color 0.3s;
+
+            &:hover {
+              background-color: rgba(0, 0, 0, 0.2);
+              /* transform: scale(1.03); */
+              color: #000;
+            }
+          }
+        }
+      }
+
+      .invNumsContainer {
+        padding-top: 5px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        max-height: 180px;
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        &::-webkit-scrollbar {
+          width: 5px;
+          height: 5px;
+        }
+        /* Track */
+        &::-webkit-scrollbar-track {
+          box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+          border-radius: 10px;
+          border-radius: 10px;
+        }
+        /* Handle */
+        &::-webkit-scrollbar-thumb {
+          border-radius: 10px;
+          border-radius: 10px;
+          background: #d7d8d6;
+          box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .invNumItem {
+          display: flex;
+          align-items: center;
+
+          p {
+            font-size: 1.2rem;
+          }
+        }
       }
     }
   }

@@ -81,7 +81,7 @@ export default class WarehouseRemoveTransferProductForm extends Component {
     // Check if invNum is uinque
     for (let i = 0; i < this.state.inventoryNumArr.length; i++) {
       if (Object.values(this.state.inventoryNumArr[i]).includes(invNum)) {
-        return this.context.error(`Inventoy number "${invNum}" is already exist`);
+        return this.context.error(`Inventory number "${invNum}" is already exist`);
       }
     }
 

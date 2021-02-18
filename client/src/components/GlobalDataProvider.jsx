@@ -73,7 +73,7 @@ export class GlobalDataProvider extends React.Component {
       return;
     }
     const userData = jwtDecode(token);
-
+    // console.log(userData)
     if (userData) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       this.setState({
