@@ -133,6 +133,9 @@ class Row extends Component {
             </IconButton>
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
+            {data.ord_numb}
+          </TableCell>
+          <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.techizatci_name ?? <RemoveIcon />}
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
@@ -215,11 +218,12 @@ export default class WarehouseRemoveTable extends Component {
           <TableHead>
             <TableRow>
               <TableCell />
+              <TableCell align="center">Sifariş №</TableCell>
               <TableCell align="center">Təchizatçi</TableCell>
               <TableCell align="center">Məhsulların Kəmiyyəti</TableCell>
               <TableCell align="center">Tarix</TableCell>
               <TableCell align="center">Təstiq</TableCell>
-              <TableCell align="center">Sifariş</TableCell>
+              <TableCell align="center"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
