@@ -261,7 +261,7 @@ export default class InventoryProcessingForm extends Component {
           product_cell: "",
           currency_id: data[i].currency_id,
           row_id: data[i].id,
-          inventory_session_id: 144,
+          inventory_session_id: this.props.inventoryId,
           barcode: data[i].barcode,
           storage_id: this.context.storageId,
           product_id: data[i].product_id,

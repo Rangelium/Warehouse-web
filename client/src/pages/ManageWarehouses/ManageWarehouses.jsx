@@ -22,7 +22,7 @@ import {
 export default class ManageWarehouses extends Component {
   static contextType = GlobalDataContext;
   state = {
-    newWarehouseForm: false,
+    // newWarehouseForm: false,
     tablesData: [],
     loading: true,
   };
@@ -41,11 +41,11 @@ export default class ManageWarehouses extends Component {
     return (
       <StyledSection className="pageData">
         <Header>
-          <h1 className="title">Anbarın quraşdırılması</h1>
+          <h1 className="title">Anbarların Siyahısı</h1>
 
-          <CustomButton onClick={() => this.setState({ newWarehouseForm: true })}>
+          {/* <CustomButton onClick={() => this.setState({ newWarehouseForm: true })}>
             Yeni Anbar yarat
-          </CustomButton>
+          </CustomButton> */}
 
           <Divider />
         </Header>
@@ -58,18 +58,18 @@ export default class ManageWarehouses extends Component {
                   <TableRow>
                     <TableCell align="center">Şöbə/Kurasiya</TableCell>
                     <TableCell align="center">Anbarın adı</TableCell>
-                    <TableCell align="center">Anbarın tipi</TableCell>
+                    <TableCell align="center">Username</TableCell>
                     <TableCell align="center">Məsul şəxs</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {this.state.tablesData.map(
-                    ({ name, storage_name, storage_type, responsible_person }) => (
+                    ({ curation, storage_name, username, full_name }) => (
                       <TableRow key={uuid()}>
-                        <TableCell align="center">{name}</TableCell>
+                        <TableCell align="center">{curation}</TableCell>
                         <TableCell align="center">{storage_name}</TableCell>
-                        <TableCell align="center">{storage_type}</TableCell>
-                        <TableCell align="center">{responsible_person}</TableCell>
+                        <TableCell align="center">{username}</TableCell>
+                        <TableCell align="center">{full_name}</TableCell>
                       </TableRow>
                     )
                   )}
@@ -89,7 +89,7 @@ export default class ManageWarehouses extends Component {
             <CircularProgress style={{ color: "#fff" }} />
           </Backdrop>
         </MainData>
-        <CreateWarehouseForm
+        {/* <CreateWarehouseForm
           open={this.state.newWarehouseForm}
           close={() => {
             this.setState({
@@ -98,7 +98,7 @@ export default class ManageWarehouses extends Component {
           }}
           refresh={this.getTableData.bind(this)}
           reloadNavbarStorage={this.props.reloadNavbarStorage}
-        />
+        /> */}
       </StyledSection>
     );
   }

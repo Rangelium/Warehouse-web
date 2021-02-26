@@ -125,6 +125,34 @@ class Row extends Component {
               Təstiq et
             </CustomButton>
           </TableCell>
+          {data.done === "-" && (  
+          <TableCell style={{ borderBottom: "unset" }} align="center">
+            <IconButton
+                onClick={() => {
+                  this.context
+                    .alert({
+                      title: "Delete",
+                      description: `Are you sure you want to delete?`,
+                    })
+                    .then(() => {
+                      api
+                        .executeProcedure(
+                          "[SalaryDB].anbar.[transfer_products_session_delete]",
+                          { id: data.id}
+                        )
+                        .then(() => {
+                          this.getRowInfo();
+                          this.props.refresh();
+                        })
+                        .catch((err) => this.context.error(err.errText));
+                    })
+                    .catch(() => {});
+                }}
+              >
+                <HighlightOffIcon />
+              </IconButton>
+            </TableCell>
+          )}
         </TableRow>
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
@@ -141,7 +169,7 @@ class Row extends Component {
                       <TableCell align="center">Hücrə №</TableCell>
                       <TableCell align="center">Transfer olunan anbarın adı</TableCell>
                       {this.props.row.done === "-" && (
-                        <TableCell align="center">Remove</TableCell>
+                        <TableCell align="center"></TableCell>
                       )}
                     </TableRow>
                   </TableHead>
@@ -224,6 +252,7 @@ export default class TransferTable extends Component {
               <TableCell align="center">Ümumi qiymət</TableCell>
               <TableCell align="center">Təsdiq edilib</TableCell>
               <TableCell align="center">Fəaliyyət</TableCell>
+              <TableCell align="center">Sil</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

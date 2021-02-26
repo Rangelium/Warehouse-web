@@ -17,7 +17,7 @@ export class GlobalDataProvider extends React.Component {
     },
     storageId: null,
     storageTitle: "",
-
+    userStructureId: null,
     userId: null,
     userData: null,
     token: null,
@@ -73,12 +73,13 @@ export class GlobalDataProvider extends React.Component {
       return;
     }
     const userData = jwtDecode(token);
-    // console.log(userData)
+    console.log(userData)
     if (userData) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       this.setState({
         userId: userData.data.id,
         userData: userData.data,
+        userStructureId: userData.data.structureid,
         token,
       });
 

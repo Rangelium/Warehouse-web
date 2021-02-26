@@ -10,6 +10,8 @@ import InventoryProcessingForm from "./InventoryProcessingForm";
 import InventoryWriteOffForm from "./InventoryWriteOffForm";
 import { CustomButton } from "../../components/UtilComponents";
 import {
+  IconButton,
+  
   Divider,
   Backdrop,
   CircularProgress,
@@ -24,6 +26,8 @@ import {
 
 // Icons
 import RemoveIcon from "@material-ui/icons/Remove";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import DoneIcon from "@material-ui/icons/Done";
 
 export default class Inventory extends Component {
   static contextType = GlobalDataContext;
@@ -141,7 +145,7 @@ export default class Inventory extends Component {
         <Header>
           <h1 className="title">İnventarizasiya</h1>
 
-          <CustomButton onClick={() => this.setState({ newSessionForm: true })}>
+          <CustomButton onClick={() => this.setState({ newSessionForm: true },console.log(this.state.tableData))}>
             Yeni sessiya yarat
           </CustomButton>
 
@@ -159,6 +163,7 @@ export default class Inventory extends Component {
                     <TableCell align="center">Ümumi miqdar fərqi</TableCell>
                     <TableCell align="center">Məhsulların miqdarı</TableCell>
                     <TableCell align="center">Fəaliyyət</TableCell>
+                    <TableCell align="center"></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -170,6 +175,8 @@ export default class Inventory extends Component {
                       numberOf_products,
                       currency_title,
                       id,
+                      is_done_fix_in,
+                      is_done_fix_out
                     }) => (
                       <TableRow key={uuid()}>
                         <TableCell align="center">
@@ -208,6 +215,32 @@ export default class Inventory extends Component {
                             Malları silin
                           </CustomButton>
                         </TableCell>
+                        {!is_done_fix_in && !is_done_fix_out  && (
+                          <TableCell align="center">
+                            <IconButton
+                              onClick={() => {
+                                this.context
+                                  .alert({
+                                    title: "Delete",
+                                    description: `Are you sure you want to delete?`,
+                                  })
+                                  .then(() => {
+                                    api
+                                      .executeProcedure(
+                                        "[SalaryDB].anbar.[inventory_session_delete]",
+                                        { id: id }
+                                      )
+                                      .then(() => {
+                                        this.getTableData();
+                                      })
+                                      .catch((err) => this.context.error(err.errText));
+                                  })
+                                  .catch(() => {});
+                              }}
+                            >
+                              <HighlightOffIcon />
+                            </IconButton>
+                          </TableCell>) || <TableCell align="center"><DoneIcon /></TableCell>}
                       </TableRow>
                     )
                   )}

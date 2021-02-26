@@ -42,7 +42,7 @@ export default class WarehouseAdd extends Component {
     const procurementTableData = await api
       .executeProcedure("[SalaryDB].procurement.[orders_for_warehouse]", {
         result: -3,
-        structure_id: this.context.userData.structureid,
+        structure_id: this.context.storageId,
         type: 1
       })
       .catch(() => {

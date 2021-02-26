@@ -26,6 +26,8 @@ import {
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import RemoveIcon from "@material-ui/icons/Remove";
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 
 class Row extends Component {
   static contextType = GlobalDataContext;
@@ -165,15 +167,33 @@ class Row extends Component {
                   <TableHead>
                     <TableRow>
                       <TableCell align="center">Məhsul</TableCell>
-                      <TableCell align="center">Kəmiyyət</TableCell>
+                      <TableCell align="center">Miqdar</TableCell>
+                      <TableCell align="center">Təstiq olunan</TableCell>
+                      <TableCell align="center"></TableCell>
                       <TableCell align="center">Kurasiya</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
+                    {console.log(this.state.productsTableData)}
                     {this.state.productsTableData.map((product) => (
                       <TableRow key={uuid()}>
                         <TableCell align="center">{product.title}</TableCell>
                         <TableCell align="center">{product.amount}</TableCell>
+                        <TableCell align="center">{product.handed_amount}</TableCell>
+                        <TableCell align="center">
+                          {product.amount_left 
+                             ? 
+                          <RadioButtonCheckedIcon style={{
+                          color:"#FFAA00",
+                          fontSize:"medium"
+                          }}/> 
+                             : 
+                          <RadioButtonCheckedIcon style={{
+                            color:"green",
+                            fontSize:"medium"
+                            }}/>
+                          }
+                          </TableCell>
                         <TableCell align="center">{product.department_name}</TableCell>
                       </TableRow>
                     ))}

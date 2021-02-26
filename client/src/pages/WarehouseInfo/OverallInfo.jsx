@@ -67,8 +67,8 @@ export default class OverallInfo extends Component {
                     this.props.overallInfo.last_in_name
                       ? this.props.overallInfo.last_in_name.length > 24
                         ? this.props.overallInfo.last_in_name
-                        : false
-                      : false
+                        : undefined
+                      : undefined
                   }
                 >
                   {this.props.overallInfo.last_in_name

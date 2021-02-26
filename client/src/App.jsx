@@ -50,7 +50,7 @@ const routes = [
       //   Component: InitialRemainders,
       // },
       {
-        name: "Anbarın quraşdırılması",
+        name: "Anbarlar",
         path: "/manageWarehouses",
         Component: ManageWarehouses,
       },

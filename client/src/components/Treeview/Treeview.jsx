@@ -150,7 +150,7 @@ export default class Treeview extends Component {
               onClick={() => this.props.close()}
               startIcon={<VisibilityOffOutlinedIcon />}
             >
-              Ağacı gizlət
+              Məhsulları  gizlət
             </StyledButton>
           </div>
         </StyledDrawer>
@@ -159,7 +159,7 @@ export default class Treeview extends Component {
           startIcon={<VisibilityOutlinedIcon color="inherit" />}
           active={this.props.active ? 0 : 1}
         >
-          Ağacı göstər
+          Məhsulları göstər
         </SpecialButton>
       </>
     );

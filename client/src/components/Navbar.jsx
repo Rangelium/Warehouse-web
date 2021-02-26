@@ -32,9 +32,12 @@ export default class Navbar extends Component {
   }
   getStoragesList = () => {
     api
-      .executeProcedure("anbar.storage_select_all")
+      .executeProcedure("anbar.storage_select_all",{
+        user_structure_id: this.context.userStructureId,
+      })
       .then((data) => {
         this.context.setStorage(data[0].id, data[0].storage_name);
+        console.log(data)
         this.setState({
           storageData: data,
           loading: false,
@@ -61,7 +64,10 @@ export default class Navbar extends Component {
       <StyledAppbar position="relative">
         <Logo />
         <Divider orientation="vertical" />
-        {!this.state.loading && (
+        {!this.state.loading && this.state.storageData.length === 1 && (
+          <Typography className="AnbarName">{this.state.storageData[0].storage_name}</Typography>
+           )}
+        {!this.state.loading && this.state.storageData.length > 1 && (
           <Select
             disableUnderline
             value={this.context.storageId}
@@ -140,6 +146,7 @@ export default class Navbar extends Component {
           }}
         >
           Çıxış
+          {/* {console.log(this.context.userStructureId,this.context.storageId)} */}
         </CustomButton>
       </StyledAppbar>
     );
@@ -157,6 +164,10 @@ const StyledAppbar = styled.nav`
   height: 56px;
   align-items: center;
   display: flex;
+
+  .AnbarName{
+    font-weight: bold;
+  }
 
   hr {
     height: 2rem;

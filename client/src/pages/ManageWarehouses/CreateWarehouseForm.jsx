@@ -21,7 +21,7 @@ export default class CreateWarehouseForm extends Component {
     responsiblePerson: "",
     warehouseType: "",
     warehouseDepartmentId: "",
-    departmentData: [],
+    // departmentData: [],
   };
 
   componentDidMount() {
@@ -42,10 +42,10 @@ export default class CreateWarehouseForm extends Component {
     e.preventDefault();
 
     api
-      .executeProcedure("[SalaryDB].anbar.[storage_create_new]", {
+      .executeProcedure("[procurement].[create_new_structure]", {
         storage_name: this.state.warehouseName,
         storage_type: this.state.warehouseType,
-        curation_department_id: parseInt(this.state.warehouseDepartmentId),
+        // curation_department_id: parseInt(this.state.warehouseDepartmentId),
         responsible_person: this.state.responsiblePerson,
       })
       .then(() => {
@@ -63,7 +63,7 @@ export default class CreateWarehouseForm extends Component {
       warehouseName: "",
       responsiblePerson: "",
       warehouseType: "",
-      warehouseDepartmentId: "",
+      // warehouseDepartmentId: "",
     });
   }
 
@@ -84,7 +84,7 @@ export default class CreateWarehouseForm extends Component {
               value={this.state.warehouseName}
               onChange={this.handleChange.bind(this)}
             />
-            <CustomSelect
+            {/* <CustomSelect
               required
               label="şöbə/kurasiya"
               name="warehouseDepartmentId"
@@ -96,7 +96,7 @@ export default class CreateWarehouseForm extends Component {
                   {name}
                 </CustomSelectItem>
               ))}
-            </CustomSelect>
+            </CustomSelect> */}
             <CustomTextInput
               required
               label="Anbarın tipi"

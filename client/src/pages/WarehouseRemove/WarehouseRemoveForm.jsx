@@ -54,7 +54,9 @@ export default class WarehouseRemoveForm extends Component {
     await this.getProductData(this.props.data[0].title);
 
     api
-      .executeProcedure("anbar.storage_select_all")
+      .executeProcedure("anbar.storage_select_all",{
+        user_structure_id: this.context.userStructureId,
+      })
       .then((data) => {
         this.setState({
           warehouseData: data,

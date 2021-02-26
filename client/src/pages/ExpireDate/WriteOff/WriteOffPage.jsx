@@ -130,6 +130,35 @@ class Row extends Component {
               Təstiq et
             </CustomButton>
           </TableCell>
+          {data.done === "-" && (
+            <TableCell style={{ borderBottom: "unset" }} align="center">
+              <IconButton
+                onClick={() => {
+                  this.context
+                    .alert({
+                      title: "Delete",
+                      description: `Are you sure you want to delete?`,
+                    })
+                    .then(() => {
+                      api
+                        .executeProcedure(
+                          "[SalaryDB].anbar.[decommission_session_delete]",
+                          { id: data.id }
+                        )
+                        .then(() => {
+                          this.getRowInfo();
+                          this.props.totalRefresh();
+                        })
+                        .catch((err) => this.context.error(err.errText));
+                    })
+                    .catch(() => {});
+                }}
+            
+              >
+                <HighlightOffIcon />
+              </IconButton>
+            </TableCell>
+          )}
         </TableRow>
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
@@ -144,7 +173,7 @@ class Row extends Component {
                       <TableCell align="center">Qiymət</TableCell>
                       <TableCell align="center">Ümumi Qiymət</TableCell>
                       <TableCell align="center">Hücrə №</TableCell>
-                      {this.props.row.done === "-" && (
+                      {data.done === "-" && (
                         <TableCell align="center">Sil</TableCell>
                       )}
                     </TableRow>
@@ -162,7 +191,7 @@ class Row extends Component {
                         <TableCell align="center">
                           {product.product_cell || <RemoveIcon />}
                         </TableCell>
-                        {this.props.row.done === "-" && (
+                        {data.done === "-" && (
                           <TableCell align="center">
                             <IconButton
                               onClick={() => {
@@ -232,6 +261,7 @@ export default class WriteOffPage extends Component {
                 <TableCell align="center">Ümumi qiymət</TableCell>
                 <TableCell align="center">Təsdiq edilib</TableCell>
                 <TableCell align="center">Fəaliyyət</TableCell>
+                <TableCell align="center">Sil</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

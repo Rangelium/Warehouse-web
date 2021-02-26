@@ -328,7 +328,7 @@ export default class TransferForm extends Component {
           <DialogActions>
             <Divider />
             <CustomButton onClick={this.handleClose.bind(this)}>
-              Close
+             İmtına
             </CustomButton>
             <CustomButton type="submit">Əlavə et</CustomButton>
           </DialogActions>
