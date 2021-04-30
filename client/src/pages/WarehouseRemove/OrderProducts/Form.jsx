@@ -70,7 +70,7 @@ export default class OrderForm extends Component {
         ({
           material_id,
           product_name,
-          approx_price,
+          unit_price,
           currency_title,
           amount_left,
           amount,
@@ -82,7 +82,7 @@ export default class OrderForm extends Component {
             key: uuid(),
             id: material_id,
             title: product_name,
-            setting_price: approx_price,
+            setting_price: unit_price,
             currency_title: currency_title,
             orderAmount: amount || amount_left,
             reason: reason || "",

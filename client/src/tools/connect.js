@@ -130,6 +130,23 @@ class API {
         });
     });
   }
+
+  writeOffUserSelectionTVP(data){
+    return new Promise((resolve, reject) => {
+      axios({
+        method: "post",
+        url: "/writeOffUserSelectionTVP",
+        data,
+        timeout: timeoutDelay,
+      })
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  }
 }
 
 export default new API();

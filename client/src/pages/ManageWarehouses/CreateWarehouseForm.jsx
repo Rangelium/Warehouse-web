@@ -2,15 +2,12 @@
 
 import React, { Component } from "react";
 import styled from "styled-components";
-import uuid from "react-uuid";
 import { GlobalDataContext } from "../../components/GlobalDataProvider";
 import api from "../../tools/connect";
 
 import {
   CustomTextInput,
   CustomButton,
-  CustomSelect,
-  CustomSelectItem,
 } from "../../components/UtilComponents";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@material-ui/core";
 

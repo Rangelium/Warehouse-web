@@ -2,6 +2,7 @@ const sql = require("mssql");
 const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
+const axios = require("axios");
 
 const { connConfig } = require("./serverTools/connectionConfig");
 const FBAuth = require("./serverTools/fbAuth");
@@ -31,7 +32,6 @@ const app = require("express")();
 const port = 61543;
 
 app.use(cors());
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -136,3 +136,66 @@ app.post("/api/addInvNumTable", FBAuth, (req, res) => {
     );
   });
 });
+
+app.post("/api/writeOffUserSelectionTVP", FBAuth, (req, res) => {
+  sql.connect(connConfig, () => {
+    const data = req.body;
+    const table = new sql.Table();
+
+    table.columns.add("id", sql.TYPES.Int);
+    table.columns.add("is_active", sql.TYPES.TinyInt);
+
+    data.receivers.forEach((row) => {
+      table.rows.add(...row);
+    });
+
+    const request = new sql.Request();
+    
+    request.input("receivers", table);
+    request.input("send_type", data.send_type);
+    request.input("number", data.number);
+    request.input("emp_id", data.emp_id);
+    request.input("doc_type", data.doc_type);
+    request.input("doc_id", data.doc_id);
+    request.input("comment", "");
+
+    request.execute(
+      "[procurement].[build_new_misc_doc]",
+      (err, result) => {
+        try {
+          if (err !== null) {
+            console.log(err.message);
+            return res.status(400).json({ error: err, errText: err.message });
+          }
+          return res.status(200).json(result.recordset);
+        } catch (error) {
+          res.status(500).json({ error, errText: "Internal server error" });
+        }
+      }
+    );
+  });
+});
+
+// setInterval(async () => {
+//   const username = "exchange";
+//   const password = "CurP@ssWor|)ExchanGe"
+//   const data = await axios.get("http://192.168.200.11:8082/exchange/v1.0/currency", {
+//     auth: {
+//       username,
+//       password,
+//     }
+//   }).then((res) => res.data).catch(err => {
+//     console.error(err)
+//     return [];
+//   })
+
+//   console.log(data)
+
+//   // const request = new sql.Request();
+//   // request.input("id", )
+//   // request.input("full_title", )
+//   // request.input("title", )
+//   // request.input("user_id", )
+
+//   // request.execute()
+// }, 3600)

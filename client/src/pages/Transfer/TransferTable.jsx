@@ -38,6 +38,7 @@ class Row extends Component {
     api
       .executeProcedure("anbar.transfer_products_session_info_accept_insert", {
         transfer_session_id: this.props.row.id,
+        result: 1,
       })
       .then(() => {
         this.context.success("Sessiya təsdiq edildi");

@@ -312,7 +312,7 @@ export default class WarehouseAddFormFillBulk extends Component {
                 <TableCell align="center">Qiymət</TableCell>
                 <TableCell align="center">Valyuta</TableCell>
                 <TableCell align="center">Hücrə №</TableCell>
-                <TableCell align="center">Yararlılıq müddəti</TableCell>
+                <TableCell align="center">Yararlıq müddəti</TableCell>
                 <TableCell align="center">İnventar №</TableCell>
               </TableRow>
             </TableHead>

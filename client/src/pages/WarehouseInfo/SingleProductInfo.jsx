@@ -70,9 +70,9 @@ export default class SingleProductInfo extends Component {
             }}
           >
             <h1 style={{ color: "#000", fontSize: "3rem", marginBottom: "15px" }}>
-              No information
+            Məhsul haqqında məlumat yoxdur
             </h1>
-            <p style={{ fontSize: "1.2rem" }}>Məhsul haqqında məlumat yoxdur</p>
+            {/* <p style={{ fontSize: "1.2rem" }}>Məhsul haqqında məlumat yoxdur</p> */}
           </div>
         </SingleProduct>
       );
@@ -156,11 +156,12 @@ export default class SingleProductInfo extends Component {
           </StyledPaper>
           <StyledPaper variant="outlined">
             <p className="title">Qalıq</p>
-            <p>
+            <p style={{color: this.props.product.left < this.props.product.optimal_quantity  ? "red" : "black"}}>
               {this.props.product.left
-                ? `${this.props.product.left} ${this.props.product.unit_title}`
+                ? `${this.props.product.left}  ${this.props.product.unit_title}`
                 : DefaultText}
             </p>
+            {this.props.product.left <  this.props.product.optimal_quantity  ? <h6>Optimal {this.props.product.optimal_quantity}</h6> : null}
           </StyledPaper>
         </div>
 
@@ -179,7 +180,7 @@ export default class SingleProductInfo extends Component {
                 <TableCell className="head">Hücrə №</TableCell>
                 <TableCell className="head">Fəaliyyət</TableCell>
                 <TableCell className="head">Müqavilə №</TableCell>
-                <TableCell className="head">Akt №</TableCell>
+                <TableCell className="head">Electron qaimə №</TableCell>
                 <TableCell className="head">Hesab-faktura №</TableCell>
                 <TableCell className="head">İnventar №</TableCell>
                 <TableCell className="head">Kontragent</TableCell>

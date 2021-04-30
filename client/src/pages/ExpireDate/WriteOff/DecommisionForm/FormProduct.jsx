@@ -118,6 +118,7 @@ export default class FormProduct extends Component {
             <CustomTextInput
               label="Səbəb"
               name="reason"
+              required
               value={this.props.reason}
               onChange={this.props.handleChange}
             />

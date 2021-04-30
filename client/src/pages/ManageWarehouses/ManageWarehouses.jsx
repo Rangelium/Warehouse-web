@@ -4,8 +4,8 @@ import uuid from "react-uuid";
 import { GlobalDataContext } from "../../components/GlobalDataProvider";
 import api from "../../tools/connect";
 
-import CreateWarehouseForm from "./CreateWarehouseForm";
-import { CustomButton } from "../../components/UtilComponents";
+// import CreateWarehouseForm from "./CreateWarehouseForm";
+// import { CustomButton } from "../../components/UtilComponents";
 import {
   Divider,
   Backdrop,

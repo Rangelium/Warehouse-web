@@ -54,9 +54,7 @@ export default class WarehouseRemoveForm extends Component {
     await this.getProductData(this.props.data[0].title);
 
     api
-      .executeProcedure("anbar.storage_select_all",{
-        user_structure_id: this.context.userStructureId,
-      })
+      .executeProcedure("anbar.storage_select_all")
       .then((data) => {
         this.setState({
           warehouseData: data,
@@ -151,7 +149,7 @@ export default class WarehouseRemoveForm extends Component {
         user_id: this.context.userId,
         retail_sale_session_id: this.props.retailSaleId,
         order_id: this.props.order_id,
-        status: authComplete ? 20 : 0,
+        status: authComplete ? 20 : 44,
       })
       .then(() => {
         let InvNumsArrMats = [];
@@ -370,7 +368,7 @@ export default class WarehouseRemoveForm extends Component {
                         <TableCell align="center">Məhsul</TableCell>
                         <TableCell align="center">Miqdar</TableCell>
                         <TableCell align="center">Qiymət</TableCell>
-                        <TableCell align="center">Yararlılıq müddəti</TableCell>
+                        <TableCell align="center">Yararlıq müddəti</TableCell>
                         <TableCell align="center">Hücrə №</TableCell>
                       </TableRow>
                     </TableHead>
@@ -486,7 +484,12 @@ export default class WarehouseRemoveForm extends Component {
 
             <div className="gap" style={{ flexGrow: 1 }}></div>
             {Boolean(this.state.activeStep === this.props.data.length - 1) && (
-              <CustomButton type="submit">Bitir</CustomButton>
+
+              <>
+              {console.log(this.state.selectedAmounts)}
+              <CustomButton disabled={this.state.selectedAmounts.reduce((a,b)=>a+b ,0) === 0 ? 1: 0} type="submit">Təstiq et</CustomButton>
+
+              </>
             )}
           </DialogActions>
         </form>

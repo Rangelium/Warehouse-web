@@ -198,7 +198,7 @@ export default class Transfer extends Component {
               value={this.state._tabValue}
               onChange={this.handleTabChange.bind(this)}
             >
-              <Tab label="Təstiq gözləyənlər" />
+              <Tab label="Transfer" />
               <Tab label="Arxiv" />
             </Tabs>
 

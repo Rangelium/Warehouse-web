@@ -54,7 +54,7 @@ export default class InventoryWriteOffForm extends Component {
   }
   async getProductData(productTitle) {
     const existingProducts = await api
-      .executeProcedure("[SalaryDB].anbar.[inventory_session_fix_out_product_search]", {
+      .executeProcedure("[SalaryDB].anbar.[transfer_products_search]", {
         storage_id: this.context.storageId,
         title: productTitle,
       })
@@ -292,7 +292,7 @@ export default class InventoryWriteOffForm extends Component {
                         <TableCell align="center">Məhsul</TableCell>
                         <TableCell align="center">Miqdar</TableCell>
                         <TableCell align="center">Qiymət</TableCell>
-                        <TableCell align="center">Yararlılıq müddəti</TableCell>
+                        <TableCell align="center">Yararlıq müddəti</TableCell>
                         <TableCell align="center">Hücrə №</TableCell>
                       </TableRow>
                     </TableHead>
@@ -406,7 +406,7 @@ export default class InventoryWriteOffForm extends Component {
 
             <div className="gap" style={{ flexGrow: 1 }}></div>
             {Boolean(this.state.activeStep === this.props.data.length - 1) && (
-              <CustomButton type="submit">Bitir</CustomButton>
+              <CustomButton type="submit">Təstiq et</CustomButton>
             )}
           </DialogActions>
         </form>

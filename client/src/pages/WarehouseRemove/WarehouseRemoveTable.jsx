@@ -26,8 +26,8 @@ import {
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import RemoveIcon from "@material-ui/icons/Remove";
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
+// import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import RadioButtonCheckedIcon from "@material-ui/icons/RadioButtonChecked";
 
 class Row extends Component {
   static contextType = GlobalDataContext;
@@ -52,10 +52,13 @@ class Row extends Component {
       () => {
         if (this.state.infoTable) {
           api
-            .executeProcedure("[SalaryDB].anbar.procurement_get_order_req_data", {
-              ord_numb: this.props.row.ord_numb,
-              emp_version: this.props.row.emp_id,
-            })
+            .executeProcedure(
+              "[SalaryDB].anbar.procurement_get_order_req_data",
+              {
+                ord_numb: this.props.row.ord_numb,
+                emp_version: this.props.row.emp_id,
+              }
+            )
             .then((res) => {
               this.setState({
                 productsTableData: res,
@@ -88,7 +91,9 @@ class Row extends Component {
       );
 
     const retailSaleId = await api
-      .executeProcedure("[SalaryDB].anbar.[order_request_handle_session_create]")
+      .executeProcedure(
+        "[SalaryDB].anbar.[order_request_handle_session_create]"
+      )
       .then((res) => res[0][""])
       .catch((err) => console.error(err.errText));
 
@@ -99,7 +104,9 @@ class Row extends Component {
         retailSaleId,
       },
       () => {
-        const data = localStorage.getItem("WarehouseRemoveUnfinishedRetailSessions");
+        const data = localStorage.getItem(
+          "WarehouseRemoveUnfinishedRetailSessions"
+        );
         if (data) {
           const arr = JSON.parse(data);
           arr.push(this.state.retailSaleId);
@@ -130,8 +137,15 @@ class Row extends Component {
       <>
         <TableRow>
           <TableCell style={{ borderBottom: "unset" }}>
-            <IconButton size="small" onClick={this.handleExpandRowClick.bind(this)}>
-              {this.state.infoTable ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            <IconButton
+              size="small"
+              onClick={this.handleExpandRowClick.bind(this)}
+            >
+              {this.state.infoTable ? (
+                <KeyboardArrowUpIcon />
+              ) : (
+                <KeyboardArrowDownIcon />
+              )}
             </IconButton>
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
@@ -146,23 +160,36 @@ class Row extends Component {
           <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.create_date_time}
           </TableCell>
-          <TableCell style={{ borderBottom: "unset" }} padding="none" align="center">
+          <TableCell
+            style={{ borderBottom: "unset" }}
+            padding="none"
+            align="center"
+          >
             <CustomButton onClick={this.showRemoveForm.bind(this)}>
               Təstiq et
             </CustomButton>
           </TableCell>
 
-          <TableCell style={{ borderBottom: "unset" }} padding="checkbox" align="center">
+          <TableCell
+            style={{ borderBottom: "unset" }}
+            padding="checkbox"
+            align="center"
+          >
             <Checkbox
               checked={isItemSelected}
-              onChange={() => this.props.toggleVendor(data.id, data.techizatci_id)}
+              onChange={() =>
+                this.props.toggleVendor(data.id, data.techizatci_id)
+              }
             />
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
             <Collapse in={this.state.infoTable} timeout="auto" unmountOnExit>
-              <Paper style={{ padding: "10px 0", position: "relative" }} elevation={0}>
+              <Paper
+                style={{ padding: "10px 0", position: "relative" }}
+                elevation={0}
+              >
                 <Table size="small">
                   <TableHead>
                     <TableRow>
@@ -179,22 +206,29 @@ class Row extends Component {
                       <TableRow key={uuid()}>
                         <TableCell align="center">{product.title}</TableCell>
                         <TableCell align="center">{product.amount}</TableCell>
-                        <TableCell align="center">{product.handed_amount}</TableCell>
                         <TableCell align="center">
-                          {product.amount_left 
-                             ? 
-                          <RadioButtonCheckedIcon style={{
-                          color:"#FFAA00",
-                          fontSize:"medium"
-                          }}/> 
-                             : 
-                          <RadioButtonCheckedIcon style={{
-                            color:"green",
-                            fontSize:"medium"
-                            }}/>
-                          }
-                          </TableCell>
-                        <TableCell align="center">{product.department_name}</TableCell>
+                          {product.handed_amount}
+                        </TableCell>
+                        <TableCell align="center">
+                          {product.amount_left ? (
+                            <RadioButtonCheckedIcon
+                              style={{
+                                color: "#FFAA00",
+                                fontSize: "medium",
+                              }}
+                            />
+                          ) : (
+                            <RadioButtonCheckedIcon
+                              style={{
+                                color: "green",
+                                fontSize: "medium",
+                              }}
+                            />
+                          )}
+                        </TableCell>
+                        <TableCell align="center">
+                          {product.department_name}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

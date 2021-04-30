@@ -11,7 +11,6 @@ import InventoryWriteOffForm from "./InventoryWriteOffForm";
 import { CustomButton } from "../../components/UtilComponents";
 import {
   IconButton,
-  
   Divider,
   Backdrop,
   CircularProgress,
@@ -145,7 +144,14 @@ export default class Inventory extends Component {
         <Header>
           <h1 className="title">İnventarizasiya</h1>
 
-          <CustomButton onClick={() => this.setState({ newSessionForm: true },console.log(this.state.tableData))}>
+          <CustomButton
+            onClick={() =>
+              this.setState(
+                { newSessionForm: true },
+                console.log(this.state.tableData)
+              )
+            }
+          >
             Yeni sessiya yarat
           </CustomButton>
 
@@ -176,7 +182,7 @@ export default class Inventory extends Component {
                       currency_title,
                       id,
                       is_done_fix_in,
-                      is_done_fix_out
+                      is_done_fix_out,
                     }) => (
                       <TableRow key={uuid()}>
                         <TableCell align="center">
@@ -215,7 +221,7 @@ export default class Inventory extends Component {
                             Malları silin
                           </CustomButton>
                         </TableCell>
-                        {!is_done_fix_in && !is_done_fix_out  && (
+                        {(!is_done_fix_in && !is_done_fix_out && (
                           <TableCell align="center">
                             <IconButton
                               onClick={() => {
@@ -233,14 +239,21 @@ export default class Inventory extends Component {
                                       .then(() => {
                                         this.getTableData();
                                       })
-                                      .catch((err) => this.context.error(err.errText));
+                                      .catch((err) =>
+                                        this.context.error(err.errText)
+                                      );
                                   })
                                   .catch(() => {});
                               }}
                             >
                               <HighlightOffIcon />
                             </IconButton>
-                          </TableCell>) || <TableCell align="center"><DoneIcon /></TableCell>}
+                          </TableCell>
+                        )) || (
+                          <TableCell align="center">
+                            <DoneIcon />
+                          </TableCell>
+                        )}
                       </TableRow>
                     )
                   )}

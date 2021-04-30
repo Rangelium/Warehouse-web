@@ -7,6 +7,7 @@ import api from "../../../tools/connect";
 
 import { CustomButton } from "../../../components/UtilComponents";
 import DecommForm from "./DecommisionForm/Form";
+import UserSelection from "./UserSelection/Form";
 import {
   IconButton,
   Paper,
@@ -67,9 +68,12 @@ class Row extends Component {
   }
   getRowInfo() {
     api
-      .executeProcedure("[SalaryDB].anbar.[decommission_session_info_selection]", {
-        session_id: this.props.row.id,
-      })
+      .executeProcedure(
+        "[SalaryDB].anbar.[decommission_session_info_selection]",
+        {
+          session_id: this.props.row.id,
+        }
+      )
       .then((res) => {
         this.setState({
           productsTableData: res,
@@ -92,47 +96,69 @@ class Row extends Component {
               size="small"
               onClick={this.handleExpandRowClick.bind(this)}
             >
-              {this.state.infoTable ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              {this.state.infoTable ? (
+                <KeyboardArrowUpIcon />
+              ) : (
+                <KeyboardArrowDownIcon />
+              )}
             </IconButton>
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
-            {dayjs(data.begin_date).subtract(4, "hour").format("YYYY-MM-DD, HH:mm")}
+            {dayjs(data.begin_date)
+              .subtract(4, "hour")
+              .format("YYYY-MM-DD, HH:mm")}
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.number_of_products}
           </TableCell>
-          <TableCell style={{ borderBottom: "unset" }} align="center">{`${parseFloat(
-            data.total_sum
-          ).toFixed(2)} ${data.default_currency}`}</TableCell>
+          <TableCell
+            style={{ borderBottom: "unset" }}
+            align="center"
+          >{`${parseFloat(data.total_sum).toFixed(2)} ${
+            data.default_currency
+          }`}</TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
-            {data.done === "+" ? <DoneIcon /> : <RemoveIcon />}
+            {data.done === 3 ? <DoneIcon /> : <RemoveIcon />}
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
-            <CustomButton
-              disabled={data.done === "+" ? true : false}
-              style={{ marginRight: "5px" }}
-              onClick={() => this.props.showNewDecommForm(data.id)}
-            >
-              Əlavə et
-            </CustomButton>
-            <CustomButton
-              disabled={data.done === "+" ? true : false}
-              onClick={() => {
-                this.context
-                  .alert({
-                    title: "Sessiyanı bitir",
-                    description: "Əminsiniz?",
-                  })
-                  .then(() => this.finishSession())
-                  .catch(() => {});
-              }}
-            >
-              Təstiq et
-            </CustomButton>
-          </TableCell>
-          {data.done === "-" && (
-            <TableCell style={{ borderBottom: "unset" }} align="center">
-              <IconButton
+            {data.done === 0 && (
+              <CustomButton
+                style={{ marginRight: "5px" }}
+                onClick={() => this.props.showNewDecommForm(data.id)}
+              >
+                Əlavə et
+              </CustomButton>
+            )}
+            {data.done === 1 && (
+              <CustomButton
+                onClick={() => {
+                  this.context
+                    .alert({
+                      title: "Sessiyanı bitir",
+                      description: "Əminsiniz?",
+                    })
+                    .then(() => this.finishSession())
+                    .catch(() => {});
+                }}
+              >
+                Təstiq et
+              </CustomButton>
+            )}
+            {data.done === 0 && (
+              <CustomButton
+                disabled={!data.number_of_products}
+                style={{ marginRight: "5px" }}
+                onClick={() =>
+                  this.props.showUserSelectionForm(data.id, data.number)
+                }
+              >
+                Təstiqlənməyə göndər              
+                </CustomButton>
+            )}
+            {data.done === -1 && <p style={{ color: "red" }}>DECLINED</p>}
+            {(data.done === 0 || data.done === -1) && (
+              <CustomButton
+                style={{ height: "40px" }}
                 onClick={() => {
                   this.context
                     .alert({
@@ -153,17 +179,20 @@ class Row extends Component {
                     })
                     .catch(() => {});
                 }}
-            
               >
                 <HighlightOffIcon />
-              </IconButton>
-            </TableCell>
-          )}
+              </CustomButton>
+            )}
+            {data.done === 2 && <p style={{color:"#FFB420"}}>Razılaşmadadır</p>}
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
             <Collapse in={this.state.infoTable} timeout="auto" unmountOnExit>
-              <Paper style={{ padding: "10px 0", position: "relative" }} elevation={0}>
+              <Paper
+                style={{ padding: "10px 0", position: "relative" }}
+                elevation={0}
+              >
                 <Table size="small">
                   <TableHead>
                     <TableRow>
@@ -181,7 +210,9 @@ class Row extends Component {
                   <TableBody>
                     {this.state.productsTableData.map((product) => (
                       <TableRow key={product.id}>
-                        <TableCell align="center">{product.product_title}</TableCell>
+                        <TableCell align="center">
+                          {product.product_title}
+                        </TableCell>
                         <TableCell align="center">
                           {product.barcode || <RemoveIcon />}
                         </TableCell>
@@ -210,7 +241,9 @@ class Row extends Component {
                                         this.getRowInfo();
                                         this.props.refresh();
                                       })
-                                      .catch((err) => this.context.error(err.errText));
+                                      .catch((err) =>
+                                        this.context.error(err.errText)
+                                      );
                                   })
                                   .catch(() => {});
                               }}
@@ -246,6 +279,8 @@ class Row extends Component {
 export default class WriteOffPage extends Component {
   state = {
     selectedSessionId: null,
+    sessionIdForUserSelection: null,
+    numberForUserSelection: null,
   };
 
   render() {
@@ -261,7 +296,7 @@ export default class WriteOffPage extends Component {
                 <TableCell align="center">Ümumi qiymət</TableCell>
                 <TableCell align="center">Təsdiq edilib</TableCell>
                 <TableCell align="center">Fəaliyyət</TableCell>
-                <TableCell align="center">Sil</TableCell>
+                {/* <TableCell align="center">Sil</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -270,7 +305,15 @@ export default class WriteOffPage extends Component {
                   key={el.id}
                   row={el}
                   totalRefresh={this.props.totalRefresh}
-                  showNewDecommForm={(id) => this.setState({ selectedSessionId: id })}
+                  showNewDecommForm={(id) =>
+                    this.setState({ selectedSessionId: id })
+                  }
+                  showUserSelectionForm={(id, number) =>
+                    this.setState({
+                      sessionIdForUserSelection: id,
+                      numberForUserSelection: number,
+                    })
+                  }
                 />
               ))}
             </TableBody>
@@ -278,11 +321,27 @@ export default class WriteOffPage extends Component {
         </StyledTableContainer>
 
         <DecommForm
-          sessionId={this.state.selectedSessionId}
-          refresh={this.props.refresh}
           open={Boolean(this.state.selectedSessionId)}
           close={() => this.setState({ selectedSessionId: null })}
+          refresh={this.props.refresh}
+          sessionId={this.state.selectedSessionId}
         />
+
+        {Boolean(this.state.sessionIdForUserSelection) &&
+          Boolean(this.state.numberForUserSelection) && (
+            <UserSelection
+              open={true}
+              close={() =>
+                this.setState({
+                  sessionIdForUserSelection: null,
+                  numberForUserSelection: null,
+                })
+              }
+              refresh={this.props.refresh}
+              docId={this.state.sessionIdForUserSelection}
+              number={this.state.numberForUserSelection}
+            />
+          )}
       </>
     );
   }

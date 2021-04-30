@@ -16,14 +16,14 @@ export default class WarehouseAddFromCreateBulk extends Component {
     vendorsList: [],
     vendorId: "",
     contractsList: [],
-    contractNum: "",
-    aktNum: "",
+    contractId: "",
+    eq: "",
     fakturaNum: "",
   };
 
   componentDidMount() {
     api
-      .executeProcedure("[SalaryDB].procurement.[get_express_vendors_list]")
+      .executeProcedure("anbar.select_express_vendors")
       .then((vendorsList) => this.setState({ vendorsList }))
       .catch((err) => console.log(err.errText));
   }
@@ -41,6 +41,7 @@ export default class WarehouseAddFromCreateBulk extends Component {
         }
       )
       .then((contractsList) => {
+        console.log(contractsList)
         this.setState({
           vendorId: e.target.value,
           contractsList,
@@ -53,11 +54,11 @@ export default class WarehouseAddFromCreateBulk extends Component {
       this.context.error("Vendoru seçin!");
       return;
     }
-    if (!Boolean(this.state.contractNum)) {
+    if (!Boolean(this.state.contractId)) {
       this.context.error("Müqavilə № seçin!");
       return;
     }
-    if (!Boolean(this.state.aktNum)) {
+    if (!Boolean(this.state.eq)) {
       this.context.error("akt № daxil edin!");
       return;
     }
@@ -71,8 +72,8 @@ export default class WarehouseAddFromCreateBulk extends Component {
         "[SalaryDB].anbar.[order_acception_handle_session_create]",
         {
           invoice_num: this.state.fakturaNum,
-          contract_num: this.state.contractNum,
-          akt_num: this.state.aktNum,
+          contract_id: this.state.contractId,
+          akt_num: this.state.eq,
         }
       )
       .then((res) => {
@@ -106,21 +107,21 @@ export default class WarehouseAddFromCreateBulk extends Component {
         <CustomSelect
           disabled={!Boolean(this.state.vendorId) ? true : false}
           label="Müqavilə №"
-          name="contractNum"
-          value={this.state.contractNum}
+          name="contractId"
+          value={this.state.contractId}
           onChange={this.handleChange.bind(this)}
         >
-          {this.state.contractsList.map(({ number }) => (
-            <CustomSelectItem key={uuid()} value={number}>
+          {this.state.contractsList.map(({ number,id }) => (
+            <CustomSelectItem key={uuid()} value={id}>
               {number}
             </CustomSelectItem>
           ))}
         </CustomSelect>
         <CustomTextInput
           disabled={!Boolean(this.state.vendorId) ? true : false}
-          label="Akt №"
-          name="aktNum"
-          value={this.state.aktNum}
+          label="Electron qaimə №"
+          name="eq"
+          value={this.state.eq}
           onChange={this.handleChange.bind(this)}
         />
         <CustomTextInput

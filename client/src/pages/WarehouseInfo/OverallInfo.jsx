@@ -129,7 +129,7 @@ export default class OverallInfo extends Component {
                     </span>
                   </p>
                   <p className="dataEl">
-                    Akt №:
+                  Electron qaimə №:
                     <span className="dataElVal">
                       {this.props.overallInfo.last_in_act_num
                         ? this.props.overallInfo.last_in_act_num

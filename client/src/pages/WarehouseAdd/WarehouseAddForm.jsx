@@ -79,7 +79,7 @@ export default class WarehouseAddForm extends Component {
     let isRight = true;
     for (let i = 0; i < this.props.dataForFill.length; i++) {
       if (!isRight) return;
-
+      console.log(this.props.dataForFill[i])
       const prodDocId = await api
         .executeProcedure("[SalaryDB].anbar.[order_acception_handle]", {
           cluster_id: this.props.dataForFill[i].cluster_id,

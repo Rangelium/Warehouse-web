@@ -5,7 +5,7 @@ import XLXS from "xlsx";
 import { GlobalDataContext } from "../../components/GlobalDataProvider";
 import api from "../../tools/connect";
 
-import ExpDateOverTable from "./ExpDateTable";
+// import ExpDateOverTable from "./ExpDateTable";
 import ArchiveTable from "./ExpireDateArchive";
 import WriteOffPage from "./WriteOff/WriteOffPage";
 import { CustomButton, CustomTextInput } from "../../components/UtilComponents";
@@ -171,19 +171,19 @@ export default class ExpireDate extends Component {
         <MainData>
           <div className="mainHead">
             <Tabs value={this.state._tabValue} onChange={this.handleTabChange.bind(this)}>
-              <Tab label="Təstiq gözləyənlər" />
+              {/* <Tab label="Təstiq gözləyənlər" /> */}
               <Tab label="Silinmə" />
               <Tab label="Arxiv" />
             </Tabs>
 
-            {this.state._tabValue === 2 &&
+            {this.state._tabValue === 1 &&
               Boolean(this.state.archiveTableData.length) && (
                 <CustomButton onClick={this.downloadArchiveExcel.bind(this)}>
                   EXCEL export
                 </CustomButton>
               )}
 
-            {this.state._tabValue === 1 && (
+            {this.state._tabValue === 0 && (
               <div className="decommisionPart">
                 <CustomButton
                   onClick={() => {
@@ -223,14 +223,14 @@ export default class ExpireDate extends Component {
           </div>
           <Divider />
 
-          <TabItem hidden={this.state._tabValue !== 0}>
+          {/* <TabItem hidden={this.state._tabValue !== 0}>
             <ExpDateOverTable
               refresh={this.getData.bind(this)}
               tableData={this.state.expDateTableData}
             />
-          </TabItem>
+          </TabItem> */}
 
-          <TabItem hidden={this.state._tabValue !== 1}>
+          <TabItem hidden={this.state._tabValue !== 0}>
             <WriteOffPage
               totalRefresh={this.getData.bind(this)}
               refresh={this.getDecommisionData.bind(this)}
@@ -238,7 +238,7 @@ export default class ExpireDate extends Component {
             />
           </TabItem>
 
-          <TabItem hidden={this.state._tabValue !== 2}>
+          <TabItem hidden={this.state._tabValue !== 1}>
             <ArchiveTable tableData={this.state.archiveTableData} />
           </TabItem>
         </MainData>

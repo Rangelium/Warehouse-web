@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import dayjs from "dayjs";
-import uuid from "react-uuid";
 import axios from "axios";
 import { Document, Page, pdfjs } from "react-pdf";
 import { GlobalDataContext } from "../../components/GlobalDataProvider";
-// import api from "../../tools/connect";
+import api from "../../tools/connect";
 
 import {
   CustomSelect,
@@ -32,24 +31,35 @@ const REPORTS_TYPES = [
   { name: "Məxaric Report", value: "reportSale" },
   { name: "Silinmələr Report", value: "Decomission" },
   { name: "Malların dövriyəsi", value: "CommodityCirculationOfAllProducts" },
+  { name: "Malın dövriyəsi", value: "CommodityCirculationOfSpecificProducts" },
 ];
 
-const giveReportURL = ({ reportType, reportFormat, startDate, endDate, storageId }) => {
-  if (reportType === "reportBuy") {
-    console.log(`http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`);
-    return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
+const giveReportURL = ({
+  reportType,
+  reportFormat,
+  startDate,
+  endDate,
+  storageId,
+  productId,
+}) => {
+  switch (reportType) {
+    case "reportBuy":
+      return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
+    case "reportSale":
+      return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
+    case "Decomission":
+      return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
+    case "CommodityCirculationOfAllProducts":
+      return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[storageid]=${storageId}`;
+    case "CommodityCirculationOfSpecificProducts":
+      console.log(
+        `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[date_to]=${endDate}&data[date_from]=${startDate}&data[storage_id]=${storageId}&data[product_id]=${productId}`
+      );
+      return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[date_to]=${endDate}&data[date_from]=${startDate}&data[storage_id]=${storageId}&data[product_id]=${productId}`;
+
+    default:
+      break;
   }
-  if (reportType === "reportSale") {
-    console.log(`http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`);
-    return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
-  }
-  if (reportType === "Decomission") {
-    console.log(`http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`);
-    return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
-  }
-  if (reportType === "CommodityCirculationOfAllProducts")
-    console.log(`http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[storageid]=${storageId}`);
-    return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[storageid]=${storageId}`;
 };
 // react-pdf setup for create-react-app src = "https://github.com/wojtekmaj/react-pdf/blob/v4.x/README.md#standard-browserify-and-others"
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -60,6 +70,10 @@ export default class Reports extends Component {
     reportType: REPORTS_TYPES[0].value,
     startDate: dayjs().subtract(1, "year").format("YYYY-MM-DD"),
     endDate: dayjs().format("YYYY-MM-DD"),
+
+    selectedProductId: null,
+    productInput: "",
+    productIdsArr: [],
 
     tableName: 0,
     tablesNames: null,
@@ -77,15 +91,54 @@ export default class Reports extends Component {
       [e.target.name]: e.target.value,
       pdfUrl: null,
       loading: false,
+      selectedProductId: null,
+    });
+  }
+  handleProductChange(e) {
+    const value = e.target.value;
+    if (isNaN(value)) {
+      api
+        .executeProcedure("[SalaryDB].anbar.[report_search_product]", {
+          title: value,
+        })
+        .then((productIdsArr) => {
+          this.setState({
+            productIdsArr,
+          });
+        })
+        .catch((err) => console.log(err.errText));
+    } else {
+      api
+        .executeProcedure("[SalaryDB].anbar.[report_search_product]", {
+          barcode: parseInt(value),
+        })
+        .then((productIdsArr) => {
+          this.setState({
+            productIdsArr,
+          });
+        })
+        .catch((err) => console.log(err.errText));
+    }
+
+    this.setState({
+      productInput: value,
     });
   }
   loadReport() {
+    if (
+      !this.state.selectedProductId &&
+      this.state.reportType === "CommodityCirculationOfSpecificProducts"
+    ) {
+      return this.context.error("You need to select product!");
+    }
+
     const url = giveReportURL({
       reportType: this.state.reportType,
       reportFormat: "PDF",
       startDate: this.state.startDate,
       endDate: this.state.endDate,
       storageId: this.context.storageId,
+      productId: this.state.selectedProductId,
     });
 
     if (url !== this.state.pdfUrl) {
@@ -109,12 +162,20 @@ export default class Reports extends Component {
     }
   }
   downloadReport(format, ext) {
+    if (
+      !this.state.selectedProductId &&
+      this.state.reportType === "CommodityCirculationOfSpecificProducts"
+    ) {
+      return this.context.error("You need to select product!");
+    }
+
     const url = giveReportURL({
       reportType: this.state.reportType,
       reportFormat: format.toUpperCase(),
       startDate: this.state.startDate,
       endDate: this.state.endDate,
       storageId: this.context.storageId,
+      productId: this.state.selectedProductId,
     });
 
     axios({
@@ -137,7 +198,7 @@ export default class Reports extends Component {
   render() {
     return (
       <StyledSection className="pageData">
-        <ToolBar>
+        <ToolBar active_products={this.state.productIdsArr.length} pdfIsShowing={this.state.pdfUrl ? 1 : 0}>
           <CustomSelect
             MenuProps={{
               anchorOrigin: {
@@ -158,7 +219,7 @@ export default class Reports extends Component {
             onChange={this.handleChange.bind(this)}
           >
             {REPORTS_TYPES.map(({ name, value }) => (
-              <CustomSelectItem key={uuid()} value={value}>
+              <CustomSelectItem key={value} value={value}>
                 {name}
               </CustomSelectItem>
             ))}
@@ -207,12 +268,40 @@ export default class Reports extends Component {
                 value={this.state.tableName}
                 onChange={this.handleChange.bind(this)}
               >
-                {this.state.tablesNames.map(({ table_name }) => (
-                  <CustomSelectItem key={uuid()} value={table_name}>
+                {this.state.tablesNames.map(({ table_name }, i) => (
+                  <CustomSelectItem key={table_name + i} value={table_name}>
                     {table_name}
                   </CustomSelectItem>
                 ))}
               </CustomSelect>
+            </div>
+          )}
+
+          {this.state.reportType ===
+            "CommodityCirculationOfSpecificProducts" && (
+            <div className="selectProduct">
+              <CustomTextInput
+                value={this.state.productInput}
+                placeholder={"Product name:"}
+                onChange={this.handleProductChange.bind(this)}
+              />
+              <div className="foundProducts">
+                {this.state.productIdsArr.map(({ title, product_id }) => (
+                  <p
+                    key={product_id}
+                    onClick={() => {
+                      this.setState({
+                        productInput: title,
+                        selectedProductId: product_id,
+                        pdfUrl: null,
+                        loading: false,
+                      });
+                    }}
+                  >
+                    {title}
+                  </p>
+                ))}
+              </div>
             </div>
           )}
 
@@ -229,7 +318,10 @@ export default class Reports extends Component {
           <Divider />
         </ToolBar>
 
-        <ReportContainer key="reportContainer" maxScreen={this.state.maximized ? 1 : 0}>
+        <ReportContainer
+          key="reportContainer"
+          maxScreen={this.state.maximized ? 1 : 0}
+        >
           {Boolean(this.state.pdfUrl) && (
             <Document
               key="reportDocument"
@@ -245,7 +337,7 @@ export default class Reports extends Component {
               }}
             >
               {[...Array(this.state.numOfPages)].map((n, i) => (
-                <Page pageNumber={i + 1} key={uuid()} />
+                <Page pageNumber={i + 1} key={i} />
               ))}
             </Document>
           )}
@@ -269,7 +361,9 @@ export default class Reports extends Component {
                 Başlamaq üçün "Göstər" düyməsinə basın
               </p>
             )}
-            {this.state.loading && <CircularProgress style={{ color: "#fff" }} />}
+            {this.state.loading && (
+              <CircularProgress style={{ color: "#fff" }} />
+            )}
           </Backdrop>
         </ReportContainer>
 
@@ -361,6 +455,80 @@ const ToolBar = styled.div`
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
+  }
+
+  .selectProduct {
+    position: relative;
+    width: 270px;
+
+    & > .MuiFormControl-root {
+      width: 100%;
+    }
+
+    &:hover .foundProducts {
+      opacity: ${(props) => (props.active_products ? 1 : 0)};
+      pointer-events: ${(props) => (props.active_products ? "all" : "none")};
+    }
+
+    .foundProducts {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% - 2px);
+      max-height: 280px;
+      border: 1px solid rgba(0, 0, 0, 0.23);
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+      z-index: 10000;
+      backdrop-filter: blur(5px);
+      background-color: rgba(0, 0, 0, 0.4);
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      &:hover {
+        opacity: ${(props) => (props.active_products ? 1 : 0)};
+        pointer-events: ${(props) => (props.active_products ? "all" : "none")};
+      }
+
+      &::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      /* Track */
+      &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        border-radius: 10px;
+      }
+      /* Handle */
+      &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        border-radius: 10px;
+        background: #d7d8d6;
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+      }
+
+      p {
+        width: 100%;
+        padding: 15px;
+        cursor: pointer;
+        font-weight: 500;
+        color: ${(props) =>
+          props.pdfIsShowing ? "rgba(255, 255, 255, 0.85)" : "rgba(255, 255, 255, 0.85)"};
+        transition: transform 0.3s, color 0.3s, background-color 0.3s;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.2);
+          /* transform: scale(1.03); */
+          color: #000;
+        }
+      }
+    }
   }
 
   hr {

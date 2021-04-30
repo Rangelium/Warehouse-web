@@ -37,7 +37,7 @@ export default class Navbar extends Component {
       })
       .then((data) => {
         this.context.setStorage(data[0].id, data[0].storage_name);
-        console.log(data)
+        // console.log(data)
         this.setState({
           storageData: data,
           loading: false,

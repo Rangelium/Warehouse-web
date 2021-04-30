@@ -60,7 +60,7 @@ export default class ArchiveTable extends Component {
                 {/* <TableCell align="center">İstehsalçı</TableCell> */}
                 <TableCell align="center">Hücrə №</TableCell>
                 <TableCell align="center">Inventar №</TableCell>
-                <TableCell align="center">Yararlılıq müddəti</TableCell>
+                <TableCell align="center">Yararlıq müddəti</TableCell>
                 <TableCell align="center">Silinmə tarixi</TableCell>
               </TableRow>
             </TableHead>

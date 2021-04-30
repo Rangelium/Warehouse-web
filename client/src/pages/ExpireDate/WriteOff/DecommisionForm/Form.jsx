@@ -18,7 +18,7 @@ import {
 } from "@material-ui/core";
 
 
-export default class TransferForm extends Component {
+export default class DecommisionForm extends Component {
   static contextType = GlobalDataContext;
   constructor() {
     super();
