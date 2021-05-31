@@ -70,24 +70,29 @@ export default class OrderForm extends Component {
         ({
           material_id,
           product_name,
-          unit_price,
+          // unit_price,
+          total_price,
           currency_title,
           amount_left,
           amount,
           reason,
           sub_gl_category_id,
           is_service,
+          is_amortisized,
+          perc
         }) => {
           return {
             key: uuid(),
             id: material_id,
             title: product_name,
-            setting_price: unit_price,
+            setting_price: total_price,
             currency_title: currency_title,
             orderAmount: amount || amount_left,
             reason: reason || "",
             sub_gl_category_id,
             is_service,
+            is_amortisized,
+            perc
           };
         }
       ),
@@ -223,6 +228,8 @@ export default class OrderForm extends Component {
         setting_price,
         reason,
         invNums,
+        is_amortisized,
+        perc
       }) => {
         if (invNums && invNums.length) {
           invNums.forEach((invNum) => inventoryNums.push([invNum]));
@@ -231,7 +238,9 @@ export default class OrderForm extends Component {
         return [
           id,
           orderAmount,
-          parseFloat((orderAmount * parseFloat(setting_price)).toFixed(2)),
+          parseFloat((
+            parseFloat(setting_price)  * (is_amortisized ? perc/100 : 1)
+          ).toFixed(2)),
           reason,
           sub_gl_category_id,
         ];
@@ -345,12 +354,14 @@ export default class OrderForm extends Component {
                         currency_title,
                         orderAmount,
                         reason,
+                        perc,
+                        is_amortisized
                       }) => (
                         <TableRow key={key}>
                           <TableCell align="center">{title}</TableCell>
                           <TableCell align="center">{orderAmount}</TableCell>
                           <TableCell align="center">{`${(
-                            parseFloat(setting_price) * orderAmount
+                            parseFloat(setting_price) * (is_amortisized ? perc/100 : 1)
                           ).toFixed(2)} ${currency_title}`}</TableCell>
                           <TableCell align="center">
                             {reason || <RemoveIcon />}

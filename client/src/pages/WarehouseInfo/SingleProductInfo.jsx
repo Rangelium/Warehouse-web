@@ -176,7 +176,7 @@ export default class SingleProductInfo extends Component {
                 <TableCell className="head">Miqdar</TableCell>
                 <TableCell className="head">Vahid qiyməti</TableCell>
                 <TableCell className="head">Ümumi qiymət</TableCell>
-                <TableCell className="head">Yararlıq müddəti</TableCell>
+                <TableCell className="head">Yararlılıq müddəti</TableCell>
                 <TableCell className="head">Hücrə №</TableCell>
                 <TableCell className="head">Fəaliyyət</TableCell>
                 <TableCell className="head">Müqavilə №</TableCell>

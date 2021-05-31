@@ -143,10 +143,11 @@ class Row extends Component {
             <CustomTextInput
               style={{ width: 100 }}
               type="number"
+              InputProps={{ inputProps: { min: 0 } }}
               name={`price${i}`}
               value={this.props.tableInputs[`price${i}`]}
               onChange={this.props.handleChange.bind(this)}
-            />
+            />  
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             <CustomSelect
@@ -312,7 +313,7 @@ export default class WarehouseAddFormFillBulk extends Component {
                 <TableCell align="center">Qiymət</TableCell>
                 <TableCell align="center">Valyuta</TableCell>
                 <TableCell align="center">Hücrə №</TableCell>
-                <TableCell align="center">Yararlıq müddəti</TableCell>
+                <TableCell align="center">Yararlılıq müddəti</TableCell>
                 <TableCell align="center">İnventar №</TableCell>
               </TableRow>
             </TableHead>

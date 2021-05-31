@@ -25,7 +25,7 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import RemoveIcon from "@material-ui/icons/Remove";
 import DoneIcon from "@material-ui/icons/Done";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+// import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import CheckCircleOutlinedIcon from "@material-ui/icons/CheckCircleOutlined";
 import PauseCircleOutlineOutlinedIcon from "@material-ui/icons/PauseCircleOutlineOutlined";
@@ -96,6 +96,12 @@ class Row extends Component {
   render() {
     const data = this.props.row;
 
+    const storageThroughArr = data.storages_through
+      .split(",")
+      .map((el) => parseInt(el));
+    // console.log(storageThroughArr)
+    // console.log(storageThroughArr.indexOf(this.context.storageId) + 1)
+
     return (
       <>
         <TableRow>
@@ -125,51 +131,42 @@ class Row extends Component {
               data.default_currency
             }`}
           </TableCell>
-          <TableCell style={{ borderBottom: "unset" }} align="center">
+          {/* <TableCell style={{ borderBottom: "unset" }} align="center">
             {data.done === "+" ? <DoneIcon /> : <RemoveIcon />}
-          </TableCell>
+          </TableCell> */}
           <TableCell style={{ borderBottom: "unset" }} align="center">
-            {data.result === 0 && (
-              <>
-                <CustomButton
-                  style={{ marginRight: "5px" }}
-                  onClick={() => this.props.showNewTransferForm(data)}
-                >
-                  Əlavə et
-                </CustomButton>
-                <CustomButton
-                  onClick={() => {
-                    this.context
-                      .alert({
-                        title: "Sessiyanı bitir",
-                        description: "Əminsiniz?",
-                      })
-                      .then(() => this.finishSession())
-                      .catch(() => {});
-                  }}
-                >
-                  Təstiq et
-                </CustomButton>
-              </>
+            {data.waiting_storage === this.context.storageId ? (
+              <CustomButton
+                onClick={() => {
+                  this.context
+                    .alert({
+                      title: "Sessiyanı bitir",
+                      description: "Əminsiniz?",
+                    })
+                    .then(() => this.finishSession())
+                    .catch(() => {});
+                }}
+              >
+                Təstiq et
+              </CustomButton>
+            ) : storageThroughArr.indexOf(this.context.storageId) + 1 <=
+              data.result ? (
+              <CheckCircleOutlinedIcon
+                style={{
+                  transform: "scale(1.3)",
+                  color: "#008000",
+                  "margin-top": "5px",
+                }}
+              />
+            ) : (
+              <PauseCircleOutlineOutlinedIcon
+                style={{
+                  transform: "scale(1.3)",
+                  color: "#ffaa00",
+                  "margin-top": "5px",
+                }}
+              />
             )}
-            {data.result !== 0 &&
-              (data.done === "+" ? (
-                <CheckCircleOutlinedIcon
-                  style={{
-                    transform: "scale(1.3)",
-                    color: "#008000",
-                    "margin-top": "5px",
-                  }}
-                />
-              ) : (
-                <PauseCircleOutlineOutlinedIcon
-                  style={{
-                    transform: "scale(1.3)",
-                    color: "#ffaa00",
-                    "margin-top": "5px",
-                  }}
-                />
-              ))}
           </TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
             <IconButton
@@ -200,36 +197,6 @@ class Row extends Component {
               <InfoOutlinedIcon style={{ transform: "scale(1.2)" }} />
             </IconButton>
           </TableCell>
-          <TableCell style={{ borderBottom: "unset" }} align="center">
-            {data.done === "-" ? (
-              <IconButton
-                onClick={() => {
-                  this.context
-                    .alert({
-                      title: "Delete",
-                      description: `Are you sure you want to delete?`,
-                    })
-                    .then(() => {
-                      api
-                        .executeProcedure(
-                          "[SalaryDB].anbar.[transfer_products_session_delete]",
-                          { id: data.id }
-                        )
-                        .then(() => {
-                          this.getRowInfo();
-                          this.props.refresh();
-                        })
-                        .catch((err) => this.context.error(err.errText));
-                    })
-                    .catch(() => {});
-                }}
-              >
-                <HighlightOffIcon style={{ transform: "scale(1.2)" }} />
-              </IconButton>
-            ) : (
-              <RemoveIcon />
-            )}
-          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
@@ -250,9 +217,6 @@ class Row extends Component {
                       <TableCell align="center">
                         Transfer olunan anbarın adı
                       </TableCell>
-                      {this.props.row.done === "-" && (
-                        <TableCell align="center"></TableCell>
-                      )}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -271,36 +235,6 @@ class Row extends Component {
                         <TableCell align="center">
                           {product.storage_name}
                         </TableCell>
-                        {this.props.row.done === "-" && (
-                          <TableCell align="center">
-                            <IconButton
-                              onClick={() => {
-                                this.context
-                                  .alert({
-                                    title: "Delete",
-                                    description: `Are you sure you want to delete ${product.title[0]}?`,
-                                  })
-                                  .then(() => {
-                                    api
-                                      .executeProcedure(
-                                        "[SalaryDB].anbar.[transfer_products_session_info_delete]",
-                                        { id: product.id }
-                                      )
-                                      .then(() => {
-                                        this.getRowInfo();
-                                        this.props.refresh();
-                                      })
-                                      .catch((err) =>
-                                        this.context.error(err.errText)
-                                      );
-                                  })
-                                  .catch(() => {});
-                              }}
-                            >
-                              <HighlightOffIcon />
-                            </IconButton>
-                          </TableCell>
-                        )}
                       </TableRow>
                     ))}
                   </TableBody>
@@ -331,7 +265,7 @@ class Row extends Component {
   }
 }
 
-export default class TransferTable extends Component {
+export default class PendingApprove extends Component {
   render() {
     return (
       <StyledTableContainer component={Paper}>
@@ -343,13 +277,12 @@ export default class TransferTable extends Component {
               <TableCell align="center">Miqdar</TableCell>
               <TableCell align="center">Ümumi qiymət</TableCell>
               <TableCell align="center">Təsdiq edilib</TableCell>
-              <TableCell align="center">Fəaliyyət</TableCell>
+              {/* <TableCell align="center">Fəaliyyət</TableCell> */}
               <TableCell align="center">Status</TableCell>
-              <TableCell align="center">Sil</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.props.tableData.map((el) => (
+            {this.props.tableData.filter(el => el.is_done !== 1).map((el) => (
               <Row
                 key={el.id}
                 row={el}

@@ -55,7 +55,7 @@ export default class ExpDateOverTable extends Component {
               <TableCell align="center">Ümumi qiymət</TableCell>
               {/* <TableCell align="center">İstehsalçı</TableCell> */}
               <TableCell align="center">Hücrə №</TableCell>
-              <TableCell align="center">Yararlıq müddəti</TableCell>
+              <TableCell align="center">Yararlılıq müddəti</TableCell>
               <TableCell align="center" />
             </TableRow>
           </TableHead>

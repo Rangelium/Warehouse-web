@@ -6,23 +6,16 @@ import api from "../../../tools/connect";
 
 import Table from "./FormTable";
 import FormProduct from "./FormProduct";
-import {
-  CustomButton,
-  CustomSelect,
-  CustomSelectItem,
-  CustomTextInput,
-} from "../../../components/UtilComponents";
+import { CustomButton } from "../../../components/UtilComponents";
 import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Typography,
   Divider,
 } from "@material-ui/core";
 
 // Icons
-import DoubleArrowOutlinedIcon from "@material-ui/icons/DoubleArrowOutlined";
 
 export default class TransferForm extends Component {
   static contextType = GlobalDataContext;
@@ -31,8 +24,6 @@ export default class TransferForm extends Component {
 
     this.state = {
       activeStep: 0,
-      toWarehouseId: "",
-      warehouseData: [],
       selectedProducts: [],
 
       file: null,
@@ -99,13 +90,16 @@ export default class TransferForm extends Component {
       .then((res) => res[0])
       .catch((err) => console.log(err));
 
-    const allPossibInvNums =  await api
-    .executeProcedure("[SalaryDB].anbar.[search_existing_inventories]", {
-      document_id: this.state.selectedProducts[this.state.activeStep].document_id,
-      storage_id: this.context.storageId
-    })
-    .then((res) => res.map(({ inventory_num }) => ({ invNum: inventory_num, key: uuid() })))
-    .catch((err) => console.log(err));
+    const allPossibInvNums = await api
+      .executeProcedure("[SalaryDB].anbar.[search_existing_inventories]", {
+        document_id: this.state.selectedProducts[this.state.activeStep]
+          .document_id,
+        storage_id: this.context.storageId,
+      })
+      .then((res) =>
+        res.map(({ inventory_num }) => ({ invNum: inventory_num, key: uuid() }))
+      )
+      .catch((err) => console.log(err));
     const possibleInvNums = [...allPossibInvNums];
 
     this.setState((prevState) => {
@@ -145,8 +139,8 @@ export default class TransferForm extends Component {
           reason: this.state.reason,
           currency: this.state.selectedProducts[i].currency_id,
           storage_from: this.context.storageId,
-          storage_to: this.state.toWarehouseId,
-          transfer_session_id: this.props.sessionId,
+          storage_to: this.props.sessionInfo.storage_to,
+          transfer_session_id: this.props.sessionInfo.id,
           document_num: this.state.contractNum,
           document_num_path: fileName,
           cluster_order_default: this.state.selectedProducts[i].cluster_default,
@@ -174,7 +168,7 @@ export default class TransferForm extends Component {
               this.state.selectedProducts[i].product_id,
               3,
               res[0].session_info_id,
-              this.state.toWarehouseId,
+              this.props.sessionInfo.storage_to,
             ]);
             InvNumsArrMats.push([
               null,
@@ -191,7 +185,7 @@ export default class TransferForm extends Component {
           api
             .addInvNumsTable({
               table: InvNumsArrMats,
-              sessionId: this.props.sessionId,
+              sessionId: this.props.sessionInfo.id,
             })
             .then(() => {
               this.context.success(
@@ -240,14 +234,8 @@ export default class TransferForm extends Component {
     this.props.close();
   }
   async prepareForm() {
-    const warehouseData = await api
-      .executeProcedure("anbar.storage_select_all")
-      .catch((err) => this.context.error(err.errText));
-
     this.setState({
       activeStep: 0,
-      toWarehouseId: "",
-      warehouseData,
       selectedProducts: [],
 
       file: null,
@@ -288,7 +276,7 @@ export default class TransferForm extends Component {
       selectedProducts,
     });
   }
-  changePossibleInvNums(userText){
+  changePossibleInvNums(userText) {
     this.setState((prevState) => {
       return {
         possibleInvNums: userText
@@ -307,47 +295,10 @@ export default class TransferForm extends Component {
         open={this.props.open}
         onClose={this.handleClose.bind(this)}
       >
-        <form
-          autoComplete="off"
-          onSubmit={this.handleSubmit.bind(this)}
-        >
+        <form autoComplete="off" onSubmit={this.handleSubmit.bind(this)}>
           <DialogTitle>Məhsulların Transferi</DialogTitle>
 
           <StyledContent>
-            <div className="heading">
-              <CustomTextInput
-                style={{ minWidth: "200px" }}
-                disabled={true}
-                label="Anbardan"
-                value={this.context.storageTitle}
-              />
-
-              <div className="block">
-                <Typography noWrap variant="h3">
-                  TRANSFER
-                </Typography>
-                <DoubleArrowOutlinedIcon className="icon" />
-              </div>
-
-              <CustomSelect
-                required
-                style={{ minWidth: "200px" }}
-                disabled={Boolean(this.state.activeStep)}
-                label="Anbara"
-                name="toWarehouseId"
-                value={this.state.toWarehouseId}
-                onChange={this.handleChange.bind(this)}
-              >
-                {this.state.warehouseData.map((warehouse) =>
-                  warehouse.id !== this.context.storageId ? (
-                    <CustomSelectItem key={uuid()} value={warehouse.id}>
-                      {warehouse.storage_name}
-                    </CustomSelectItem>
-                  ) : null
-                )}
-              </CustomSelect>
-            </div>
-
             <div className="mainData">
               {!this.state.activeStep && (
                 <Table
@@ -358,7 +309,7 @@ export default class TransferForm extends Component {
 
               {Boolean(this.state.activeStep) && (
                 <FormProduct
-                changePossibleInvNums={this.changePossibleInvNums.bind(this)}
+                  changePossibleInvNums={this.changePossibleInvNums.bind(this)}
                   possibleInvNums={this.state.possibleInvNums}
                   quantity={this.state.quantity}
                   productCell={this.state.productCell}
@@ -441,32 +392,9 @@ const StyledContent = styled(DialogContent)`
   display: flex;
   flex-direction: column;
 
-  .heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .block {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .MuiTypography-root {
-        font-size: 1.6rem;
-        margin-right: 5px;
-      }
-
-      .icon {
-        transform: scale(1.4);
-        color: #ffaa00;
-      }
-    }
-  }
-
   .mainData {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    padding-top: 10px;
   }
 `;

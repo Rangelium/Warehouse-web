@@ -135,7 +135,7 @@ export default class InventoryWriteOffTransferForm extends Component {
         reason: this.state.reason,
         currency: this.props.product.currency_id,
         inventory_session_id: this.props.inventoryId,
-        cluster: this.props.product.cluster,
+        cluster: this.props.product.cluster_default,
         price: this.props.product.unit_price,
         exp_date: this.props.product.exp_date,
         product_cell: this.props.product.product_cell,

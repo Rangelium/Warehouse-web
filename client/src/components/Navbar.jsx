@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
-import uuid from "react-uuid";
+// import uuid from "react-uuid";
 import styled from "styled-components";
 import api from "../tools/connect";
 import { GlobalDataContext } from "./GlobalDataProvider";
@@ -87,22 +87,22 @@ export default class Navbar extends Component {
             }}
           >
             {this.state.storageData.map((storage) => (
-              <MenuItem key={uuid()} value={storage.id}>
+              <MenuItem key={storage.id} value={storage.id}>
                 {storage.storage_name}
               </MenuItem>
             ))}
           </Select>
         )}
         <div className="links">
-          {this.props.routes.map(({ name, path, children }) => {
+          {this.props.routes.map(({ name, path, children }, i) => {
             if (children) {
               return (
-                <div key={uuid()} className="link navGroup">
+                <div key={`${name}_${i}`} className="link navGroup">
                   <Typography className="group">{name}</Typography>
                   <ExpandMoreIcon className="groupIcon" />
                   <List>
-                    {children.map(({ name, path, hidden }) => (
-                      <ListItem button key={uuid()}>
+                    {children.map(({ name, path, hidden }, i) => (
+                      <ListItem button key={`${path}_${i}`}>
                         <NavLink
                           className="link"
                           title={name}
@@ -121,7 +121,7 @@ export default class Navbar extends Component {
             return (
               <NavLink
                 className="link"
-                key={uuid()}
+                key={`${path}_${i}`}
                 title={name}
                 activeClassName="selectedLink"
                 exact

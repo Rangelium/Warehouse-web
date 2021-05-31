@@ -61,7 +61,7 @@ export default class WarehouseRemoveArchive extends Component {
                 <TableCell align="center">Ümumi Qiymət</TableCell>
                 <TableCell align="center">Hücrə №</TableCell>
                 <TableCell align="center">Inventar №</TableCell>
-                <TableCell align="center">Yararlıq müddəti</TableCell>
+                <TableCell align="center">Yararlılıq müddəti</TableCell>
                 <TableCell align="center">Yaradılış tarixi</TableCell>
                 <TableCell align="center">File</TableCell>
               </TableRow>

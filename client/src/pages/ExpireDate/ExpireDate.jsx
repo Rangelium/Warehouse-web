@@ -165,7 +165,7 @@ export default class ExpireDate extends Component {
     return (
       <StyledSection className="pageData">
         <Header>
-          <h1 className="title">Yararlıq müddəti keçmiş məhsullar</h1>
+          <h1 className="title">Yararlılıq müddəti keçmiş məhsullar</h1>
         </Header>
 
         <MainData>

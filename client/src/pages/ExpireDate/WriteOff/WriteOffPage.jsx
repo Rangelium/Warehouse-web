@@ -222,7 +222,7 @@ class Row extends Component {
                         <TableCell align="center">
                           {product.product_cell || <RemoveIcon />}
                         </TableCell>
-                        {data.done === "-" && (
+                        {data.done === 0 && (
                           <TableCell align="center">
                             <IconButton
                               onClick={() => {

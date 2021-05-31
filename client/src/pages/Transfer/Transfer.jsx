@@ -5,9 +5,11 @@ import XLXS from "xlsx";
 import { GlobalDataContext } from "../../components/GlobalDataProvider";
 import api from "../../tools/connect";
 
+import CreateSessionForm from "./CreateNewSessionForm/Form";
 import TransferArchive from "./TransferArchive";
 import TransferTable from "./TransferTable";
 import TransferForm from "./TransferForm/Form";
+import PendingApprove from "./PendingApprove";
 import { CustomTextInput, CustomButton } from "../../components/UtilComponents";
 import {
   Tabs,
@@ -27,7 +29,10 @@ export default class Transfer extends Component {
     endDate: dayjs().add(1, "year").format("YYYY-MM-DD"),
     transferTableData: [],
     archiveTableData: [],
-    selectedSessionId: null, // null
+    awaitedTableData: [],
+    selectedSessionInfo: null, // null
+
+    isCreateSessionFormOpen: false,
 
     _tabValue: 0,
     loading: true,
@@ -73,6 +78,14 @@ export default class Transfer extends Component {
         return [];
       });
 
+    const awaitedTableData = await api
+      .executeProcedure("anbar.transfer_products_session_selection_acception", {
+        storage_id: this.context.storageId,
+      })
+      .catch(() => {
+        return [];
+      });
+
     const archiveTableData = await api
       .executeProcedure("[SalaryDB].anbar.[transfer_products_archive]", {
         storage_id: this.context.storageId,
@@ -85,18 +98,8 @@ export default class Transfer extends Component {
       loading: false,
       transferTableData,
       archiveTableData,
+      awaitedTableData,
     });
-  }
-  createNewSession() {
-    api
-      .executeProcedure("[SalaryDB].anbar.[transfer_products_create_session]", {
-        storage_id: this.context.storageId,
-      })
-      .then(() => {
-        this.context.success("Sessiya yaradıldı");
-        this.getTransferData();
-      })
-      .catch((err) => this.context.error(err.errText));
   }
   downloadArchiveExcel() {
     const wb = XLXS.utils.book_new();
@@ -155,41 +158,38 @@ export default class Transfer extends Component {
         <Header>
           <h1 className="title">Məhsulların transferi</h1>
 
-          <CustomButton
-            onClick={() => {
-              this.context
-                .alert({
-                  title: "Yeni sessiya yarat",
-                  description:
-                    "Yeni bir sessiya yaratmaq istədiyinizə əminsiniz??",
-                })
-                .then(() => this.createNewSession())
-                .catch(() => {});
-            }}
-          >
-            Yeni sessiya
-          </CustomButton>
+          {this.state._tabValue !== 2 && (
+            <>
+              <CustomButton
+                onClick={() => {
+                  this.setState({ isCreateSessionFormOpen: true });
+                }}
+              >
+                Yeni sessiya
+              </CustomButton>
 
-          <div className="dateBlock">
-            <p>Tarix:</p>
-            <CustomTextInput
-              required
-              type="date"
-              variant="outlined"
-              name="startDate"
-              value={this.state.startDate}
-              onChange={this.handleChange.bind(this)}
-            />
-            <RemoveIcon />
-            <CustomTextInput
-              required
-              type="date"
-              variant="outlined"
-              name="endDate"
-              value={this.state.endDate}
-              onChange={this.handleChange.bind(this)}
-            />
-          </div>
+              <div className="dateBlock">
+                <p>Tarix:</p>
+                <CustomTextInput
+                  required
+                  type="date"
+                  variant="outlined"
+                  name="startDate"
+                  value={this.state.startDate}
+                  onChange={this.handleChange.bind(this)}
+                />
+                <RemoveIcon />
+                <CustomTextInput
+                  required
+                  type="date"
+                  variant="outlined"
+                  name="endDate"
+                  value={this.state.endDate}
+                  onChange={this.handleChange.bind(this)}
+                />
+              </div>
+            </>
+          )}
         </Header>
 
         <MainData>
@@ -200,6 +200,7 @@ export default class Transfer extends Component {
             >
               <Tab label="Transfer" />
               <Tab label="Arxiv" />
+              <Tab label="Təstiqi gözləyənlər" />
             </Tabs>
 
             {this.state._tabValue === 1 &&
@@ -214,8 +215,8 @@ export default class Transfer extends Component {
 
           <TabItem hidden={this.state._tabValue !== 0}>
             <TransferTable
-              showNewTransferForm={(id) =>
-                this.setState({ selectedSessionId: id })
+              showNewTransferForm={(selectedSessionInfo) =>
+                this.setState({ selectedSessionInfo })
               }
               refresh={this.getTransferData.bind(this)}
               tableData={this.state.transferTableData}
@@ -224,6 +225,13 @@ export default class Transfer extends Component {
 
           <TabItem hidden={this.state._tabValue !== 1}>
             <TransferArchive tableData={this.state.archiveTableData} />
+          </TabItem>
+
+          <TabItem hidden={this.state._tabValue !== 2}>
+            <PendingApprove
+              refresh={this.getTransferData.bind(this)}
+              tableData={this.state.awaitedTableData}
+            />
           </TabItem>
 
           <Backdrop
@@ -239,10 +247,15 @@ export default class Transfer extends Component {
         </MainData>
 
         <TransferForm
-          sessionId={this.state.selectedSessionId}
+          sessionInfo={this.state.selectedSessionInfo}
           refresh={this.getTransferData.bind(this)}
-          open={Boolean(this.state.selectedSessionId)}
-          close={() => this.setState({ selectedSessionId: null })}
+          open={Boolean(this.state.selectedSessionInfo)}
+          close={() => this.setState({ selectedSessionInfo: null })}
+        />
+        <CreateSessionForm
+          open={this.state.isCreateSessionFormOpen}
+          close={() => this.setState({ isCreateSessionFormOpen: false })}
+          refresh={this.getTransferData.bind(this)}
         />
       </StyledSection>
     );
@@ -254,8 +267,11 @@ export default class Transfer extends Component {
 // ===============================================================================================================================
 
 const StyledSection = styled.section`
-  display: flex;
-  flex-direction: column;
+  // display: flex;
+  // flex-direction: column;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 60px 1fr;
 
   .MuiTabs-root {
     padding: 0 15px 0 0;

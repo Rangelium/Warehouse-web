@@ -47,7 +47,7 @@ export default class WarehouseAddForm extends Component {
     this.props.dataForFill.forEach((el, i) => {
       if (
         !Boolean(inputsData[`price${i}`]) ||
-        parseInt(inputsData[`price${i}`]) <= 0
+        parseFloat(inputsData[`price${i}`]) <= 0
       ) {
         isValid = false;
         return;

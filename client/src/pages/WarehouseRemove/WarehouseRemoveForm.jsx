@@ -67,7 +67,7 @@ export default class WarehouseRemoveForm extends Component {
   }
   async getProductData(productTitle) {
     const existingProducts = await api
-      .executeProcedure("[SalaryDB].anbar.[order_request_product_search]", {
+      .executeProcedure("[SalaryDB].anbar.[transfer_products_search]", {
         storage_id: this.state.selectedWarehouse,
         title: productTitle,
       })
@@ -368,7 +368,7 @@ export default class WarehouseRemoveForm extends Component {
                         <TableCell align="center">Məhsul</TableCell>
                         <TableCell align="center">Miqdar</TableCell>
                         <TableCell align="center">Qiymət</TableCell>
-                        <TableCell align="center">Yararlıq müddəti</TableCell>
+                        <TableCell align="center">Yararlılıq müddəti</TableCell>
                         <TableCell align="center">Hücrə №</TableCell>
                       </TableRow>
                     </TableHead>

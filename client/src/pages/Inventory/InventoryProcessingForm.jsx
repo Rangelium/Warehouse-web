@@ -63,6 +63,7 @@ class Row extends Component {
             el.price_difference
           ).toFixed(2)} ${el.currency_title}`}</TableCell>
           <TableCell style={{ borderBottom: "unset" }} align="center">
+            {el.is_inventory ? 
             <CustomTextInput
               _ref={this.props.tableInputs[`invInputRef${i}`]}
               onKeyUp={(e) => {
@@ -78,7 +79,7 @@ class Row extends Component {
                 }
               }}
               disabled={
-                this.props.parentState[`inventoryNumArr${i}`].length >= el.quantity_difference
+                this.props.parentState[`inventoryNumArr${i}`].length >= el.quantity_difference 
               }
               style={{ width: 150 }}
               name={`inventoryNum${i}`}
@@ -106,7 +107,7 @@ class Row extends Component {
                   </InputAdornment>
                 ),
               }}
-            />
+            /> : null}
           </TableCell>
         </StyledTableRow>
 
@@ -243,7 +244,7 @@ export default class InventoryProcessingForm extends Component {
     let arrOfDocId = [];
 
     for (let i = 0; i < data.length; i++){
-      if(this.state[`inventoryNumArr${i}`].length !== data[i].quantity_difference){
+      if(this.state[`inventoryNumArr${i}`].length !== data[i].quantity_difference && data[i].is_inventory){
         return this.context.error(
           `You must create ${
             data[i].quantity_difference - this.state[`inventoryNumArr${i}`].length

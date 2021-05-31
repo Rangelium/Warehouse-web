@@ -240,7 +240,7 @@ export default class InitialRemaindersForm extends Component {
 
             <CustomTextInput
               disabled={this.state.productId ? false : true}
-              label="Yararlıq müddəti"
+              label="Yararlılıq müddəti"
               name="expDate"
               type="date"
               value={this.state.expDate}

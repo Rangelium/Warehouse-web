@@ -44,18 +44,18 @@ const giveReportURL = ({
 }) => {
   switch (reportType) {
     case "reportBuy":
-      return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
+      return `http://192.168.0.182:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
     case "reportSale":
-      return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
+      return `http://192.168.0.182:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
     case "Decomission":
-      return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
+      return `http://192.168.0.182:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[dateto]=${endDate}&data[datefrom]=${startDate}&data[storageid]=${storageId}`;
     case "CommodityCirculationOfAllProducts":
-      return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[storageid]=${storageId}`;
+      return `http://192.168.0.182:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[storageid]=${storageId}`;
     case "CommodityCirculationOfSpecificProducts":
       console.log(
-        `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[date_to]=${endDate}&data[date_from]=${startDate}&data[storage_id]=${storageId}&data[product_id]=${productId}`
+        `http://192.168.0.182:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[date_to]=${endDate}&data[date_from]=${startDate}&data[storage_id]=${storageId}&data[product_id]=${productId}`
       );
-      return `http://127.0.0.1:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[date_to]=${endDate}&data[date_from]=${startDate}&data[storage_id]=${storageId}&data[product_id]=${productId}`;
+      return `http://192.168.0.182:8080/Reports/Report.php?ReportName=${reportType}&Format=${reportFormat}&data[date_to]=${endDate}&data[date_from]=${startDate}&data[storage_id]=${storageId}&data[product_id]=${productId}`;
 
     default:
       break;

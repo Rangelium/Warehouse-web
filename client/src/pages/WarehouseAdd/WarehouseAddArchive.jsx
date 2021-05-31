@@ -59,7 +59,7 @@ export default class WarehouseAddArchive extends Component {
                 <TableCell align="center">Qiymət</TableCell>
                 <TableCell align="center">Ümumi Qiymət</TableCell>
                 <TableCell align="center">Hücrə nömrəsi</TableCell>
-                <TableCell align="center">Yararlıq müddəti</TableCell>
+                <TableCell align="center">Yararlılıq müddəti</TableCell>
                 <TableCell align="center">Kontragent</TableCell>
                 <TableCell align="center">Electron qaimə №</TableCell>
                 <TableCell align="center">Hesab-faktura №</TableCell>

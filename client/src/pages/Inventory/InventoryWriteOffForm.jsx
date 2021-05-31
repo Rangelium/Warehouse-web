@@ -292,7 +292,7 @@ export default class InventoryWriteOffForm extends Component {
                         <TableCell align="center">Məhsul</TableCell>
                         <TableCell align="center">Miqdar</TableCell>
                         <TableCell align="center">Qiymət</TableCell>
-                        <TableCell align="center">Yararlıq müddəti</TableCell>
+                        <TableCell align="center">Yararlılıq müddəti</TableCell>
                         <TableCell align="center">Hücrə №</TableCell>
                       </TableRow>
                     </TableHead>
